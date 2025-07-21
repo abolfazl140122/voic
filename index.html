@@ -10,6 +10,7 @@
         
         * {
             font-family: 'Vazirmatn', sans-serif;
+            user-select: none; /* Prevents text selection during drag */
         }
         
         .loading-spinner {
@@ -65,8 +66,9 @@
         
         .word-slot {
             min-height: 60px;
+            width: 50px;
             border: 2px dashed #ffd700;
-            transition: all 0.1s ease;
+            transition: all 0.2s ease;
             background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
         }
         
@@ -76,10 +78,15 @@
             color: #000;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
+
+        .word-slot.drag-over {
+            background-color: #ffd70033;
+            transform: scale(1.1);
+        }
         
         .word-card {
             cursor: grab;
-            transition: all 0.1s ease;
+            transition: all 0.2s ease;
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
             border: 1px solid #ffd700;
         }
@@ -92,8 +99,13 @@
         }
         
         .word-card.dragging {
-            opacity: 0.7;
+            opacity: 0.5;
             transform: rotate(10deg) scale(1.1);
+        }
+
+        .word-card.hidden-card {
+            opacity: 0;
+            pointer-events: none;
         }
         
         .glass-effect {
@@ -103,7 +115,7 @@
         }
         
         .button-hover {
-            transition: all 0.1s ease;
+            transition: all 0.2s ease;
         }
         
         .button-hover:hover {
@@ -123,8 +135,80 @@
             position: absolute;
             top: 0;
             left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .title-animation {
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { 
+                text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;
+                transform: scale(1);
+            }
+            to { 
+                text-shadow: 0 0 40px #ffd700, 0 0 80px #ffd700, 0 0 120px #ffd700;
+                transform: scale(1.02);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen text-white">
+    
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-50">
+        <div class="text-center">
+            <h1 class="text-7xl font-bold mb-8 text-yellow-400 gold-glow title-animation floating">مافیا فکت</h1>
+            <p class="text-xl text-yellow-300 mb-8 fade-in">تیم اسکورت گیم تقدیم می‌کند</p>
+            <div class="loading-spinner mx-auto mb-6"></div>
+            <p class="text-2xl text-yellow-300 fade-in">در حال بارگذاری...</p>
+            <div class="mt-8 flex justify-center space-x-2">
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce"></div>
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            </div>
+        </div>
+    </div>
 
-<div class="text-lg text-gray-400">👤</div>
+    <!-- Registration Screen -->
+    <div id="registrationScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-40 hidden">
+        <div class="glass-effect rounded-2xl p-10 max-w-md w-full mx-4 slide-up">
+            <h2 class="text-4xl font-bold text-center text-yellow-400 mb-8 gold-glow">ثبت نام</h2>
+            <div class="space-y-8">
+                <div>
+                    <label class="block text-yellow-300 text-lg font-medium mb-3">نام کاربری</label>
+                    <input type="text" id="usernameInput" class="w-full px-6 py-4 rounded-xl bg-black/50 border-2 border-yellow-400/50 text-yellow-100 placeholder-yellow-300/60 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all" placeholder="نام کاربری خود را وارد کنید">
+                </div>
+                <button id="registerBtn" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-4 px-8 rounded-xl transition-all button-hover text-lg">
+                    ثبت نام
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="mainMenu" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black hidden">
+        <!-- Settings Button -->
+        <div class="absolute top-4 left-4 slide-up">
+            <button id="settingsBtn" class="glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 w-12 h-12 rounded-xl transition-all button-hover flex items-center justify-center text-xl">
+                ⚙️
+            </button>
+        </div>
+
+        <!-- User Info -->
+        <div class="absolute top-4 right-4 glass-effect rounded-xl p-4 slide-up">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="mystery-avatar w-12 h-12 rounded-full flex items-center justify-center relative">
+                    <div class="text-lg text-gray-400">👤</div>
                     <div class="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
                         <span class="text-black text-sm font-bold">?</span>
                     </div>
@@ -178,20 +262,20 @@
                         👨‍💻 سازندگان
                     </button>
                     
-                    <button id="comingSoonBtn" class="w-full glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 font-medium py-4 px-6 rounded-xl transition-all button-hover text-right">
-                        🔜 به زودی
+                    <button id="clearDataBtn" class="w-full bg-red-800/50 hover:bg-red-700/60 text-red-300 hover:text-red-100 font-medium py-4 px-6 rounded-xl transition-all button-hover text-right">
+                        🗑️ پاک کردن اطلاعات بازی
                     </button>
                 </div>
                 
                 <div class="mt-8 text-center">
-                    <p class="text-yellow-400/60 text-sm">نسخه 1.0.0</p>
+                    <p class="text-yellow-400/60 text-sm">نسخه 1.0.1</p>
                     <p class="text-yellow-400/60 text-xs mt-2">تیم اسکورت گیم</p>
                 </div>
             </div>
         </div>
     </div>
 
-<!-- Game Screen -->
+    <!-- Game Screen -->
     <div id="gameScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black hidden p-4">
         <!-- Game Header -->
         <div class="flex justify-between items-center mb-4">
@@ -202,7 +286,9 @@
                 <h2 class="text-sm font-bold text-yellow-400">مرحله <span id="currentLevel">1</span></h2>
                 <p class="text-yellow-300 text-xs">امتیاز: <span id="score" class="text-yellow-400 font-bold">0</span></p>
             </div>
-            <div class="w-12"></div>
+             <button id="resetLevelBtn" class="glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 px-4 py-2 rounded-lg transition-all button-hover text-sm">
+                ↻ شروع مجدد
+            </button>
         </div>
 
         <!-- Game Area -->
@@ -210,18 +296,18 @@
             <!-- Word Slots -->
             <div class="glass-effect rounded-xl p-3 mb-4 slide-up">
                 <h3 class="text-base font-bold text-yellow-400 mb-3 text-center">🎯 کلمه مخفی را بسازید</h3>
-                <div id="wordSlots" class="flex justify-center space-x-2 space-x-reverse mb-3">
+                <div id="wordSlots" class="flex justify-center flex-wrap gap-2 mb-3">
                     <!-- Slots will be generated by JavaScript -->
                 </div>
                 <div class="text-center">
-                    <p class="text-yellow-300 text-xs">💡 راهنمایی: <span id="hint" class="text-yellow-100 font-medium">کلمه‌ای مرتبط با جنایت و مخفی‌کاری</span></p>
+                    <p class="text-yellow-300 text-xs">💡 راهنمایی: <span id="hint" class="text-yellow-100 font-medium"></span></p>
                 </div>
             </div>
 
             <!-- Word Cards -->
             <div class="glass-effect rounded-xl p-3 mb-4 slide-up">
                 <h3 class="text-base font-bold text-yellow-400 mb-3 text-center">🔤 حروف موجود</h3>
-                <div id="wordCards" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div id="wordCards" class="grid grid-cols-4 md:grid-cols-7 gap-3">
                     <!-- Cards will be generated by JavaScript -->
                 </div>
             </div>
@@ -232,7 +318,7 @@
     <div id="modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
         <div class="glass-effect rounded-3xl p-10 max-w-md w-full mx-4 text-center slide-up">
             <h3 id="modalTitle" class="text-3xl font-bold text-yellow-400 mb-6 gold-glow"></h3>
-            <p id="modalText" class="text-yellow-100 mb-8 text-lg leading-relaxed"></p>
+            <p id="modalText" class="text-yellow-100 mb-8 text-lg leading-relaxed whitespace-pre-wrap"></p>
             <button id="modalBtn" class="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 px-8 rounded-xl transition-all button-hover">
                 باشه
             </button>
@@ -240,230 +326,280 @@
     </div>
 
     <script>
+        // DOM Elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const registrationScreen = document.getElementById('registrationScreen');
+        const mainMenu = document.getElementById('mainMenu');
+        const settingsScreen = document.getElementById('settingsScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const modal = document.getElementById('modal');
+
         // Game State
         let currentUser = null;
-        let currentLevel = 1;
+        let currentLevelIndex = 0;
         let score = 0;
-        let selectedAvatar = '👤';
         
-        // Game Levels
+        // Game Levels Data
         const levels = [
-            {
-                word: 'مافیا',
-                letters: ['م', 'ا', 'ف', 'ی', 'ا'],
-                hint: 'سازمان مخفی جنایتکار'
-            },
-            {
-                word: 'جنایت',
-                letters: ['ج', 'ن', 'ا', 'ی', 'ت'],
-                hint: 'عمل غیرقانونی'
-            },
-            {
-                word: 'مخفی',
-                letters: ['م', 'خ', 'ف', 'ی'],
-                hint: 'پنهان و نامعلوم'
-            },
-            {
-                word: 'رئیس',
-                letters: ['ر', 'ئ', 'ی', 'س'],
-                hint: 'رهبر گروه'
-            },
-            {
-                word: 'محرمانه',
-                letters: ['م', 'ح', 'ر', 'م', 'ا', 'ن', 'ه'],
-                hint: 'اطلاعات مخفی'
-            }
+            { word: 'مافیا', hint: 'سازمان مخفی جنایتکار' },
+            { word: 'جنایت', hint: 'عمل غیرقانونی' },
+            { word: 'مخفی', hint: 'پنهان و نامعلوم' },
+            { word: 'رئیس', hint: 'رهبر گروه' },
+            { word: 'محرمانه', hint: 'اطلاعات سری' },
+            { word: 'پلیس', hint: 'نیروی انتظامی' },
+            { word: 'بازجو', hint: 'کسی که سوال می‌پرسد' },
+            { word: 'خیانت', hint: 'نقض پیمان و وفاداری' },
         ];
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user exists
-            const savedUser = localStorage.getItem('mafiaFactUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showMainMenu();
-            } else {
-                setTimeout(() => {
-                    showRegistration();
-                }, 3000);
-            }
-        });
+        // --- Utility Functions ---
 
-width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-        
-        .title-animation {
-            animation: titleGlow 3s ease-in-out infinite alternate;
-        }
-        
-        @keyframes titleGlow {
-            from { 
-                text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;
-                transform: scale(1);
-            }
-            to { 
-                text-shadow: 0 0 40px #ffd700, 0 0 80px #ffd700, 0 0 120px #ffd700;
-                transform: scale(1.02);
-            }
-        }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen">
-    
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-50">
-        <div class="text-center">
-            <h1 class="text-7xl font-bold mb-8 text-yellow-400 gold-glow title-animation floating">مافیا فکت</h1>
-            <p class="text-xl text-yellow-300 mb-8 fade-in">تیم اسکورت گیم تقدیم می‌کند</p>
-            <div class="loading-spinner mx-auto mb-6"></div>
-            <p class="text-2xl text-yellow-300 fade-in">در حال بارگذاری...</p>
-            <div class="mt-8 flex justify-center space-x-2">
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Registration Screen -->
-    <div id="registrationScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-40 hidden">
-        <div class="glass-effect rounded-2xl p-10 max-w-md w-full mx-4 slide-up">
-            <h2 class="text-4xl font-bold text-center text-yellow-400 mb-8 gold-glow">ثبت نام</h2>
-            <div class="space-y-8">
-                <div>
-                    <label class="block text-yellow-300 text-lg font-medium mb-3">نام کاربری</label>
-                    <input type="text" id="usernameInput" class="w-full px-6 py-4 rounded-xl bg-black/50 border-2 border-yellow-400/50 text-yellow-100 placeholder-yellow-300/60 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all" placeholder="نام کاربری خود را وارد کنید">
-                </div>
-                <button id="registerBtn" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-4 px-8 rounded-xl transition-all button-hover text-lg">
-                    ثبت نام
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Menu -->
-    <div id="mainMenu" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black hidden">
-        <!-- Settings Button -->
-        <div class="absolute top-4 left-4 slide-up">
-            <button id="settingsBtn" class="glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 w-12 h-12 rounded-xl transition-all button-hover flex items-center justify-center text-xl">
-                ⚙️
-            </button>
-        </div>
-
-        <!-- User Info -->
-        <div class="absolute top-4 right-4 glass-effect rounded-xl p-4 slide-up">
-            <div class="flex items-center space-x-3 space-x-reverse">
-                <div class="mystery-avatar w-12 h-12 rounded-full flex items-center justify-center relative">
-
-// Back to Menu
-        document.getElementById('backToMenuBtn').addEventListener('click', function() {
-            document.getElementById('gameScreen').classList.add('hidden');
-            document.getElementById('mainMenu').classList.remove('hidden');
-        });
-
-        // Initialize Game
-        function initializeGame() {
-            currentLevel = currentUser.level || 1;
-            score = currentUser.score || 0;
+        function showModal(title, text, buttonText = 'باشه', callback = null) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalText').textContent = text;
+            const modalBtn = document.getElementById('modalBtn');
+            modalBtn.textContent = buttonText;
             
-            document.getEl
+            const newBtn = modalBtn.cloneNode(true);
+            modalBtn.parentNode.replaceChild(newBtn, modalBtn);
 
-// Show Registration
-        function showRegistration() {
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('registrationScreen').classList.remove('hidden');
-            document.getElementById('registrationScreen').classList.add('fade-in');
+            newBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                if (callback) callback();
+            });
+            modal.classList.remove('hidden');
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
 
-        // Show Main Menu
+        function saveUserData() {
+            if (currentUser) {
+                currentUser.levelIndex = currentLevelIndex;
+                currentUser.score = score;
+                localStorage.setItem('mafiaFactUser', JSON.stringify(currentUser));
+            }
+        }
+
+        // --- Screen Management ---
+
+        function showRegistration() {
+            loadingScreen.classList.add('hidden');
+            registrationScreen.classList.remove('hidden');
+            registrationScreen.classList.add('fade-in');
+        }
+
         function showMainMenu() {
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('registrationScreen').classList.add('hidden');
-            document.getElementById('settingsScreen').classList.add('hidden');
-            document.getElementById('mainMenu').classList.remove('hidden');
-            document.getElementById('mainMenu').classList.add('fade-in');
+            loadingScreen.classList.add('hidden');
+            registrationScreen.classList.add('hidden');
+            settingsScreen.classList.add('hidden');
+            gameScreen.classList.add('hidden');
+            mainMenu.classList.remove('hidden');
+            mainMenu.classList.add('fade-in');
             
             if (currentUser) {
                 document.getElementById('userName').textContent = currentUser.username;
             }
         }
 
-        // Show Settings
         function showSettings() {
-            document.getElementById('mainMenu').classList.add('hidden');
-            document.getElementById('settingsScreen').classList.remove('hidden');
-            document.getElementById('settingsScreen').classList.add('fade-in');
+            mainMenu.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+            settingsScreen.classList.add('fade-in');
         }
 
-        // Registration
-        document.getElementById('registerBtn').addEventListener('click', function() {
-            const username = document.getElementById('usernameInput').value.trim();
-            
-            if (!username) {
-                showModal('خطا', 'لطفاً نام کاربری را وارد کنید');
+        function showGame() {
+            mainMenu.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            gameScreen.classList.add('fade-in');
+            setupLevel();
+        }
+
+        // --- Game Logic ---
+
+        function setupLevel() {
+            if (currentLevelIndex >= levels.length) {
+                showModal('تبریک!', 'شما تمام مراحل بازی را با موفقیت به پایان رساندید!', 'بازگشت به منو', showMainMenu);
                 return;
             }
-            
-            currentUser = {
-                username: username,
-                avatar: '👤',
-                level: 1,
-                score: 0
-            };
-            
-            localStorage.setItem('mafiaFactUser', JSON.stringify(currentUser));
-            
-            // Show loading then main menu
-            document.getElementById('registrationScreen').classList.add('hidden');
-            document.getElementById('loadingScreen').classList.remove('hidden');
-            
-            setTimeout(() => {
-                showMainMenu();
-            }, 1500);
-        });
 
-        // Menu Button Handlers
-        document.querySelectorAll('.menu-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                showModal('به زودی', 'این قابلیت به زودی اضافه خواهد شد!');
+            const level = levels[currentLevelIndex];
+            const wordSlots = document.getElementById('wordSlots');
+            const wordCards = document.getElementById('wordCards');
+
+            // Update UI
+            document.getElementById('currentLevel').textContent = currentLevelIndex + 1;
+            document.getElementById('score').textContent = score;
+            document.getElementById('hint').textContent = level.hint;
+
+            // Clear previous elements
+            wordSlots.innerHTML = '';
+            wordCards.innerHTML = '';
+
+            // Create word slots
+            for (let i = 0; i < level.word.length; i++) {
+                const slot = document.createElement('div');
+                slot.classList.add('word-slot', 'rounded-lg', 'flex', 'items-center', 'justify-center', 'text-2xl', 'font-bold');
+                slot.dataset.index = i;
+                wordSlots.appendChild(slot);
+            }
+
+            // Create word cards
+            const letters = shuffleArray([...level.word]);
+            letters.forEach((letter, index) => {
+                const card = document.createElement('div');
+                card.id = `card-${index}`;
+                card.classList.add('word-card', 'p-4', 'rounded-lg', 'text-center', 'text-2xl', 'font-bold');
+                card.textContent = letter;
+                card.draggable = true;
+                wordCards.appendChild(card);
             });
+
+            addDragAndDropListeners();
+        }
+
+        function addDragAndDropListeners() {
+            const cards = document.querySelectorAll('.word-card');
+            const slots = document.querySelectorAll('.word-slot');
+
+            cards.forEach(card => {
+                card.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                    setTimeout(() => card.classList.add('dragging'), 0);
+                });
+                card.addEventListener('dragend', () => card.classList.remove('dragging'));
+            });
+
+            slots.forEach(slot => {
+                slot.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    if (!slot.classList.contains('filled')) {
+                       slot.classList.add('drag-over');
+                    }
+                });
+                slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+                slot.addEventListener('drop', e => {
+                    e.preventDefault();
+                    slot.classList.remove('drag-over');
+                    if (slot.classList.contains('filled')) return;
+
+                    const cardId = e.dataTransfer.getData('text/plain');
+                    const card = document.getElementById(cardId);
+                    
+                    if (card) {
+                        slot.textContent = card.textContent;
+                        slot.classList.add('filled');
+                        slot.dataset.cardId = cardId;
+                        card.classList.add('hidden-card');
+                        checkAnswer();
+                    }
+                });
+                
+                // Allow returning a letter from slot to cards
+                slot.addEventListener('click', () => {
+                    if (slot.classList.contains('filled')) {
+                        const cardId = slot.dataset.cardId;
+                        const card = document.getElementById(cardId);
+                        if(card) card.classList.remove('hidden-card');
+                        
+                        slot.textContent = '';
+                        slot.classList.remove('filled');
+                        delete slot.dataset.cardId;
+                    }
+                });
+            });
+        }
+
+        function checkAnswer() {
+            const slots = document.querySelectorAll('.word-slot');
+            const filledSlots = document.querySelectorAll('.word-slot.filled');
+
+            if (filledSlots.length !== levels[currentLevelIndex].word.length) {
+                return; // Not all slots are filled yet
+            }
+
+            let constructedWord = '';
+            slots.forEach(slot => {
+                constructedWord += slot.textContent;
+            });
+
+            if (constructedWord === levels[currentLevelIndex].word) {
+                // Correct answer
+                score += 10;
+                currentLevelIndex++;
+                saveUserData();
+                showModal('عالی بود!', 'کلمه را درست حدس زدید! +10 امتیاز', 'مرحله بعد', setupLevel);
+            } else {
+                // Incorrect answer
+                showModal('اشتباه بود!', 'کلمه ساخته شده صحیح نیست. دوباره تلاش کنید.', 'امتحان مجدد');
+                // Optional: Reset the board after incorrect guess
+                setTimeout(resetLevel, 1500);
+            }
+        }
+
+        function resetLevel() {
+            // This function resets the current level without advancing
+            setupLevel();
+        }
+
+        // --- Event Listeners Setup ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('mafiaFactUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                currentLevelIndex = currentUser.levelIndex || 0;
+                score = currentUser.score || 0;
+                setTimeout(showMainMenu, 1500);
+            } else {
+                setTimeout(showRegistration, 3000);
+            }
         });
 
-        // Settings Button
-        document.getElementById('settingsBtn').addEventListener('click', function() {
-            showSettings();
-        });
-
-        // Close Settings
-        document.getElementById('closeSettingsBtn').addEventListener('click', function() {
+        document.getElementById('registerBtn').addEventListener('click', () => {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (!username) {
+                showModal('خطا', 'لطفاً نام کاربری را وارد کنید.');
+                return;
+            }
+            currentUser = { username: username, levelIndex: 0, score: 0 };
+            saveUserData();
             showMainMenu();
         });
 
-        // Settings Options
-        document.getElementById('supportBtn').addEventListener('click', function() {
+        document.getElementById('settingsBtn').addEventListener('click', showSettings);
+        document.getElementById('closeSettingsBtn').addEventListener('click', showMainMenu);
+        document.getElementById('startGameBtn').addEventListener('click', showGame);
+        document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
+        document.getElementById('resetLevelBtn').addEventListener('click', resetLevel);
+
+        document.getElementById('supportBtn').addEventListener('click', () => {
             showModal('ارتباط با پشتیبانی', 'برای ارتباط با پشتیبانی، لطفاً به آدرس ایمیل زیر پیام ارسال کنید:\n\nsupport@escortgame.com');
         });
 
-        document.getElementById('developersBtn').addEventListener('click', function() {
-            showModal('سازندگان', 'این بازی توسط تیم اسکورت گیم ساخته شده است.\n\nتیم توسعه:\n• کدنویس ارشد: Ali.k\n• کدنویس دوم: abolfazl1401\n• طراح: ivar\n\nتمامی حقوق این اپلیکشن متعلق به استدیو اسکورت گیم است');
+        document.getElementById('developersBtn').addEventListener('click', () => {
+            showModal('سازندگان', 'این بازی توسط تیم اسکورت گیم ساخته شده است.\n\nتیم توسعه:\n• کدنویس ارشد: Ali.k\n• کدنویس دوم: abolfazl1401\n• طراح: ivar\n\nتمامی حقوق این اپلیکشن متعلق به استدیو اسکورت گیم است.');
+        });
+        
+        document.getElementById('clearDataBtn').addEventListener('click', () => {
+            const confirmation = confirm('آیا مطمئن هستید که می‌خواهید تمام اطلاعات بازی (نام کاربری، مراحل و امتیاز) را پاک کنید؟ این عمل غیرقابل بازگشت است.');
+            if (confirmation) {
+                localStorage.removeItem('mafiaFactUser');
+                alert('اطلاعات بازی با موفقیت پاک شد. صفحه مجددا بارگذاری می‌شود.');
+                window.location.reload();
+            }
         });
 
-        document.getElementById('comingSoonBtn').addEventListener('click', function() {
-            showModal('به زودی', 'قابلیت‌های جدید به زودی اضافه خواهند شد!\n\n• حالت چندنفره\n• مراحل بیشتر\n• سیستم رتبه‌بندی\n• و خیلی چیزهای دیگر...');
+        document.querySelectorAll('.menu-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showModal('به زودی', 'این قابلیت هنوز در دسترس نیست و به زودی اضافه خواهد شد!');
+            });
         });
 
-        // Start Game
-        document.getElementById('startGameBtn').addEventListener('click', function() {
-            document.getElementById('mainMenu').classList.add('hidden');
-            document.getElementById('gameScreen').classList.remove('hidden');
-            document.getElementById('gameScreen').classList.add('fade-in');
-            initializeGame();
-        });
+    </script>
+</body>
+</html>
