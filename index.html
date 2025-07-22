@@ -8,8 +8,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
         
-        body {
+        * {
             font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap highlight on mobile */
         }
         
         .loading-spinner {
@@ -26,31 +27,14 @@
             100% { transform: rotate(360deg); }
         }
         
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        .fade-out {
-            animation: fadeOut 0.5s ease-out forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        
         .title-glow {
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.5);
             animation: titleGlow 2s ease-in-out infinite alternate;
         }
         
         @keyframes titleGlow {
-            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
-            to { text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700; }
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 35px rgba(255, 215, 0, 0.7); }
         }
         
         .floating {
@@ -67,13 +51,14 @@
         }
         
         @keyframes pulseGold {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
-            50% { box-shadow: 0 0 0 20px rgba(255, 215, 0, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
         }
         
         .word-slot {
-            min-height: 60px;
-            width: 60px;
+            width: 50px;
+            height: 60px;
             border: 2px dashed #ffd700;
             transition: all 0.3s ease;
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
@@ -83,6 +68,7 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: #ffd700;
+            cursor: pointer;
         }
         
         .word-slot.filled {
@@ -98,14 +84,19 @@
             user-select: none;
             background: linear-gradient(145deg, #ffd700, #ffed4e);
             box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-            color: #1a1a1a;
-            padding: 10px 20px;
-            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
             font-weight: bold;
+            color: #000;
+            border-radius: 0.5rem;
         }
         
         .word-piece:hover {
-            transform: scale(1.05) translateY(-2px);
+            transform: scale(1.1) translateY(-3px);
             box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
         }
         
@@ -116,8 +107,8 @@
         }
         
         .glass-effect {
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 215, 0, 0.2);
         }
         
@@ -128,48 +119,26 @@
         .black-gradient {
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
         }
-        
-        .menu-btn-hover {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .menu-btn-hover:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .menu-btn-hover:hover:before {
-            left: 100%;
-        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen text-white overflow-x-hidden">
+
+<body class="bg-gradient-to-br from-black via-gray-900 to-black text-white min-h-screen">
     
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-50">
-        <div class="text-center">
-            <h1 class="text-7xl font-bold mb-12 text-yellow-400 title-glow floating">مافیا فکت</h1>
-            <div class="loading-spinner mx-auto mb-6"></div>
-            <p class="text-2xl text-yellow-300 font-semibold">در حال بارگذاری...</p>
-            <div class="mt-4 flex justify-center space-x-1 space-x-reverse">
-                <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
-                <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-            </div>
+    <!-- 1. Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex flex-col items-center justify-center z-50">
+        <h1 class="text-7xl font-bold mb-12 text-yellow-400 title-glow floating">مافیا فکت</h1>
+        <div class="loading-spinner mx-auto mb-6"></div>
+        <p class="text-2xl text-yellow-300 font-semibold">در حال بارگذاری...</p>
+        <div class="mt-4 flex justify-center space-x-1 space-x-reverse">
+            <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
+            <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
         </div>
     </div>
 
-    <!-- Registration Screen -->
-    <div id="registrationScreen" class="hidden fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-40">
-        <div class="glass-effect p-10 rounded-3xl border-2 border-yellow-400 text-center max-w-md w-full mx-4 shadow-2xl fade-in">
+    <!-- 2. Registration Screen -->
+    <div id="registrationScreen" class="hidden fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-40 p-4">
+        <div class="glass-effect p-10 rounded-3xl border-2 border-yellow-400 text-center max-w-md w-full mx-4 shadow-2xl">
             <h2 class="text-5xl font-bold text-yellow-400 mb-8 title-glow">ثبت نام</h2>
             <div class="mb-8">
                 <label class="block text-yellow-300 text-xl mb-4 font-semibold">نام کاربری:</label>
@@ -181,393 +150,387 @@
         </div>
     </div>
 
-    <!-- Main Menu -->
-    <div id="mainMenu" class="hidden min-h-screen p-4 relative overflow-hidden">
-        <!-- Settings Button -->
-        <div class="absolute top-4 left-4 z-10">
+    <!-- 3. Main Menu -->
+    <div id="mainMenu" class="hidden min-h-screen p-4 relative overflow-hidden flex flex-col">
+        <!-- Header: User Info & Settings -->
+        <header class="flex justify-between items-start">
             <button id="settingsBtn" class="glass-effect p-3 rounded-xl border border-yellow-400 shadow-md hover:scale-105 transition-all">
-                <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+                <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
             </button>
-        </div>
-
-        <!-- User Info -->
-        <div id="userInfoCard" class="absolute top-4 right-4 glass-effect p-3 rounded-xl border border-yellow-400 shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer z-10">
-            <div class="flex items-center space-x-2 space-x-reverse">
-                <div class="relative"><div class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md"><svg class="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div></div>
-                <div class="flex flex-col">
-                    <span id="userNameDisplay" class="text-yellow-400 font-bold text-sm">کاربر</span>
-                    <div class="flex items-center space-x-1 space-x-reverse">
-                        <div class="flex items-center"><span class="text-yellow-400 text-xs font-bold" id="userCoins">100</span><span class="text-yellow-400 text-sm mr-1">🪙</span></div>
-                        <div class="flex items-center"><span class="text-yellow-400 text-xs font-bold" id="userCups">0</span><span class="text-yellow-400 text-sm mr-1">🏆</span></div>
+            <div class="glass-effect p-3 rounded-xl border border-yellow-400 shadow-lg cursor-pointer">
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="relative">
+                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md">
+                            <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
+                    </div>
+                    <div class="flex flex-col">
+                        <span id="userName" class="text-yellow-400 font-bold text-sm">کاربر</span>
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="flex items-center">
+                                <span class="text-yellow-400 text-xs font-bold" id="userCoins">100</span>
+                                <span class="text-yellow-400 text-sm mr-1">🪙</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-yellow-400 text-xs font-bold" id="userCups">0</span>
+                                <span class="text-yellow-400 text-sm mr-1">🏆</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <div class="flex flex-col items-center justify-center min-h-screen">
-            <h1 class="text-6xl font-bold mb-12 text-yellow-400 title-glow floating">مافیا فکت</h1>
-            <button id="startGameBtn" class="gold-gradient text-black px-10 py-4 rounded-xl font-bold text-xl mb-6 transition-all duration-300 shadow-xl hover:scale-105 pulse-gold">شروع بازی</button>
-            <button id="onlineGameBtn" class="black-gradient border-2 border-yellow-400 text-yellow-400 px-10 py-4 rounded-xl font-bold text-xl mb-8 transition-all duration-300 shadow-xl hover:scale-105">بازی آنلاین</button>
-            <div class="flex space-x-8 space-x-reverse mt-16">
-                <button class="menu-btn menu-btn-hover black-gradient border-2 border-yellow-400 text-yellow-400 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">چت</button>
-                <button class="menu-btn menu-btn-hover black-gradient border-2 border-yellow-400 text-yellow-400 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">کلن</button>
-                <button class="menu-btn menu-btn-hover black-gradient border-2 border-yellow-400 text-yellow-400 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">فروشگاه</button>
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col items-center justify-center">
+            <button id="startGameBtn" class="gold-gradient text-black px-10 py-4 rounded-xl font-bold text-xl mb-6 transition-all duration-300 shadow-xl hover:scale-105 pulse-gold">
+                شروع بازی (آفلاین)
+            </button>
+            
+            <button id="onlineGameBtn" class="black-gradient border-2 border-yellow-400 text-yellow-400 px-10 py-4 rounded-xl font-bold text-xl mb-8 transition-all duration-300 shadow-xl hover:scale-105">
+                بازی آنلاین
+            </button>
+            
+            <div class="flex space-x-8 space-x-reverse mt-auto mb-8">
+                <button class="menu-btn black-gradient border-2 border-yellow-400 text-yellow-400 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">
+                    چت
+                </button>
+                <button class="menu-btn black-gradient border-2 border-yellow-400 text-yellow-400 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">
+                    کلن
+                </button>
+                <button class="menu-btn black-gradient border-2 border-yellow-400 text-yellow-400 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">
+                    فروشگاه
+                </button>
             </div>
-        </div>
+        </main>
     </div>
 
-    <!-- Player Finding Screen -->
-    <div id="playerFindingScreen" class="hidden fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-40">
-        <div class="text-center fade-in">
-            <div class="loading-spinner mx-auto mb-8"></div>
-            <h2 class="text-4xl font-bold text-yellow-400 title-glow mb-6">در حال پیدا کردن حریف...</h2>
-            <div class="text-yellow-300 text-xl mb-4">
-                <span id="searchTimer">5</span> ثانیه باقی مانده
-            </div>
-            <div class="flex justify-center space-x-1 mb-8">
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-            </div>
-            <button id="cancelSearchBtn" class="black-gradient border-2 border-yellow-400 text-yellow-400 px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all">لغو</button>
-        </div>
-    </div>
-
-    <!-- Bot Introduction Screen -->
-    <div id="botIntroScreen" class="hidden fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-40">
-        <div class="glass-effect p-12 rounded-3xl border-2 border-yellow-400 text-center max-w-md w-full mx-4 fade-in">
-            <h2 class="text-3xl font-bold text-yellow-400 title-glow mb-8">حریف پیدا شد!</h2>
-            <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6 floating">
-                <span class="text-4xl">🤖</span>
-            </div>
-            <h3 class="text-2xl font-bold text-yellow-400 mb-6" id="foundBotName">مافیا بات</h3>
-            <p class="text-yellow-300 mb-8 text-lg">آماده برای شروع مسابقه؟</p>
-            <button id="startBattleBtn" class="gold-gradient text-black px-10 py-4 rounded-xl font-bold text-xl hover:scale-105 transition-all shadow-lg pulse-gold">شروع مسابقه</button>
-        </div>
-    </div>
-    
-    <!-- Game Screen -->
+    <!-- 4. Offline Game Screen -->
     <div id="gameScreen" class="hidden min-h-screen p-4 flex flex-col">
-        <div class="flex justify-between items-center mb-6">
-            <button id="backToMenuBtn" class="black-gradient border-2 border-yellow-400 text-yellow-400 px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all">بازگشت</button>
+        <!-- Game Header -->
+        <header class="flex justify-between items-center mb-6">
+            <button id="backToMenuBtn" class="black-gradient border-2 border-yellow-400 text-yellow-400 px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all">
+                بازگشت
+            </button>
             <div class="text-center glass-effect p-4 rounded-xl border border-yellow-400">
                 <h2 class="text-3xl font-bold text-yellow-400 title-glow">مرحله <span id="currentLevel">1</span></h2>
                 <p class="text-yellow-300 text-lg">امتیاز: <span id="score">0</span></p>
             </div>
-            <div class="w-28"></div>
-        </div>
-        <div class="flex-grow flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
+            <div class="w-24"></div> <!-- Spacer -->
+        </header>
+
+        <!-- Game Content -->
+        <main class="flex-grow flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
             <div class="mb-12 w-full">
                 <h3 class="text-2xl font-bold text-yellow-400 mb-6 text-center title-glow">کلمه را تشکیل دهید:</h3>
-                <div id="wordSlots" class="flex justify-center flex-wrap gap-3 mb-8"></div>
+                <div id="wordSlots" class="flex justify-center flex-wrap gap-3 mb-8">
+                    <!-- Slots will be generated by JS -->
+                </div>
             </div>
+
             <div class="glass-effect p-6 rounded-2xl border-2 border-yellow-400 shadow-2xl w-full">
                 <h3 class="text-xl font-bold text-yellow-400 mb-4 text-center title-glow">حروف موجود:</h3>
-                <div id="wordPieces" class="flex flex-wrap justify-center gap-3"></div>
+                <div id="wordPieces" class="flex flex-wrap justify-center gap-3">
+                    <!-- Pieces will be generated by JS -->
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 
+    <!-- 5. Modals (Placed at the end of body) -->
+
     <!-- Coming Soon Modal -->
-    <div id="comingSoonModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-        <div class="glass-effect p-10 rounded-2xl border-2 border-yellow-400 text-center shadow-2xl max-w-md w-full mx-4 fade-in">
+    <div id="comingSoonModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+        <div class="glass-effect p-10 rounded-2xl border-2 border-yellow-400 text-center shadow-2xl max-w-md w-full mx-4">
             <h3 class="text-3xl font-bold text-yellow-400 mb-6 title-glow">به زودی</h3>
             <div class="text-yellow-300 mb-8 text-lg space-y-2">
+                <p>این بخش در حال توسعه است!</p>
+                <p>• بازی آنلاین</p>
                 <p>• چالش‌های روزانه</p>
-                <p>• سیستم امتیازدهی جدید</p>
-                <p>• بخش چت و ارتباط با دوستان</p>
+                <p>• بخش چت و کلن</p>
                 <p>• فروشگاه و آیتم‌های ویژه</p>
-                <p>• مسابقات هفتگی</p>
             </div>
-            <button id="closeComingSoonBtn" class="gold-gradient text-black px-8 py-3 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg">بستن</button>
+            <button id="closeComingSoonBtn" class="gold-gradient text-black px-8 py-3 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg">
+                فهمیدم!
+            </button>
         </div>
     </div>
 
     <!-- Settings Modal -->
-    <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-        <div class="glass-effect p-10 rounded-2xl border-2 border-yellow-400 text-center shadow-2xl max-w-md w-full mx-4 fade-in">
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+        <div class="glass-effect p-10 rounded-2xl border-2 border-yellow-400 text-center shadow-2xl max-w-md w-full mx-4">
             <h3 class="text-3xl font-bold text-yellow-400 mb-8 title-glow">تنظیمات</h3>
-            <div class="space-y-4">
-                <button class="settings-option w-full black-gradient border border-yellow-400 text-yellow-400 px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">ارتباط با پشتیبانی</button>
-                <button id="developersBtn" class="settings-option w-full black-gradient border border-yellow-400 text-yellow-400 px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">سازندگان</button>
-                <button class="settings-option w-full black-gradient border border-yellow-400 text-yellow-400 px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">خروج از حساب</button>
+            <div class="space-y-4 mb-8">
+                <button class="w-full black-gradient border border-yellow-400 text-yellow-400 px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">
+                    ارتباط با پشتیبانی
+                </button>
+                <button class="w-full black-gradient border border-yellow-400 text-yellow-400 px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">
+                    سازندگان
+                </button>
+                 <button id="resetUserBtn" class="w-full bg-red-800 border border-red-500 text-red-300 px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 hover:bg-red-700 shadow-lg">
+                    ریست کردن کاربر
+                </button>
             </div>
-             <button id="closeSettingsBtn" class="mt-8 gold-gradient text-black px-8 py-3 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg">بستن</button>
+            <button id="closeSettingsBtn" class="gold-gradient text-black px-8 py-3 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg">
+                بستن
+            </button>
         </div>
     </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Elements ---
-    const loadingScreen = document.getElementById('loadingScreen');
-    const registrationScreen = document.getElementById('registrationScreen');
-    const mainMenu = document.getElementById('mainMenu');
-    const gameScreen = document.getElementById('gameScreen');
-    const playerFindingScreen = document.getElementById('playerFindingScreen');
-    const botIntroScreen = document.getElementById('botIntroScreen');
-    const comingSoonModal = document.getElementById('comingSoonModal');
-    const settingsModal = document.getElementById('settingsModal');
+    <!-- JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const screens = {
+                loading: document.getElementById('loadingScreen'),
+                registration: document.getElementById('registrationScreen'),
+                mainMenu: document.getElementById('mainMenu'),
+                game: document.getElementById('gameScreen'),
+            };
 
-    // --- Buttons ---
-    const registerBtn = document.getElementById('registerBtn');
-    const startGameBtn = document.getElementById('startGameBtn');
-    const onlineGameBtn = document.getElementById('onlineGameBtn');
-    const backToMenuBtn = document.getElementById('backToMenuBtn');
-    const cancelSearchBtn = document.getElementById('cancelSearchBtn');
-    const startBattleBtn = document.getElementById('startBattleBtn');
-    const settingsBtn = document.getElementById('settingsBtn');
-    const closeComingSoonBtn = document.getElementById('closeComingSoonBtn');
-    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-    const menuButtons = document.querySelectorAll('.menu-btn');
+            const modals = {
+                comingSoon: document.getElementById('comingSoonModal'),
+                settings: document.getElementById('settingsModal'),
+            };
 
-    // --- Game Elements ---
-    const usernameInput = document.getElementById('usernameInput');
-    const userNameDisplay = document.getElementById('userNameDisplay');
-    const userCoinsDisplay = document.getElementById('userCoins');
-    const userCupsDisplay = document.getElementById('userCups');
-    const currentLevelDisplay = document.getElementById('currentLevel');
-    const scoreDisplay = document.getElementById('score');
-    const wordSlotsContainer = document.getElementById('wordSlots');
-    const wordPiecesContainer = document.getElementById('wordPieces');
+            const buttons = {
+                register: document.getElementById('registerBtn'),
+                startGame: document.getElementById('startGameBtn'),
+                onlineGame: document.getElementById('onlineGameBtn'),
+                menuButtons: document.querySelectorAll('.menu-btn'),
+                backToMenu: document.getElementById('backToMenuBtn'),
+                settings: document.getElementById('settingsBtn'),
+                closeComingSoon: document.getElementById('closeComingSoonBtn'),
+                closeSettings: document.getElementById('closeSettingsBtn'),
+                resetUser: document.getElementById('resetUserBtn'),
+            };
 
-    // --- Game Data & State ---
-    const levels = [
-        { word: "مافیا", pieces: "افایم" },
-        { word: "گادفادر", pieces: "رفادگاد" },
-        { word: "شهروند", pieces: "دوهنرش" },
-        { word: "کاراگاه", pieces: "اگارهاک" },
-        { word: "پزشک", pieces: "شکزپ" },
-        { word: "تروریست", pieces: "تریتسرو" },
-    ];
-    let currentLevel = 0;
-    let score = 0;
-    let searchInterval;
+            const userUI = {
+                name: document.getElementById('userName'),
+                coins: document.getElementById('userCoins'),
+                cups: document.getElementById('userCups'),
+                usernameInput: document.getElementById('usernameInput'),
+            };
+            
+            const gameUI = {
+                level: document.getElementById('currentLevel'),
+                score: document.getElementById('score'),
+                wordSlots: document.getElementById('wordSlots'),
+                wordPieces: document.getElementById('wordPieces'),
+            };
 
-    // --- Utility Functions ---
-    const showScreen = (screen) => {
-        [loadingScreen, registrationScreen, mainMenu, gameScreen, playerFindingScreen, botIntroScreen].forEach(s => s.classList.add('hidden'));
-        if (screen) {
-            screen.classList.remove('hidden');
-            screen.classList.add('fade-in');
-        }
-    };
+            // --- Game State & Data ---
+            let currentUser = null;
+            let gameState = {
+                level: 0,
+                score: 0,
+                currentWord: [],
+                correctWord: '',
+                shuffledLetters: [],
+            };
 
-    const showModal = (modal) => {
-        if (modal) {
-            modal.classList.remove('hidden');
-        }
-    };
+            const levels = [
+                { word: "مافیا", hint: "نقش اصلی بازی" },
+                { word: "کاراگاه", hint: "شهروندی که استعلام میگیرد" },
+                { word: "پدرخوانده", hint: "رئیس مافیا" },
+                { word: "شهروند", hint: "عضو تیم شهر" },
+                { word: "روانپزشک", hint: "دکتر تیم شهر" },
+            ];
 
-    const hideModal = (modal) => {
-        if (modal) {
-            modal.classList.add('hidden');
-        }
-    };
-
-    // --- Game Logic ---
-    function shuffle(s) {
-        let arr = s.split('');
-        for(let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr.join('');
-    }
-
-    function loadLevel(levelIndex) {
-        if (levelIndex >= levels.length) {
-            alert("تبریک! شما تمام مراحل را به پایان رساندید!");
-            goToMainMenu();
-            return;
-        }
-
-        currentLevel = levelIndex;
-        const levelData = levels[currentLevel];
-        
-        currentLevelDisplay.textContent = currentLevel + 1;
-        scoreDisplay.textContent = score;
-
-        wordSlotsContainer.innerHTML = '';
-        wordPiecesContainer.innerHTML = '';
-
-        // Create slots
-        for (let i = 0; i < levelData.word.length; i++) {
-            const slot = document.createElement('div');
-            slot.classList.add('word-slot', 'rounded-xl');
-            slot.dataset.index = i;
-            slot.addEventListener('click', () => returnPieceToPool(slot));
-            wordSlotsContainer.appendChild(slot);
-        }
-
-        // Create pieces
-        const shuffledPieces = shuffle(levelData.pieces);
-        shuffledPieces.split('').forEach((char, index) => {
-            const piece = document.createElement('div');
-            piece.classList.add('word-piece');
-            piece.textContent = char;
-            piece.dataset.id = `piece-${index}`;
-            piece.addEventListener('click', () => placePieceInSlot(piece));
-            wordPiecesContainer.appendChild(piece);
-        });
-    }
-
-    function placePieceInSlot(piece) {
-        if (piece.classList.contains('used')) return;
-
-        const emptySlot = document.querySelector('.word-slot:not(.filled)');
-        if (emptySlot) {
-            emptySlot.textContent = piece.textContent;
-            emptySlot.classList.add('filled');
-            emptySlot.dataset.pieceId = piece.dataset.id;
-            piece.classList.add('used');
-            checkWord();
-        }
-    }
-
-    function returnPieceToPool(slot) {
-        if (!slot.classList.contains('filled')) return;
-
-        const pieceId = slot.dataset.pieceId;
-        const piece = document.querySelector(`[data-id="${pieceId}"]`);
-
-        slot.textContent = '';
-        slot.classList.remove('filled');
-        delete slot.dataset.pieceId;
-
-        if (piece) {
-            piece.classList.remove('used');
-        }
-    }
-
-    function checkWord() {
-        const slots = document.querySelectorAll('.word-slot.filled');
-        const correctWord = levels[currentLevel].word;
-
-        if (slots.length !== correctWord.length) return;
-
-        let formedWord = '';
-        document.querySelectorAll('.word-slot').forEach(slot => {
-            formedWord += slot.textContent;
-        });
-
-        if (formedWord === correctWord) {
-            score += 10;
-            scoreDisplay.textContent = score;
-            setTimeout(() => {
-                alert('آفرین! کلمه درست بود.');
-                loadLevel(currentLevel + 1);
-            }, 500);
-        }
-    }
-
-    // --- Navigation ---
-    function goToMainMenu() {
-        showScreen(mainMenu);
-        updateUserInfo();
-    }
-
-    function startGame() {
-        score = 0;
-        loadLevel(0);
-        showScreen(gameScreen);
-    }
-
-    function startOnlineSearch() {
-        showScreen(playerFindingScreen);
-        let timer = 5;
-        const searchTimerDisplay = document.getElementById('searchTimer');
-        searchTimerDisplay.textContent = timer;
-
-        searchInterval = setInterval(() => {
-            timer--;
-            searchTimerDisplay.textContent = timer;
-            if (timer <= 0) {
-                clearInterval(searchInterval);
-                showScreen(botIntroScreen);
-            }
-        }, 1000);
-    }
-    
-    function cancelOnlineSearch() {
-        clearInterval(searchInterval);
-        goToMainMenu();
-    }
-
-    // --- User Data ---
-    function saveUser(username) {
-        const userData = {
-            username: username,
-            coins: 100,
-            cups: 0
-        };
-        localStorage.setItem('mafiaFactUser', JSON.stringify(userData));
-        return userData;
-    }
-
-    function getUser() {
-        const userData = localStorage.getItem('mafiaFactUser');
-        return userData ? JSON.parse(userData) : null;
-    }
-
-    function updateUserInfo() {
-        const user = getUser();
-        if (user) {
-            userNameDisplay.textContent = user.username;
-            userCoinsDisplay.textContent = user.coins;
-            userCupsDisplay.textContent = user.cups;
-        }
-    }
-
-    // --- Event Listeners ---
-    registerBtn.addEventListener('click', () => {
-        const username = usernameInput.value.trim();
-        if (username) {
-            saveUser(username);
-            goToMainMenu();
-        } else {
-            alert('لطفا یک نام کاربری وارد کنید.');
-        }
-    });
-
-    startGameBtn.addEventListener('click', startGame);
-    backToMenuBtn.addEventListener('click', goToMainMenu);
-    
-    onlineGameBtn.addEventListener('click', startOnlineSearch);
-    cancelSearchBtn.addEventListener('click', cancelOnlineSearch);
-    startBattleBtn.addEventListener('click', () => {
-        alert("بازی آنلاین در حال حاضر شبیه سازی شده است. شما به بازی تک نفره منتقل می شوید.");
-        startGame();
-    });
-
-    settingsBtn.addEventListener('click', () => showModal(settingsModal));
-    closeSettingsBtn.addEventListener('click', () => hideModal(settingsModal));
-
-    menuButtons.forEach(btn => {
-        if (!['شروع بازی', 'بازی آنلاین'].includes(btn.textContent)) {
-            btn.addEventListener('click', () => showModal(comingSoonModal));
-        }
-    });
-    closeComingSoonBtn.addEventListener('click', () => hideModal(comingSoonModal));
-
-
-    // --- Initialization ---
-    function init() {
-        setTimeout(() => {
-            loadingScreen.classList.add('fade-out');
-            loadingScreen.addEventListener('animationend', () => {
-                const user = getUser();
-                if (user) {
-                    goToMainMenu();
-                } else {
-                    showScreen(registrationScreen);
+            // --- Utility Functions ---
+            const showScreen = (screenName) => {
+                Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+                if (screens[screenName]) {
+                    screens[screenName].classList.remove('hidden');
                 }
-            }, { once: true });
-        }, 2000); // Simulate loading time
-    }
+            };
+            
+            const showModal = (modalName) => {
+                if (modals[modalName]) {
+                    modals[modalName].classList.remove('hidden');
+                }
+            };
 
-    init();
-});
-</script>
+            const hideModal = (modalName) => {
+                 if (modals[modalName]) {
+                    modals[modalName].classList.add('hidden');
+                }
+            };
+
+            const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
+
+            // --- User Management ---
+            const loadUser = () => {
+                const userData = localStorage.getItem('mafiaFactUser');
+                if (userData) {
+                    currentUser = JSON.parse(userData);
+                    updateUserUI();
+                    return true;
+                }
+                return false;
+            };
+
+            const saveUser = () => {
+                localStorage.setItem('mafiaFactUser', JSON.stringify(currentUser));
+            };
+            
+            const updateUserUI = () => {
+                if (currentUser) {
+                    userUI.name.textContent = currentUser.name;
+                    userUI.coins.textContent = currentUser.coins;
+                    userUI.cups.textContent = currentUser.cups;
+                }
+            };
+
+            // --- Game Logic ---
+            const loadLevel = (levelIndex) => {
+                if (levelIndex >= levels.length) {
+                    alert('تبریک! شما تمام مراحل را تمام کردید.');
+                    showScreen('mainMenu');
+                    return;
+                }
+                
+                const levelData = levels[levelIndex];
+                gameState.level = levelIndex;
+                gameState.correctWord = levelData.word;
+                gameState.shuffledLetters = shuffleArray([...levelData.word]);
+                gameState.currentWord = Array(levelData.word.length).fill(null);
+
+                gameUI.level.textContent = levelIndex + 1;
+                gameUI.score.textContent = gameState.score;
+                
+                // Create slots and pieces
+                gameUI.wordSlots.innerHTML = '';
+                gameUI.wordPieces.innerHTML = '';
+
+                gameState.correctWord.split('').forEach((_, index) => {
+                    const slot = document.createElement('div');
+                    slot.classList.add('word-slot', 'rounded-lg');
+                    slot.dataset.index = index;
+                    slot.addEventListener('click', () => returnPieceFromSlot(index));
+                    gameUI.wordSlots.appendChild(slot);
+                });
+
+                gameState.shuffledLetters.forEach((letter, index) => {
+                    const piece = document.createElement('div');
+                    piece.classList.add('word-piece');
+                    piece.textContent = letter;
+                    piece.dataset.letter = letter;
+                    piece.dataset.originalIndex = index;
+                    piece.addEventListener('click', () => placePieceInSlot(piece));
+                    gameUI.wordPieces.appendChild(piece);
+                });
+            };
+
+            const placePieceInSlot = (pieceElement) => {
+                if (pieceElement.classList.contains('used')) return;
+
+                const firstEmptySlotIndex = gameState.currentWord.indexOf(null);
+                if (firstEmptySlotIndex !== -1) {
+                    const letter = pieceElement.dataset.letter;
+                    
+                    gameState.currentWord[firstEmptySlotIndex] = { letter, originalIndex: pieceElement.dataset.originalIndex };
+                    
+                    const slotElement = gameUI.wordSlots.children[firstEmptySlotIndex];
+                    slotElement.textContent = letter;
+                    slotElement.classList.add('filled');
+                    
+                    pieceElement.classList.add('used');
+                    
+                    checkWinCondition();
+                }
+            };
+
+            const returnPieceFromSlot = (slotIndex) => {
+                const slotData = gameState.currentWord[slotIndex];
+                if (slotData) {
+                    const pieceElement = document.querySelector(`.word-piece[data-original-index='${slotData.originalIndex}']`);
+                    if (pieceElement) {
+                        pieceElement.classList.remove('used');
+                    }
+                    
+                    const slotElement = gameUI.wordSlots.children[slotIndex];
+                    slotElement.textContent = '';
+                    slotElement.classList.remove('filled');
+                    
+                    gameState.currentWord[slotIndex] = null;
+                }
+            };
+
+            const checkWinCondition = () => {
+                if (gameState.currentWord.every(slot => slot !== null)) {
+                    const formedWord = gameState.currentWord.map(s => s.letter).join('');
+                    if (formedWord === gameState.correctWord) {
+                       setTimeout(() => {
+                            alert('آفرین! کلمه درست بود.');
+                            gameState.score += 10;
+                            currentUser.coins += 5;
+                            saveUser();
+                            updateUserUI();
+                            loadLevel(gameState.level + 1);
+                        }, 300);
+                    } else {
+                        alert('کلمه اشتباه است. دوباره تلاش کن.');
+                    }
+                }
+            };
+
+            // --- Event Listeners ---
+            buttons.register.addEventListener('click', () => {
+                const name = userUI.usernameInput.value.trim();
+                if (name) {
+                    currentUser = { name: name, coins: 100, cups: 0 };
+                    saveUser();
+                    updateUserUI();
+                    showScreen('mainMenu');
+                } else {
+                    alert('لطفا یک نام کاربری وارد کنید.');
+                }
+            });
+
+            buttons.startGame.addEventListener('click', () => {
+                gameState.score = 0; // Reset score for new game
+                loadLevel(0);
+                showScreen('game');
+            });
+
+            buttons.backToMenu.addEventListener('click', () => {
+                showScreen('mainMenu');
+            });
+            
+            // "Coming Soon" buttons
+            buttons.onlineGame.addEventListener('click', () => showModal('comingSoon'));
+            buttons.menuButtons.forEach(btn => btn.addEventListener('click', () => showModal('comingSoon')));
+            buttons.closeComingSoon.addEventListener('click', () => hideModal('comingSoon'));
+
+            // Settings modal
+            buttons.settings.addEventListener('click', () => showModal('settings'));
+            buttons.closeSettings.addEventListener('click', () => hideModal('settings'));
+            buttons.resetUser.addEventListener('click', () => {
+                if (confirm('آیا مطمئن هستید؟ تمام اطلاعات شما پاک خواهد شد.')) {
+                    localStorage.removeItem('mafiaFactUser');
+                    location.reload();
+                }
+            });
+
+            // --- App Initialization ---
+            const init = () => {
+                setTimeout(() => {
+                    if (loadUser()) {
+                        showScreen('mainMenu');
+                    } else {
+                        showScreen('registration');
+                    }
+                }, 2000); // Simulate loading time
+            };
+
+            init();
+        });
+    </script>
 </body>
 </html>
-
