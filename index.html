@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مافیا فکت</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==================== CSS STYLES ==================== */
+
+        /* عمومی */
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 800px;
+            background-color: #16213e;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* مدیریت صفحات */
+        .screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* صفحه لودینگ */
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.2);
+            border-top: 8px solid #0f3460;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loading-screen p {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        /* صفحه ثبت نام */
+        #registration-screen h1 {
+            color: #e94560;
+        }
+
+        #registration-form {
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+        }
+
+        #username-input {
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #533483;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        #registration-form button {
+            padding: 12px;
+            background-color: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        #registration-form button:hover {
+            background-color: #c4324c;
+        }
+
+        /* منوی اصلی */
+        #main-menu-screen {
+            justify-content: space-between;
+        }
+
+        .user-profile {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .menu-content {
+            text-align: center;
+        }
+
+        .menu-content h1 {
+            font-size: 3em;
+            color: #e94560;
+            text-shadow: 0 0 10px #e94560;
+        }
+
+        .main-button {
+            padding: 15px 40px;
+            font-size: 1.5em;
+            background-color: #16c79a;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .main-button:hover {
+            transform: scale(1.05);
+        }
+
+        .bottom-menu {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-icon-btn {
+            background: none;
+            border: 2px solid #533483;
+            color: #e0e0e0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .menu-icon-btn:hover {
+            background-color: #533483;
+        }
+
+        /* صفحه بازی */
+        #game-screen {
+            justify-content: flex-start;
+        }
+        .game-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        #back-to-menu-btn {
+            background: none;
+            border: 1px solid #e94560;
+            color: #e94560;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #answer-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 40px;
+            min-height: 50px;
+            justify-content: center;
+        }
+        .answer-slot {
+            width: 50px;
+            height: 50px;
+            border: 2px dashed #533483;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        #word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .word-tile {
+            padding: 10px 20px;
+            background-color: #0f3460;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.2em;
+        }
+        .word-tile:hover {
+            background-color: #1a4a8a;
+        }
+        .word-tile.selected {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: scale(0.9);
+        }
+
+        #check-answer-btn, #reset-level-btn {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 5px;
+        }
+        #check-answer-btn {
+            background-color: #16c79a;
+            color: white;
+        }
+        #check-answer-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        #reset-level-btn {
+            background-color: #e94560;
+            color: white;
+        }
+
+        /* پاپ آپ */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #16213e;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 300px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+
+        <!-- 1. صفحه لودینگ  -->
+        <div id="loading-screen" class="screen active">
+            <div class="spinner"></div>
+            <p>...در حال بارگذاری</p>
+        </div>
+
+        <!-- 2. صفحه ثبت نام -->
+        <div id="registration-screen" class="screen">
+            <h1>به مافیا فکت خوش آمدید</h1>
+            <p>برای شروع، نام خود را وارد کنید.</p>
+            <form id="registration-form">
+                <input type="text" id="username-input" placeholder="نام کاربری" required minlength="3">
+                <button type="submit">ثبت نام</button>
+            </form>
+        </div>
+
+        <!-- 3. صفحه منوی اصلی -->
+        <div id="main-menu-screen" class="screen">
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/50" alt="Avatar" id="user-avatar">
+                <span id="username-display"></span>
+            </div>
+            
+            <div class="menu-content">
+                <h1>مافیا فکت</h1>
+                <button id="start-game-btn" class="main-button">شروع بازی</button>
+            </div>
+
+            <div class="bottom-menu">
+                <button class="menu-icon-btn" data-feature="shop">فروشگاه</button>
+                <button class="menu-icon-btn" data-feature="clan">کلن</button>
+                <button class="menu-icon-btn" data-feature="chat">چت</button>
+            </div>
+        </div>
+        
+        <!-- 4. صفحه بازی -->
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <h2 id="level-title">مرحله ۱</h2>
+                <button id="back-to-menu-btn">بازگشت</button>
+            </div>
+            <div id="answer-container">
+                <!-- جایگاه‌های خالی اینجا قرار می‌گیرند -->
+            </div>
+            <div id="word-bank">
+                <!-- کلمات قابل کلیک اینجا قرار می‌گیرند -->
+            </div>
+            <div style="margin-top: 20px;">
+                <button id="check-answer-btn" disabled>بررسی</button>
+                <button id="reset-level-btn">شروع مجدد</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- پاپ‌آپ "به زودی" -->
+    <div id="coming-soon-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">×</span>
+            <h2>به زودی!</h2>
+            <p>این بخش در به‌روزرسانی‌های آینده اضافه خواهد شد.</p>
+        </div>
+    </div>
+
+<script>
+    // ================== JAVASCRIPT LOGIC ==================
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // انتخاب تمام عناصر لازم از صفحه
+        const screens = document.querySelectorAll('.screen');
+        const registrationScreen = document.getElementById('registration-screen');
+        const mainMenuScreen = document.getElementById('main-menu-screen');
+        
+        const registrationForm = document.getElementById('registration-form');
+        const usernameInput = document.getElementById('username-input');
+        const usernameDisplay = document.getElementById('username-display');
+        
+        const startGameBtn = document.getElementById('start-game-btn');
+        const featureBtns = document.querySelectorAll('.menu-icon-btn');
+        const comingSoonModal = document.getElementById('coming-soon-modal');
+        const closeModalBtn = document.querySelector('.close-btn');
+
+        const levelTitle = document.getElementById('level-title');
+        const answerContainer = document.getElementById('answer-container');
+        const wordBank = document.getElementById('word-bank');
+        const checkAnswerBtn = document.getElementById('check-answer-btn');
+        const resetLevelBtn = document.getElementById('reset-level-btn');
+        const backToMenuBtn = document.getElementById('back-to-menu-btn');
+
+        let currentUser = null;
+        let currentLevelIndex = 0;
+        let selectedWords = [];
+        
+        // تعریف مراحل بازی
+        const levels = [
+            { word: "مافیا", parts: ["ما", "فی", "یا"], junk: ["شه", "رو", "ند"] },
+            { word: "گادفادر", parts: ["گاد", "فا", "در"], junk: ["پو", "لی", "س"] },
+            { word: "شهروند", parts: ["شهر", "و", "ند"], junk: ["تفنگ", "ما", "فیا"] },
+            { word: "دکترلکتر", parts: ["دک", "تر", "لک", "تر"], junk: ["نجات", "شب", "روز"] },
+            { word: "کارآگاه", parts: ["کار", "آ", "گاه"], junk: ["شاه", "سرباز", "کش"] }
+        ];
+
+        // تابع برای نمایش یک صفحه خاص و پنهان کردن بقیه
+        function showScreen(screenId) {
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // تابع برای چک کردن وجود نام کاربری ذخیره شده
+        function checkUserSession() {
+            setTimeout(() => {
+                // از localStorage برای ذخیره نام کاربری استفاده می‌کنیم
+                const savedUser = localStorage.getItem('mafiaFactUsername');
+                if (savedUser) {
+                    currentUser = savedUser;
+                    usernameDisplay.textContent = currentUser;
+                    showScreen('main-menu-screen');
+                } else {
+                    showScreen('registration-screen');
+                }
+            }, 2000); // شبیه‌سازی لودینگ اولیه
+        }
+
+        // رویداد ثبت نام
+        registrationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            if (username.length >= 3) {
+                currentUser = username;
+                localStorage.setItem('mafiaFactUsername', currentUser);
+                usernameDisplay.textContent = currentUser;
+                
+                // نمایش لودینگ کوتاه قبل از ورود به منو
+                showScreen('loading-screen');
+                setTimeout(() => {
+                    showScreen('main-menu-screen');
+                }, 1500);
+            } else {
+                alert('نام کاربری باید حداقل ۳ حرف داشته باشد.');
+            }
+        });
+
+        // رویدادهای دکمه‌های "به زودی"
+        featureBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                comingSoonModal.style.display = 'flex';
+            });
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            comingSoonModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == comingSoonModal) {
+                comingSoonModal.style.display = 'none';
+            }
+        });
+
+        // شروع بازی
+        startGameBtn.addEventListener('click', () => {
+            currentLevelIndex = 0;
+            loadLevel(currentLevelIndex);
+            showScreen('game-screen');
+        });
+
+        // بازگشت به منو از صفحه بازی
+        backToMenuBtn.addEventListener('click', () => {
+            showScreen('main-menu-screen');
+        });
+
+        // تابع برای بارگذاری یک مرحله
+        function loadLevel(levelIndex) {
+            if (levelIndex >= levels.length) {
+                alert('تبریک! شما تمام مراحل را به پایان رساندید!');
+                showScreen('main-menu-screen');
+                return;
+            }
+
+            const level = levels[levelIndex];
+            selectedWords = [];
+
+            levelTitle.textContent = `مرحله ${levelIndex + 1}`;
+            answerContainer.innerHTML = '';
+            wordBank.innerHTML = '';
+            
+            // ایجاد جایگاه‌های خالی
+            level.parts.forEach(() => {
+                const slot = document.createElement('div');
+                slot.classList.add('answer-slot');
+                answerContainer.appendChild(slot);
+            });
+
+            // ایجاد کلمات قابل کلیک و مخلوط کردن آنها
+            const allParts = [...level.parts, ...level.junk].sort(() => Math.random() - 0.5);
+            
+            allParts.forEach(part => {
+                const tile = document.createElement('div');
+                tile.classList.add('word-tile');
+                tile.textContent = part;
+                tile.addEventListener('click', handleTileClick);
+                wordBank.appendChild(tile);
+            });
+
+            checkAnswerBtn.disabled = true;
+        }
+
+        // مدیریت کلیک روی کلمات
+        function handleTileClick(event) {
+            const clickedTile = event.target;
+            if (clickedTile.classList.contains('selected') || selectedWords.length >= levels[currentLevelIndex].parts.length) {
+                return;
+            }
+
+            clickedTile.classList.add('selected');
+            selectedWords.push(clickedTile.textContent);
+            
+            updateAnswerSlots();
+
+            if (selectedWords.length === levels[currentLevelIndex].parts.length) {
+                checkAnswerBtn.disabled = false;
+            }
+        }
+
+        // به‌روزرسانی جایگاه‌های جواب
+        function updateAnswerSlots() {
+            const slots = answerContainer.querySelectorAll('.answer-slot');
+            slots.forEach((slot, index) => {
+                slot.textContent = selectedWords[index] || '';
+            });
+        }
+
+        // بررسی جواب
+        checkAnswerBtn.addEventListener('click', () => {
+            const userAnswer = selectedWords.join('');
+            const correctAnswer = levels[currentLevelIndex].word;
+
+            if (userAnswer === correctAnswer) {
+                alert('آفرین! جواب درست بود.');
+                currentLevelIndex++;
+                loadLevel(currentLevelIndex);
+            } else {
+                alert('جواب اشتباه است! دوباره تلاش کن.');
+                resetCurrentLevel();
+            }
+        });
+
+        // شروع مجدد مرحله فعلی
+        resetLevelBtn.addEventListener('click', resetCurrentLevel);
+        
+        function resetCurrentLevel() {
+            selectedWords = [];
+            updateAnswerSlots();
+            wordBank.querySelectorAll('.word-tile').forEach(tile => tile.classList.remove('selected'));
+            checkAnswerBtn.disabled = true;
+        }
+
+        // شروع فرآیند بازی
+        checkUserSession();
+    });
+</script>
+
+</body>
+</html>
