@@ -10,609 +10,633 @@
         
         * {
             font-family: 'Vazirmatn', sans-serif;
-            user-select: none;
+            user-select: none; /* Prevents text selection during drag */
+        }
+        
+        .loading-spinner {
+            border: 4px solid #1a1a1a;
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .gold-glow {
+            text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700, 0 0 60px #ffd700;
+            animation: goldPulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes goldPulse {
+            from { text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700, 0 0 60px #ffd700; }
+            to { text-shadow: 0 0 30px #ffd700, 0 0 60px #ffd700, 0 0 90px #ffd700; }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .word-slot {
+            min-height: 60px;
+            width: 50px;
+            border: 2px dashed #ffd700;
+            transition: all 0.2s ease;
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+        }
+        
+        .word-slot.filled {
+            border: 2px solid #ffd700;
+            background: linear-gradient(145deg, #ffd700, #ffed4e);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
-        /* --- Themes --- */
-        body.theme-dark { background: linear-gradient(135deg, #000000, #1a1a1a, #2c2c2c); }
-        body.theme-godfather { background: linear-gradient(135deg, #260d0d, #4d1a1a, #732626); }
-        body.theme-classic { background: linear-gradient(135deg, #1d2b3a, #3c566e, #5a81a2); }
-
-        .fade-in { animation: fadeIn 0.8s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .slide-up { animation: slideUp 0.5s ease-out; }
-        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .gold-glow { text-shadow: 0 0 15px #ffd700, 0 0 30px #ffd700; }
-        
-        .glass-effect { background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px); border: 1px solid rgba(255, 215, 0, 0.2); }
-        
-        .button-hover:not(:disabled) { transition: all 0.2s ease; }
-        .button-hover:not(:disabled):hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3); }
-        .button-hover:active:not(:disabled) { transform: translateY(-1px) scale(1.01); }
-        .button-hover:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .word-slot { min-height: 55px; width: 45px; border: 2px dashed #ffd700; transition: all 0.2s ease; background: #0000004d; }
-        .word-slot.filled { border-style: solid; background: linear-gradient(145deg, #ffd700, #ffed4e); color: #000; box-shadow: 0 0 15px #ffd70080; }
-        .word-slot.drag-over { background-color: #ffd70033; transform: scale(1.1); }
-        
-        .word-card { cursor: grab; transition: all 0.2s ease; background: #2a2a2a; border: 1px solid #ffd700; }
-        .word-card:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 6px 15px rgba(255, 215, 0, 0.2); background: linear-gradient(145deg, #ffd700, #ffed4e); color: #000; }
-        .word-card.dragging { opacity: 0.4; transform: rotate(8deg) scale(1.1); }
-        .word-card.hidden-card { opacity: 0; pointer-events: none; }
-        
-        .avatar-select { border: 3px solid transparent; transition: all 0.2s ease; }
-        .avatar-select.selected { border-color: #ffd700; box-shadow: 0 0 20px #ffd700; transform: scale(1.1); }
-        
-        .screen {
-            position: fixed;
-            inset: 0;
-            display: none; /* Use 'flex' or 'block' to show */
-            padding: 1rem;
-            animation: fadeIn 0.5s ease;
+        .word-slot.drag-over {
+            background-color: #ffd70033;
+            transform: scale(1.1);
         }
-        .screen.active {
-            display: flex;
-            flex-direction: column;
+        
+        .word-card {
+            cursor: grab;
+            transition: all 0.2s ease;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: 1px solid #ffd700;
+        }
+        
+        .word-card:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+            background: linear-gradient(145deg, #ffd700, #ffed4e);
+            color: #000;
+        }
+        
+        .word-card.dragging {
+            opacity: 0.5;
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .word-card.hidden-card {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .glass-effect {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .button-hover {
+            transition: all 0.2s ease;
+        }
+        
+        .button-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .mystery-avatar {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: 2px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mystery-avatar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .title-animation {
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { 
+                text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;
+                transform: scale(1);
+            }
+            to { 
+                text-shadow: 0 0 40px #ffd700, 0 0 80px #ffd700, 0 0 120px #ffd700;
+                transform: scale(1.02);
+            }
         }
     </style>
 </head>
-<body class="min-h-screen text-white transition-all duration-500">
-
-    <!-- Audio Elements -->
-    <audio id="sound-click" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-    <audio id="sound-success" src="https://www.soundjay.com/misc/sounds/coins-in-hand-2.mp3" preload="auto"></audio>
-    <audio id="sound-error" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
-    <audio id="sound-buy" src="https://www.soundjay.com/misc/sounds/cash-register-02.mp3" preload="auto"></audio>
-
+<body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen text-white">
+    
     <!-- Loading Screen -->
-    <div id="loadingScreen" class="screen active items-center justify-center">
-        <h1 class="text-6xl font-bold mb-6 text-yellow-400 gold-glow">مافیا فکت</h1>
-        <div class="w-16 h-16 border-4 border-gray-700 border-t-yellow-400 rounded-full animate-spin"></div>
-        <p class="mt-4 text-yellow-300">در حال بارگذاری...</p>
+    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-50">
+        <div class="text-center">
+            <h1 class="text-7xl font-bold mb-8 text-yellow-400 gold-glow title-animation floating">مافیا فکت</h1>
+            <p class="text-xl text-yellow-300 mb-8 fade-in">تیم اسکورت گیم تقدیم می‌کند</p>
+            <div class="loading-spinner mx-auto mb-6"></div>
+            <p class="text-2xl text-yellow-300 fade-in">در حال بارگذاری...</p>
+            <div class="mt-8 flex justify-center space-x-2">
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce"></div>
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Registration Screen -->
-    <div id="registrationScreen" class="screen items-center justify-center">
-        <div class="glass-effect rounded-2xl p-8 max-w-md w-full mx-auto slide-up">
-            <h2 class="text-3xl font-bold text-center text-yellow-400 mb-6">ثبت نام</h2>
-            <input type="text" id="usernameInput" class="w-full px-5 py-3 rounded-xl bg-black/50 border-2 border-yellow-400/50 text-yellow-100 placeholder-yellow-300/60 focus:outline-none focus:ring-2 focus:ring-yellow-400" placeholder="نام کاربری خود را وارد کنید">
-            <button id="registerBtn" class="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl button-hover">ورود به بازی</button>
+    <div id="registrationScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center z-40 hidden">
+        <div class="glass-effect rounded-2xl p-10 max-w-md w-full mx-4 slide-up">
+            <h2 class="text-4xl font-bold text-center text-yellow-400 mb-8 gold-glow">ثبت نام</h2>
+            <div class="space-y-8">
+                <div>
+                    <label class="block text-yellow-300 text-lg font-medium mb-3">نام کاربری</label>
+                    <input type="text" id="usernameInput" class="w-full px-6 py-4 rounded-xl bg-black/50 border-2 border-yellow-400/50 text-yellow-100 placeholder-yellow-300/60 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all" placeholder="نام کاربری خود را وارد کنید">
+                </div>
+                <button id="registerBtn" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-4 px-8 rounded-xl transition-all button-hover text-lg">
+                    ثبت نام
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Main Menu -->
-    <div id="mainMenu" class="screen items-center justify-center">
-        <div class="absolute top-4 right-4 glass-effect rounded-lg px-4 py-2 flex items-center space-x-2 space-x-reverse">
-            <span class="text-2xl">💰</span>
-            <span id="goldDisplay" class="text-xl font-bold text-yellow-400">0</span>
+    <div id="mainMenu" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black hidden">
+        <!-- Settings Button -->
+        <div class="absolute top-4 left-4 slide-up">
+            <button id="settingsBtn" class="glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 w-12 h-12 rounded-xl transition-all button-hover flex items-center justify-center text-xl">
+                ⚙️
+            </button>
         </div>
-        <div class="text-center">
-            <img id="mainMenuAvatar" src="" class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-yellow-400">
-            <h1 id="mainMenuUsername" class="text-3xl font-bold text-white mb-10"></h1>
-            <button data-target="gameScreen" class="nav-btn w-64 bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-4 rounded-xl text-xl mb-4 button-hover">🎮 شروع بازی</button>
-            <div class="grid grid-cols-2 gap-4 w-64 mx-auto">
-                <button data-target="profileScreen" class="nav-btn glass-effect text-yellow-300 py-3 rounded-xl button-hover">👤 پروفایل</button>
-                <button data-target="shopScreen" class="nav-btn glass-effect text-yellow-300 py-3 rounded-xl button-hover">🛒 فروشگاه</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Game Screen -->
-    <div id="gameScreen" class="screen">
-        <header class="flex justify-between items-center mb-4">
-            <button data-target="mainMenu" class="nav-btn glass-effect px-4 py-2 rounded-lg button-hover">← منو</button>
-            <div class="text-center glass-effect rounded-lg px-4 py-1">
-                <h2 class="font-bold text-yellow-400">مرحله <span id="currentLevel">1</span></h2>
-            </div>
-            <div class="flex items-center space-x-2 space-x-reverse glass-effect rounded-lg px-3 py-1">
-                <span class="text-lg">💰</span>
-                <span id="gameGoldDisplay" class="font-bold text-yellow-400">0</span>
-            </div>
-        </header>
-        <main class="max-w-4xl mx-auto w-full">
-            <div class="glass-effect rounded-xl p-3 mb-4 slide-up">
-                <h3 class="text-base font-bold text-yellow-400 mb-3 text-center">🎯 کلمه مخفی را بسازید</h3>
-                <div id="wordSlots" class="flex justify-center flex-wrap gap-2 mb-3"></div>
-                <p class="text-center text-yellow-300 text-xs">💡 راهنمایی: <span id="hint" class="text-yellow-100 font-medium"></span></p>
-            </div>
-            <div class="glass-effect rounded-xl p-3 mb-4 slide-up">
-                <div id="wordCards" class="grid grid-cols-5 md:grid-cols-8 gap-2"></div>
-            </div>
-            <div class="flex justify-center gap-4 mt-4">
-                <button id="hintBtn" class="glass-effect text-yellow-300 py-3 px-6 rounded-xl button-hover flex items-center gap-2">💡 راهنمایی (<span id="hintCount">0</span>)</button>
-                <button id="resetLevelBtn" class="glass-effect text-yellow-300 py-3 px-6 rounded-xl button-hover">↻ شروع مجدد</button>
-            </div>
-        </main>
-    </div>
 
-    <!-- Profile Screen -->
-    <div id="profileScreen" class="screen items-center">
-        <button data-target="mainMenu" class="nav-btn absolute top-4 left-4 glass-effect px-4 py-2 rounded-lg button-hover">← بازگشت</button>
-        <div class="glass-effect p-6 rounded-2xl w-full max-w-md slide-up">
-            <h2 class="text-3xl font-bold text-center text-yellow-400 mb-6">👤 پروفایل</h2>
-            <div id="avatarSelection" class="grid grid-cols-4 gap-4 mb-6"></div>
-            <div class="text-center space-y-2">
-                <p class="text-lg">نام کاربری: <span id="profileUsername" class="font-bold text-yellow-300"></span></p>
-                <p class="text-lg">مرحله فعلی: <span id="profileLevel" class="font-bold text-yellow-300"></span></p>
-                <p class="text-lg">تعداد طلا: <span id="profileGold" class="font-bold text-yellow-300"></span></p>
-                <p class="text-lg">کلمات حل شده: <span id="profileWords" class="font-bold text-yellow-300"></span></p>
-            </div>
-             <button id="clearDataBtn" class="mt-8 w-full bg-red-800/60 hover:bg-red-700/70 text-red-200 font-medium py-3 px-6 rounded-xl button-hover">🗑️ پاک کردن اطلاعات</button>
-        </div>
-    </div>
-    
-    <!-- Shop Screen -->
-    <div id="shopScreen" class="screen items-center">
-        <button data-target="mainMenu" class="nav-btn absolute top-4 left-4 glass-effect px-4 py-2 rounded-lg button-hover">← بازگشت</button>
-        <div class="glass-effect p-6 rounded-2xl w-full max-w-lg slide-up">
-            <h2 class="text-3xl font-bold text-center text-yellow-400 mb-6">🛒 فروشگاه</h2>
-            <div class="space-y-6">
-                <div>
-                    <h3 class="text-xl text-yellow-300 mb-2">خرید آیتم</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button id="buyHintBtn" class="glass-effect p-4 rounded-xl button-hover text-center">
-                            <p class="text-lg">💡 راهنمایی</p>
-                            <p class="text-yellow-400 font-bold">💰 25 طلا</p>
-                        </button>
+        <!-- User Info -->
+        <div class="absolute top-4 right-4 glass-effect rounded-xl p-4 slide-up">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="mystery-avatar w-12 h-12 rounded-full flex items-center justify-center relative">
+                    <div class="text-lg text-gray-400">👤</div>
+                    <div class="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span class="text-black text-sm font-bold">?</span>
                     </div>
                 </div>
                 <div>
-                    <h3 class="text-xl text-yellow-300 mb-2">تغییر تم</h3>
-                    <div id="themeSelection" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                    <p id="userName" class="text-yellow-300 font-medium text-sm">کاربر</p>
+                    <p class="text-yellow-400/60 text-sm">آنلاین</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex flex-col items-center justify-center min-h-screen">
+            <!-- Start Button -->
+            <button id="startGameBtn" class="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-4 px-12 rounded-xl text-xl mb-8 transition-all button-hover shadow-lg mt-20">
+                🎮 شروع بازی
+            </button>
+            
+            <!-- Menu Buttons -->
+            <div class="absolute bottom-20 left-1/2 transform -translate-x-1/2">
+                <div class="grid grid-cols-3 gap-4 w-80">
+                    <button class="menu-btn glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 font-medium py-3 px-3 rounded-xl transition-all button-hover text-xs text-center whitespace-nowrap">
+                        💬 چت
+                    </button>
+                    <button class="menu-btn glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 font-medium py-3 px-3 rounded-xl transition-all button-hover text-xs text-center whitespace-nowrap">
+                        👥 کلن
+                    </button>
+                    <button class="menu-btn glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 font-medium py-3 px-3 rounded-xl transition-all button-hover text-xs text-center whitespace-nowrap">
+                        🛒 فروشگاه
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Modals -->
-    <div id="modalContainer" class="fixed inset-0 bg-black/70 items-center justify-center z-50 hidden">
-        <div id="genericModal" class="glass-effect rounded-2xl p-8 max-w-sm w-full mx-4 text-center slide-up hidden">
-            <h3 id="modalTitle" class="text-2xl font-bold text-yellow-400 mb-4"></h3>
-            <p id="modalText" class="text-yellow-100 mb-6 whitespace-pre-wrap"></p>
-            <button id="modalBtn" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-8 rounded-xl button-hover">باشه</button>
+
+    <!-- Settings Screen -->
+    <div id="settingsScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black hidden p-4">
+        <div class="max-w-md mx-auto mt-20">
+            <div class="glass-effect rounded-2xl p-8 slide-up">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-3xl font-bold text-yellow-400 gold-glow">⚙️ تنظیمات</h2>
+                    <button id="closeSettingsBtn" class="text-yellow-300 hover:text-yellow-100 text-2xl transition-all">✕</button>
+                </div>
+                
+                <div class="space-y-4">
+                    <button id="supportBtn" class="w-full glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 font-medium py-4 px-6 rounded-xl transition-all button-hover text-right">
+                        📞 ارتباط با پشتیبانی
+                    </button>
+                    
+                    <button id="developersBtn" class="w-full glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 font-medium py-4 px-6 rounded-xl transition-all button-hover text-right">
+                        👨‍💻 سازندگان
+                    </button>
+                    
+                    <button id="clearDataBtn" class="w-full bg-red-800/50 hover:bg-red-700/60 text-red-300 hover:text-red-100 font-medium py-4 px-6 rounded-xl transition-all button-hover text-right">
+                        🗑️ پاک کردن اطلاعات بازی
+                    </button>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <p class="text-yellow-400/60 text-sm">نسخه 1.0.2</p>
+                    <p class="text-yellow-400/60 text-xs mt-2">تیم اسکورت گیم</p>
+                </div>
+            </div>
         </div>
-        <div id="dailyRewardModal" class="glass-effect rounded-2xl p-8 max-w-sm w-full mx-4 text-center slide-up hidden">
-            <h3 class="text-2xl font-bold text-yellow-400 mb-4">🎁 پاداش روزانه!</h3>
-            <p class="text-yellow-100 mb-6">برای بازی امروز، 💰 50 طلا دریافت کردید!</p>
-            <button id="claimDailyRewardBtn" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-8 rounded-xl button-hover">عالیه!</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black hidden p-4">
+        <!-- Game Header -->
+        <div class="flex justify-between items-center mb-4">
+            <button id="backToMenuBtn" class="glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 px-4 py-2 rounded-lg transition-all button-hover text-sm">
+                ← بازگشت
+            </button>
+            <div class="text-center glass-effect rounded-lg px-3 py-1">
+                <h2 class="text-sm font-bold text-yellow-400">مرحله <span id="currentLevel">1</span></h2>
+                <p class="text-yellow-300 text-xs">امتیاز: <span id="score" class="text-yellow-400 font-bold">0</span></p>
+            </div>
+             <button id="resetLevelBtn" class="glass-effect hover:bg-yellow-400/20 text-yellow-300 hover:text-yellow-100 px-4 py-2 rounded-lg transition-all button-hover text-sm">
+                ↻ شروع مجدد
+            </button>
         </div>
-        <div id="tutorialOverlay" class="glass-effect rounded-2xl p-8 max-w-lg w-full text-center slide-up hidden">
-            <h3 class="text-3xl font-bold text-yellow-400 mb-4">✨ به بازی خوش آمدید!</h3>
-            <p class="text-yellow-100 text-lg mb-6">حروف را از پایین به جایگاه‌های خالی بالا بکشید تا کلمه مخفی را بسازید.</p>
-            <button id="tutorialConfirmBtn" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-10 rounded-xl button-hover">فهمیدم!</button>
+
+        <!-- Game Area -->
+        <div class="max-w-4xl mx-auto">
+            <!-- Word Slots -->
+            <div class="glass-effect rounded-xl p-3 mb-4 slide-up">
+                <h3 class="text-base font-bold text-yellow-400 mb-3 text-center">🎯 کلمه مخفی را بسازید</h3>
+                <div id="wordSlots" class="flex justify-center flex-wrap gap-2 mb-3">
+                    <!-- Slots will be generated by JavaScript -->
+                </div>
+                <div class="text-center">
+                    <p class="text-yellow-300 text-xs">💡 راهنمایی: <span id="hint" class="text-yellow-100 font-medium"></span></p>
+                </div>
+            </div>
+
+            <!-- Word Cards -->
+            <div class="glass-effect rounded-xl p-3 mb-4 slide-up">
+                <h3 class="text-base font-bold text-yellow-400 mb-3 text-center">🔤 حروف موجود</h3>
+                <div id="wordCards" class="grid grid-cols-4 md:grid-cols-7 gap-3">
+                    <!-- Cards will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="fixed inset-0 bg-black/80 flex items-center justify-center z-45 hidden p-4">
+        <div class="glass-effect rounded-2xl p-8 max-w-lg w-full text-center relative slide-up">
+            <h3 class="text-3xl font-bold text-yellow-400 mb-4 gold-glow">✨ به بازی خوش آمدید! ✨</h3>
+            <p class="text-yellow-100 text-lg mb-2">
+                برای ساختن کلمه مخفی، حروف پایین صفحه را بکشید...
+            </p>
+            <div class="text-5xl my-4 animate-bounce">👇</div>
+            <p class="text-yellow-100 text-lg mb-6">
+                ... و در جایگاه‌های خالی بالا رها کنید.
+            </p>
+            <button id="tutorialConfirmBtn" class="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 px-10 rounded-xl transition-all button-hover">
+                فهمیدم!
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-3xl p-10 max-w-md w-full mx-4 text-center slide-up">
+            <h3 id="modalTitle" class="text-3xl font-bold text-yellow-400 mb-6 gold-glow"></h3>
+            <p id="modalText" class="text-yellow-100 mb-8 text-lg leading-relaxed whitespace-pre-wrap"></p>
+            <button id="modalBtn" class="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 px-8 rounded-xl transition-all button-hover">
+                باشه
+            </button>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // DOM Elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const registrationScreen = document.getElementById('registrationScreen');
+        const mainMenu = document.getElementById('mainMenu');
+        const settingsScreen = document.getElementById('settingsScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const modal = document.getElementById('modal');
+        const tutorialOverlay = document.getElementById('tutorialOverlay'); // <-- New element
+
+        // Game State
+        let currentUser = null;
+        let currentLevelIndex = 0;
+        let score = 0;
+        
+        // Game Levels Data
+        const levels = [
+            { word: 'مافیا', hint: 'سازمان مخفی جنایتکار' },
+            { word: 'جنایت', hint: 'عمل غیرقانونی' },
+            { word: 'مخفی', hint: 'پنهان و نامعلوم' },
+            { word: 'رئیس', hint: 'رهبر گروه' },
+            { word: 'محرمانه', hint: 'اطلاعات سری' },
+            { word: 'پلیس', hint: 'نیروی انتظامی' },
+            { word: 'بازجو', hint: 'کسی که سوال می‌پرسد' },
+            { word: 'خیانت', hint: 'نقض پیمان و وفاداری' },
+        ];
+
+        // --- Utility Functions ---
+
+        function showModal(title, text, buttonText = 'باشه', callback = null) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalText').textContent = text;
+            const modalBtn = document.getElementById('modalBtn');
+            modalBtn.textContent = buttonText;
             
-            // --- DATA & CONFIG ---
-            const
-                DB_KEY = 'mafiaFactUser_v2',
-                HINT_COST = 25,
-                THEME_COST = 200,
-                DAILY_REWARD = 50,
-                WIN_REWARD = 10;
+            const newBtn = modalBtn.cloneNode(true);
+            modalBtn.parentNode.replaceChild(newBtn, modalBtn);
 
-            const levels = [
-                { word: 'مافیا', hint: 'سازمان مخفی جنایتکار' }, { word: 'جنایت', hint: 'عمل غیرقانونی' },
-                { word: 'مخفی', hint: 'پنهان و نامعلوم' }, { word: 'رئیس', hint: 'رهبر گروه' },
-                { word: 'محرمانه', hint: 'اطلاعات سری' }, { word: 'پلیس', hint: 'نیروی انتظامی' },
-                { word: 'بازجو', hint: 'کسی که سوال می‌پرسد' }, { word: 'خیانت', hint: 'نقض پیمان و وفاداری' },
-                { word: 'اسلحه', hint: 'وسیله جنگی' }, { word: 'قاچاق', hint: 'تجارت غیرقانونی' },
-                { word: 'زندان', hint: 'محل حبس مجرمان' }, { word: 'وکیل', hint: 'مدافع در دادگاه' },
-                { word: 'دادگاه', hint: 'محل قضاوت' }, { word: 'شاهد', hint: 'بیننده یک رویداد' },
-                { word: 'متهم', hint: 'مظنون به جرم' }, { word: 'وثیقه', hint: 'ضمانت مالی برای آزادی' },
-                { word: 'کاراگاه', hint: 'محقق خصوصی' }, { word: 'مامور', hint: 'عضو نیروی دولتی' },
-                { word: 'سرقت', hint: 'دزدی' }, { word: 'گروگان', hint: 'فردی که به اسارت گرفته شده' }
-            ];
+            newBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                if (callback) callback();
+            });
+            modal.classList.remove('hidden');
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function saveUserData() {
+            if (currentUser) {
+                currentUser.levelIndex = currentLevelIndex;
+                currentUser.score = score;
+                // 'hasSeenTutorial' is already part of the currentUser object
+                localStorage.setItem('mafiaFactUser', JSON.stringify(currentUser));
+            }
+        }
+
+        // --- Screen Management ---
+
+        function showRegistration() {
+            loadingScreen.classList.add('hidden');
+            registrationScreen.classList.remove('hidden');
+            registrationScreen.classList.add('fade-in');
+        }
+
+        function showMainMenu() {
+            loadingScreen.classList.add('hidden');
+            registrationScreen.classList.add('hidden');
+            settingsScreen.classList.add('hidden');
+            gameScreen.classList.add('hidden');
+            tutorialOverlay.classList.add('hidden'); // Ensure tutorial is hidden
+            mainMenu.classList.remove('hidden');
+            mainMenu.classList.add('fade-in');
             
-            const avatars = {
-                'avatar1': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Felix',
-                'avatar2': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Mimi',
-                'avatar3': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Leo',
-                'avatar4': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe'
-            };
-
-            const themes = {
-                'theme-dark': { name: 'تاریک', cost: 0 },
-                'theme-godfather': { name: 'پدرخوانده', cost: THEME_COST },
-                'theme-classic': { name: 'کلاسیک', cost: THEME_COST }
-            };
-
-            // --- STATE ---
-            let currentUser = null;
-            let currentLevel;
-            let draggedCardId = null;
-
-            // --- DOM ELEMENTS ---
-            const allScreens = document.querySelectorAll('.screen');
-            const goldDisplays = {
-                main: document.getElementById('goldDisplay'),
-                game: document.getElementById('gameGoldDisplay'),
-                profile: document.getElementById('profileGold')
-            };
-            const modalContainer = document.getElementById('modalContainer');
-            const genericModal = document.getElementById('genericModal');
-            const dailyRewardModal = document.getElementById('dailyRewardModal');
-            const tutorialOverlay = document.getElementById('tutorialOverlay');
-
-            // --- SOUND ENGINE ---
-            const sounds = {
-                click: document.getElementById('sound-click'),
-                success: document.getElementById('sound-success'),
-                error: document.getElementById('sound-error'),
-                buy: document.getElementById('sound-buy')
-            };
-            function playSound(soundId) {
-                if (sounds[soundId]) {
-                    sounds[soundId].currentTime = 0;
-                    sounds[soundId].play().catch(e => console.log("Audio play failed:", e));
-                }
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.username;
             }
-            
-            // --- CORE FUNCTIONS ---
-            function saveUser() {
-                localStorage.setItem(DB_KEY, JSON.stringify(currentUser));
+        }
+
+        function showSettings() {
+            mainMenu.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+            settingsScreen.classList.add('fade-in');
+        }
+
+        function showGame() {
+            mainMenu.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            gameScreen.classList.add('fade-in');
+            setupLevel();
+
+            // *** NEW LOGIC: Show tutorial for the first time ***
+            if (currentUser && !currentUser.hasSeenTutorial) {
+                setTimeout(() => { // a small delay makes it feel smoother
+                    tutorialOverlay.classList.remove('hidden');
+                }, 500);
+            }
+        }
+
+        // --- Game Logic ---
+
+        function setupLevel() {
+            if (currentLevelIndex >= levels.length) {
+                showModal('تبریک!', 'شما تمام مراحل بازی را با موفقیت به پایان رساندید!', 'بازگشت به منو', showMainMenu);
+                return;
             }
 
-            function loadUser() {
-                const data = localStorage.getItem(DB_KEY);
-                if (data) {
-                    currentUser = JSON.parse(data);
-                    // Ensure all properties exist for users from older versions
-                    currentUser.stats = currentUser.stats || { words: 0 };
-                    currentUser.hints = currentUser.hints === undefined ? 1 : currentUser.hints;
-                    currentUser.ownedThemes = currentUser.ownedThemes || ['theme-dark'];
-                    currentUser.activeTheme = currentUser.activeTheme || 'theme-dark';
-                    return true;
-                }
-                return false;
+            const level = levels[currentLevelIndex];
+            const wordSlots = document.getElementById('wordSlots');
+            const wordCards = document.getElementById('wordCards');
+
+            // Update UI
+            document.getElementById('currentLevel').textContent = currentLevelIndex + 1;
+            document.getElementById('score').textContent = score;
+            document.getElementById('hint').textContent = level.hint;
+
+            // Clear previous elements
+            wordSlots.innerHTML = '';
+            wordCards.innerHTML = '';
+
+            // Create word slots
+            for (let i = 0; i < level.word.length; i++) {
+                const slot = document.createElement('div');
+                slot.classList.add('word-slot', 'rounded-lg', 'flex', 'items-center', 'justify-center', 'text-2xl', 'font-bold');
+                slot.dataset.index = i;
+                wordSlots.appendChild(slot);
             }
 
-            function createUser(username) {
-                currentUser = {
-                    username: username,
-                    levelIndex: 0,
-                    gold: 50,
-                    avatarId: 'avatar1',
-                    hasSeenTutorial: false,
-                    lastLoginDate: null,
-                    hints: 1,
-                    ownedThemes: ['theme-dark'],
-                    activeTheme: 'theme-dark',
-                    stats: { words: 0 }
-                };
-                saveUser();
-            }
+            // Create word cards
+            const letters = shuffleArray([...level.word]);
+            letters.forEach((letter, index) => {
+                const card = document.createElement('div');
+                card.id = `card-${index}`;
+                card.classList.add('word-card', 'p-4', 'rounded-lg', 'text-center', 'text-2xl', 'font-bold');
+                card.textContent = letter;
+                card.draggable = true;
+                wordCards.appendChild(card);
+            });
 
-            // --- UI & NAVIGATION ---
-            function navigateTo(screenId) {
-                playSound('click');
-                allScreens.forEach(s => s.classList.remove('active'));
-                document.getElementById(screenId)?.classList.add('active');
-                if (screenId === 'profileScreen') populateProfile();
-                if (screenId === 'shopScreen') populateShop();
-            }
-            
-            function showModal(title, text, btnText = 'باشه', onConfirm = null) {
-                modalContainer.style.display = 'flex';
-                genericModal.style.display = 'block';
-                document.getElementById('modalTitle').textContent = title;
-                document.getElementById('modalText').textContent = text;
-                const modalBtn = document.getElementById('modalBtn');
-                modalBtn.textContent = btnText;
-                
-                const newBtn = modalBtn.cloneNode(true);
-                modalBtn.parentNode.replaceChild(newBtn, modalBtn);
-                
-                newBtn.onclick = () => {
-                    playSound('click');
-                    modalContainer.style.display = 'none';
-                    genericModal.style.display = 'none';
-                    if (onConfirm) onConfirm();
-                };
-            }
+            addDragAndDropListeners();
+        }
 
-            function updateGoldUI() {
-                const gold = currentUser.gold;
-                goldDisplays.main.textContent = gold;
-                goldDisplays.game.textContent = gold;
-                if(document.getElementById('profileScreen').classList.contains('active')) {
-                    goldDisplays.profile.textContent = gold;
-                }
-            }
-            
-            function applyTheme(themeId) {
-                document.body.className = 'min-h-screen text-white transition-all duration-500'; // Reset
-                document.body.classList.add(themeId);
-            }
+        function addDragAndDropListeners() {
+            const cards = document.querySelectorAll('.word-card');
+            const slots = document.querySelectorAll('.word-slot');
 
-            // --- INITIALIZATION ---
-            function init() {
-                if (loadUser()) {
-                    applyTheme(currentUser.activeTheme);
-                    updateGoldUI();
-                    document.getElementById('mainMenuUsername').textContent = currentUser.username;
-                    document.getElementById('mainMenuAvatar').src = avatars[currentUser.avatarId];
-                    navigateTo('mainMenu');
-                    checkDailyReward();
-                } else {
-                    navigateTo('registrationScreen');
-                }
-                document.getElementById('loadingScreen').classList.remove('active');
-            }
-            
-            function checkDailyReward() {
-                const today = new Date().toISOString().split('T')[0];
-                if (currentUser.lastLoginDate !== today) {
-                    modalContainer.style.display = 'flex';
-                    dailyRewardModal.style.display = 'block';
-                    currentUser.lastLoginDate = today;
-                    currentUser.gold += DAILY_REWARD;
-                    playSound('success');
-                    updateGoldUI();
-                    saveUser();
-                }
-            }
-
-            // --- GAME LOGIC ---
-            function setupLevel() {
-                if (currentUser.levelIndex >= levels.length) {
-                    showModal('پایان بازی!', 'شما تمام مراحل را با موفقیت به پایان رساندید!', 'بازگشت به منو', () => navigateTo('mainMenu'));
-                    return;
-                }
-                currentLevel = levels[currentUser.levelIndex];
-                
-                document.getElementById('currentLevel').textContent = currentUser.levelIndex + 1;
-                document.getElementById('hint').textContent = currentLevel.hint;
-                document.getElementById('hintCount').textContent = currentUser.hints;
-                
-                const wordSlots = document.getElementById('wordSlots');
-                const wordCards = document.getElementById('wordCards');
-                wordSlots.innerHTML = '';
-                wordCards.innerHTML = '';
-
-                currentLevel.word.split('').forEach((_, i) => {
-                    const slot = document.createElement('div');
-                    slot.className = 'word-slot rounded-lg flex items-center justify-center text-2xl font-bold';
-                    slot.dataset.index = i;
-                    wordSlots.appendChild(slot);
+            cards.forEach(card => {
+                card.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                    setTimeout(() => card.classList.add('dragging'), 0);
                 });
+                card.addEventListener('dragend', () => card.classList.remove('dragging'));
+            });
 
-                const letters = [...currentLevel.word].sort(() => Math.random() - 0.5);
-                letters.forEach((letter, i) => {
-                    const card = document.createElement('div');
-                    card.className = 'word-card p-3 rounded-lg text-center text-2xl font-bold';
-                    card.id = `card-${i}`;
-                    card.textContent = letter;
-                    card.draggable = true;
-                    wordCards.appendChild(card);
-                });
-                
-                addDragDropListeners();
-
-                if (!currentUser.hasSeenTutorial) {
-                    modalContainer.style.display = 'flex';
-                    tutorialOverlay.style.display = 'block';
-                }
-            }
-            
-            function addDragDropListeners() {
-                document.querySelectorAll('.word-card').forEach(card => {
-                    card.addEventListener('dragstart', e => {
-                        draggedCardId = e.target.id;
-                        setTimeout(() => card.classList.add('dragging'), 0);
-                    });
-                    card.addEventListener('dragend', () => card.classList.remove('dragging'));
-                });
-
-                document.querySelectorAll('.word-slot').forEach(slot => {
-                    slot.addEventListener('dragover', e => { e.preventDefault(); if (!slot.textContent) slot.classList.add('drag-over'); });
-                    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
-                    slot.addEventListener('drop', e => {
-                        e.preventDefault();
-                        slot.classList.remove('drag-over');
-                        if (slot.textContent) return;
-                        
-                        const card = document.getElementById(draggedCardId);
-                        if (card) {
-                            slot.textContent = card.textContent;
-                            slot.classList.add('filled');
-                            slot.dataset.cardId = draggedCardId;
-                            card.classList.add('hidden-card');
-                            playSound('click');
-                            checkAnswer();
-                        }
-                    });
-                    slot.addEventListener('click', () => {
-                        if (slot.dataset.cardId) {
-                            const card = document.getElementById(slot.dataset.cardId);
-                            if (card) card.classList.remove('hidden-card');
-                            slot.textContent = '';
-                            slot.classList.remove('filled');
-                            delete slot.dataset.cardId;
-                            playSound('click');
-                        }
-                    });
-                });
-            }
-
-            function checkAnswer() {
-                const slots = document.querySelectorAll('.word-slot');
-                if ([...slots].some(s => !s.textContent)) return; // Not fully filled
-                
-                const constructedWord = [...slots].map(s => s.textContent).join('');
-                if (constructedWord === currentLevel.word) {
-                    playSound('success');
-                    currentUser.gold += WIN_REWARD;
-                    currentUser.levelIndex++;
-                    currentUser.stats.words++;
-                    updateGoldUI();
-                    saveUser();
-                    showModal('عالی بود!', `کلمه را درست حدس زدید.\n+${WIN_REWARD} طلا 💰`, 'مرحله بعد', setupLevel);
-                } else {
-                    playSound('error');
-                    showModal('اشتباه بود!', 'کلمه صحیح نیست. دوباره تلاش کنید.');
-                }
-            }
-            
-            function useHint() {
-                playSound('click');
-                if (currentUser.hints <= 0) {
-                    showModal('راهنمایی ندارید!', 'برای دریافت راهنمایی بیشتر، از فروشگاه خرید کنید.');
-                    return;
-                }
-                const slots = document.querySelectorAll('.word-slot');
-                const emptySlots = [...slots].filter(s => !s.textContent);
-                if (emptySlots.length === 0) return;
-                
-                const targetSlot = emptySlots[0];
-                const correctLetter = currentLevel.word[targetSlot.dataset.index];
-
-                const availableCard = [...document.querySelectorAll('.word-card:not(.hidden-card)')].find(c => c.textContent === correctLetter);
-                if (availableCard) {
-                    currentUser.hints--;
-                    document.getElementById('hintCount').textContent = currentUser.hints;
-                    targetSlot.textContent = correctLetter;
-                    targetSlot.classList.add('filled');
-                    targetSlot.dataset.cardId = availableCard.id; // Mark which card was used
-                    availableCard.classList.add('hidden-card');
-                    saveUser();
-                    checkAnswer();
-                }
-            }
-
-            // --- PROFILE & SHOP LOGIC ---
-            function populateProfile() {
-                document.getElementById('profileUsername').textContent = currentUser.username;
-                document.getElementById('profileLevel').textContent = currentUser.levelIndex + 1;
-                document.getElementById('profileGold').textContent = currentUser.gold;
-                document.getElementById('profileWords').textContent = currentUser.stats.words;
-                
-                const avatarContainer = document.getElementById('avatarSelection');
-                avatarContainer.innerHTML = '';
-                Object.entries(avatars).forEach(([id, url]) => {
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.className = 'w-16 h-16 rounded-full cursor-pointer avatar-select';
-                    if (id === currentUser.avatarId) img.classList.add('selected');
-                    img.onclick = () => {
-                        playSound('click');
-                        currentUser.avatarId = id;
-                        document.querySelector('.avatar-select.selected').classList.remove('selected');
-                        img.classList.add('selected');
-                        document.getElementById('mainMenuAvatar').src = url;
-                        saveUser();
-                    };
-                    avatarContainer.appendChild(img);
-                });
-            }
-            
-            function populateShop() {
-                document.getElementById('buyHintBtn').onclick = () => {
-                    playSound('click');
-                    if (currentUser.gold >= HINT_COST) {
-                        currentUser.gold -= HINT_COST;
-                        currentUser.hints++;
-                        playSound('buy');
-                        updateGoldUI();
-                        saveUser();
-                        showModal('موفقیت آمیز!', 'یک راهنمایی به شما اضافه شد.');
-                    } else {
-                        playSound('error');
-                        showModal('خطا!', 'طلای شما برای خرید کافی نیست.');
+            slots.forEach(slot => {
+                slot.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    if (!slot.classList.contains('filled')) {
+                       slot.classList.add('drag-over');
                     }
-                };
-
-                const themeContainer = document.getElementById('themeSelection');
-                themeContainer.innerHTML = '';
-                Object.entries(themes).forEach(([id, data]) => {
-                    const owned = currentUser.ownedThemes.includes(id);
-                    const active = currentUser.activeTheme === id;
-                    
-                    const btn = document.createElement('button');
-                    btn.className = 'glass-effect p-4 rounded-xl button-hover flex flex-col items-center justify-center';
-                    btn.innerHTML = `
-                        <p class="text-lg">${data.name}</p>
-                        <p class="text-yellow-400 font-bold">${active ? 'فعال' : (owned ? 'انتخاب' : `💰 ${data.cost}`)}</p>
-                    `;
-                    btn.disabled = active;
-                    btn.onclick = () => {
-                        playSound('click');
-                        if (owned) {
-                            currentUser.activeTheme = id;
-                            applyTheme(id);
-                            saveUser();
-                            populateShop(); // Refresh shop UI
-                        } else {
-                            if (currentUser.gold >= data.cost) {
-                                currentUser.gold -= data.cost;
-                                currentUser.ownedThemes.push(id);
-                                currentUser.activeTheme = id;
-                                playSound('buy');
-                                applyTheme(id);
-                                updateGoldUI();
-                                saveUser();
-                                populateShop(); // Refresh shop UI
-                            } else {
-                                playSound('error');
-                                showModal('خطا!', 'طلای شما برای خرید این تم کافی نیست.');
-                            }
-                        }
-                    };
-                    themeContainer.appendChild(btn);
                 });
+                slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+                slot.addEventListener('drop', e => {
+                    e.preventDefault();
+                    slot.classList.remove('drag-over');
+                    if (slot.classList.contains('filled')) return;
+
+                    const cardId = e.dataTransfer.getData('text/plain');
+                    const card = document.getElementById(cardId);
+                    
+                    if (card) {
+                        slot.textContent = card.textContent;
+                        slot.classList.add('filled');
+                        slot.dataset.cardId = cardId;
+                        card.classList.add('hidden-card');
+                        checkAnswer();
+                    }
+                });
+                
+                // Allow returning a letter from slot to cards
+                slot.addEventListener('click', () => {
+                    if (slot.classList.contains('filled')) {
+                        const cardId = slot.dataset.cardId;
+                        const card = document.getElementById(cardId);
+                        if(card) card.classList.remove('hidden-card');
+                        
+                        slot.textContent = '';
+                        slot.classList.remove('filled');
+                        delete slot.dataset.cardId;
+                    }
+                });
+            });
+        }
+
+        function checkAnswer() {
+            const slots = document.querySelectorAll('.word-slot');
+            const filledSlots = document.querySelectorAll('.word-slot.filled');
+
+            if (filledSlots.length !== levels[currentLevelIndex].word.length) {
+                return; // Not all slots are filled yet
             }
 
-            // --- EVENT LISTENERS ---
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.addEventListener('click', () => navigateTo(btn.dataset.target));
+            let constructedWord = '';
+            slots.forEach(slot => {
+                constructedWord += slot.textContent;
             });
 
-            document.getElementById('registerBtn').addEventListener('click', () => {
-                const username = document.getElementById('usernameInput').value.trim();
-                if (username) {
-                    playSound('click');
-                    createUser(username);
-                    init();
-                } else {
-                    playSound('error');
-                    showModal('خطا', 'لطفاً یک نام کاربری وارد کنید.');
-                }
-            });
-            
-            document.getElementById('startGameBtn')?.addEventListener('click', setupLevel);
-            document.getElementById('resetLevelBtn').addEventListener('click', () => { playSound('click'); setupLevel(); });
-            document.getElementById('hintBtn').addEventListener('click', useHint);
-            
-            document.getElementById('claimDailyRewardBtn').addEventListener('click', () => {
-                playSound('click');
-                modalContainer.style.display = 'none';
-                dailyRewardModal.style.display = 'none';
-            });
-            
-            document.getElementById('tutorialConfirmBtn').addEventListener('click', () => {
-                playSound('click');
-                modalContainer.style.display = 'none';
-                tutorialOverlay.style.display = 'none';
-                currentUser.hasSeenTutorial = true;
-                saveUser();
-            });
+            if (constructedWord === levels[currentLevelIndex].word) {
+                // Correct answer
+                score += 10;
+                currentLevelIndex++;
+                saveUserData();
+                showModal('عالی بود!', 'کلمه را درست حدس زدید! +10 امتیاز', 'مرحله بعد', setupLevel);
+            } else {
+                // Incorrect answer
+                showModal('اشتباه بود!', 'کلمه ساخته شده صحیح نیست. دوباره تلاش کنید.', 'امتحان مجدد');
+            }
+        }
 
-            document.getElementById('clearDataBtn').addEventListener('click', () => {
-                playSound('click');
-                if (confirm('آیا مطمئنید؟ تمام پیشرفت شما، طلا و آیتم‌ها برای همیشه پاک خواهد شد!')) {
-                    localStorage.removeItem(DB_KEY);
-                    window.location.reload();
-                }
-            });
+        function resetLevel() {
+            // This function resets the current level without advancing
+            setupLevel();
+        }
 
-            // Start the application
-            setTimeout(init, 1500);
+        // --- Event Listeners Setup ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('mafiaFactUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                currentLevelIndex = currentUser.levelIndex || 0;
+                score = currentUser.score || 0;
+                // The 'hasSeenTutorial' property will be loaded here if it exists
+                setTimeout(showMainMenu, 1500);
+            } else {
+                setTimeout(showRegistration, 3000);
+            }
         });
+
+        document.getElementById('registerBtn').addEventListener('click', () => {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (!username) {
+                showModal('خطا', 'لطفاً نام کاربری را وارد کنید.');
+                return;
+            }
+            // *** MODIFIED: Add hasSeenTutorial flag for new users ***
+            currentUser = { username: username, levelIndex: 0, score: 0, hasSeenTutorial: false };
+            saveUserData();
+            showMainMenu();
+        });
+        
+        // *** NEW EVENT LISTENER for the tutorial button ***
+        document.getElementById('tutorialConfirmBtn').addEventListener('click', () => {
+            tutorialOverlay.classList.add('hidden');
+            if (currentUser) {
+                currentUser.hasSeenTutorial = true;
+                saveUserData(); // Save the state so it doesn't show again
+            }
+        });
+
+        document.getElementById('settingsBtn').addEventListener('click', showSettings);
+        document.getElementById('closeSettingsBtn').addEventListener('click', showMainMenu);
+        document.getElementById('startGameBtn').addEventListener('click', showGame);
+        document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
+        document.getElementById('resetLevelBtn').addEventListener('click', resetLevel);
+
+        document.getElementById('supportBtn').addEventListener('click', () => {
+            showModal('ارتباط با پشتیبانی', 'برای ارتباط با پشتیبانی، لطفاً به آدرس ایمیل زیر پیام ارسال کنید:\n\nsupport@escortgame.com');
+        });
+
+        document.getElementById('developersBtn').addEventListener('click', () => {
+            showModal('سازندگان', 'این بازی توسط تیم اسکورت گیم ساخته شده است.\n\nتیم توسعه:\n• کدنویس ارشد: Ali.k\n• کدنویس دوم: abolfazl1401\n• طراح: ivar\n\nتمامی حقوق این اپلیکشن متعلق به استدیو اسکورت گیم است.');
+        });
+        
+        document.getElementById('clearDataBtn').addEventListener('click', () => {
+            const confirmation = confirm('آیا مطمئن هستید که می‌خواهید تمام اطلاعات بازی (نام کاربری، مراحل و امتیاز) را پاک کنید؟ این عمل غیرقابل بازگشت است.');
+            if (confirmation) {
+                localStorage.removeItem('mafiaFactUser');
+                alert('اطلاعات بازی با موفقیت پاک شد. صفحه مجددا بارگذاری می‌شود.');
+                window.location.reload();
+            }
+        });
+
+        document.querySelectorAll('.menu-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showModal('به زودی', 'این قابلیت هنوز در دسترس نیست و به زودی اضافه خواهد شد!');
+            });
+        });
+
     </script>
 </body>
 </html>
