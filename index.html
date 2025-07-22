@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مافیا فکت - Mafia Fact</title>
+    <!-- NOTE: PWA manifest.json and service-worker.js cannot be embedded in HTML.
+         They would need to be separate files in the 'public' directory.
+         For a fully functional PWA, uncomment these lines and ensure files exist.
+    -->
+    <!-- <link rel="manifest" href="/manifest.json"> -->
+    <!-- <meta name="theme-color" content="#2c3e50"> -->
+    <!-- <link rel="apple-touch-icon" href="/assets/images/icons/icon-192x192.png"> -->
+
+    <style>
+        /* --- CSS STYLES --- */
+        @font-face {
+            font-family: 'Vazirmatn';
+            src: url('/assets/fonts/Vazirmatn-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* جلوگیری از اسکرول */
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a1a; /* پس‌زمینه تیره */
+            font-family: 'Vazirmatn', sans-serif;
+            color: #f5f5f5;
+            direction: rtl; /* برای فارسی */
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block; /* حذف فضای اضافی زیر canvas */
+        }
+
+        /* Overlay برای RegistrationScene */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* بالاتر از Canvas */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .registration-box {
+            background-color: #2c3e50; /* رنگ آبی تیره */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 80%; /* ریسپانسیو برای موبایل */
+            max-width: 400px;
+            animation: fadeInScale 0.5s ease-out;
+        }
+
+        .registration-box h1 {
+            font-size: 2.5em;
+            color: #e67e22; /* رنگ نارنجی جذاب */
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .registration-box input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            margin-bottom: 20px;
+            border: 2px solid #34495e; /* border آبی تیره */
+            border-radius: 8px;
+            background-color: #3f5872; /* پس‌زمینه آبی روشن‌تر */
+            color: #f5f5f5;
+            font-size: 1.1em;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .registration-box input[type="text"]:focus {
+            border-color: #e67e22; /* border نارنجی هنگام فوکوس */
+        }
+
+        .registration-box button {
+            background-color: #e67e22;
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .registration-box button:hover {
+            background-color: #d35400;
+        }
+
+        .registration-box button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .version-warning {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #f39c12; /* رنگ هشدار */
+        }
+
+        /* انیمیشن برای Modal "به زودی" (Phaser Game Object) */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <div id="registration-overlay" class="overlay">
+        <div class="registration-box">
+            <h1>مافیا فکت</h1>
+            <input type="text" id="username-input" placeholder="نام خود را وارد کنید..." maxlength="15">
+            <button id="start-game-btn">شروع بازی</button>
+            <p id="version-warning" class="version-warning"></p>
+        </div>
+    </div>
+
+    <!-- Phaser Library CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
+    <script>
+        /* --- JAVASCRIPT/PHASER GAME LOGIC --- */
+
+        // 1. Constants and Global Settings
+        const GAME_VERSION = '1.0.0'; // Change this to force account reset on new version
+
+        const SceneKeys = {
+            PRELOADER: 'PreloaderScene',
+            REGISTRATION: 'RegistrationScene',
+            ASSET_LOADER: 'AssetLoaderScene',
+            MAIN_MENU: 'MainMenuScene',
+            GAME: 'GameScene',
+        };
+
+        const StorageKeys = {
+            USER_DATA: 'mafiaFactUserData',
+            GAME_VERSION: 'mafiaFactGameVersion',
+            CURRENT_LEVEL: 'mafiaFactCurrentLevel',
+        };
+
+        const GAME_DIMENSIONS = {
+            WIDTH: 720,
+            HEIGHT: 1280,
+        };
+
+        const COLORS = {
+            PRIMARY: 0xE67E22, // نارنجی
+            SECONDARY: 0x34495E, // آبی تیره
+            BACKGROUND: 0x2C3E50, // آبی متوسط
+            TEXT_LIGHT: 0xF5F5F5,
+            TEXT_DARK: 0x1A1A1A,
+            GREEN_SUCCESS: 0x27AE60,
+            RED_ERROR: 0xE74C3C,
+        };
+
+        const FONT_STYLES = {
+            H1: { fontSize: '48px', fontFamily: 'Vazirmatn', color: `#${COLORS.PRIMARY.toString(16)}`, align: 'center' },
+            H2: { fontSize: '32px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}`, align: 'center' },
+            BODY: { fontSize: '24px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}` },
+            BUTTON: { fontSize: '30px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}`, fontWeight: 'bold' },
+            LEVEL_TEXT: { fontSize: '36px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}`, fontWeight: 'bold' },
+            SCORE_TEXT: { fontSize: '36px', fontFamily: 'Vazirmatn', color: `#${COLORS.PRIMARY.toString(16)}`, fontWeight: 'bold' },
+            MODAL_TITLE: { fontSize: '40px', fontFamily: 'Vazirmatn', color: `#${COLORS.PRIMARY.toString(16)}`, fontWeight: 'bold' },
+            MODAL_MESSAGE: { fontSize: '28px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}` },
+            USERNAME: { fontSize: '26px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}`, fontWeight: 'bold' },
+        };
+
+        // 2. Data for Game Levels
+        const LEVELS_DATA = [
+            {
+                level: 1,
+                word: "مافیا",
+                letters: ["م", "ا", "ف", "ی", "ا"],
+                hint: "این کلمه را برای اولین بار در فیلم Godfather شنیدید."
+            },
+            {
+                level: 2,
+                word: "شهروند",
+                letters: ["و", "ن", "د", "ش", "ه", "ر"],
+                hint: "نقش ساده و بی گناه در بازی."
+            },
+            {
+                level: 3,
+                word: "پلیس",
+                letters: ["پ", "ل", "ی", "س", "ش"],
+                hint: "شب‌ها به دنبال کشف هویت خلافکاران است."
+            },
+            {
+                level: 4,
+                word: "دکتر",
+                letters: ["ک", "ت", "د", "ر", "ل"],
+                hint: "می‌تواند جان کسی را نجات دهد."
+            },
+            {
+                level: 5,
+                word: "قتل",
+                letters: ["ق", "ل", "ت", "پ"],
+                hint: "عملی که مافیا شب‌ها انجام می‌دهد."
+            },
+            {
+                level: 6,
+                word: "اعتماد",
+                letters: ["ا", "ع", "ت", "م", "ا", "د", "ن"],
+                hint: "چیزی که در این بازی خیلی سخت به دست می‌آید."
+            }
+            // ... Add more levels here
+        ];
+
+
+        // 3. Utility Classes/Objects
+        const StorageManager = {
+            saveUserData: function(username) {
+                const userData = {
+                    username: username,
+                    level: 1,
+                    score: 0,
+                };
+                localStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(userData));
+                localStorage.setItem(StorageKeys.GAME_VERSION, GAME_VERSION);
+            },
+
+            loadUserData: function() {
+                const storedVersion = localStorage.getItem(StorageKeys.GAME_VERSION);
+                if (storedVersion !== GAME_VERSION) {
+                    console.warn(`Game version mismatch. Stored: ${storedVersion}, Current: ${GAME_VERSION}. Resetting user data.`);
+                    StorageManager.clearUserData();
+                    return null;
+                }
+
+                const userDataString = localStorage.getItem(StorageKeys.USER_DATA);
+                if (userDataString) {
+                    try {
+                        return JSON.parse(userDataString);
+                    } catch (e) {
+                        console.error("Error parsing user data from localStorage:", e);
+                        StorageManager.clearUserData();
+                        return null;
+                    }
+                }
+                return null;
+            },
+
+            updateCurrentLevel: function(level) {
+                const userData = StorageManager.loadUserData();
+                if (userData) {
+                    userData.level = level;
+                    localStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(userData));
+                }
+            },
+
+            updateScore: function(score) {
+                const userData = StorageManager.loadUserData();
+                if (userData) {
+                    userData.score = score;
+                    localStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(userData));
+                }
+            },
+
+            clearUserData: function() {
+                localStorage.removeItem(StorageKeys.USER_DATA);
+                localStorage.removeItem(StorageKeys.GAME_VERSION);
+                localStorage.removeItem(StorageKeys.CURRENT_LEVEL);
+            }
+        };
+
+        // Global AudioManager instance for simplicity in single-file setup
+        let audioManagerInstance = null;
+
+        class AudioManager {
+            constructor(scene) {
+                this.scene = scene;
+                this.sounds = new Map();
+                this.music = null;
+            }
+
+            addSound(key, path) {
+                if (!this.sounds.has(key)) {
+                    this.sounds.set(key, this.scene.sound.add(key));
+                    this.scene.load.audio(key, path);
+                }
+            }
+
+            playSound(key, config) {
+                const sound = this.sounds.get(key);
+                if (sound) {
+                    sound.play(config);
+                } else {
+                    console.warn(`Sound "${key}" not found.`);
+                }
+            }
+
+            addMusic(key, path) {
+                if (!this.sounds.has(key)) {
+                    this.music = this.scene.sound.add(key, { loop: true });
+                    this.scene.load.audio(key, path);
+                }
+            }
+
+            playMusic(key, config) {
+                if (this.music && this.music.key === key) {
+                    if (!this.music.isPlaying) {
+                        this.music.play(config);
+                    }
+                } else {
+                    this.music && this.music.stop();
+                    this.music = this.scene.sound.add(key, { loop: true });
+                    this.music.play(config);
+                }
+            }
+
+            stopMusic() {
+                this.music && this.music.stop();
+            }
+        }
+
+
+        // 4. Game Objects
+        class GameButton extends Phaser.GameObjects.Container {
+            constructor(scene, x, y, texture, text, onClick, textStyle = {}) {
+                super(scene, x, y);
+                scene.add.existing(this);
+
+                this.initialScale = 1;
+
+                this.background = scene.add.image(0, 0, texture).setOrigin(0.5);
+                this.text = scene.add.text(0, 0, text, { ...FONT_STYLES.BUTTON, ...textStyle }).setOrigin(0.5);
+
+                this.add([this.background, this.text]);
+                this.setSize(this.background.width, this.background.height);
+
+                this.setInteractive({ useHandCursor: true })
+                    .on('pointerover', this.onPointerOver, this)
+                    .on('pointerout', this.onPointerOut, this)
+                    .on('pointerdown', this.onPointerDown, this)
+                    .on('pointerup', () => {
+                        this.onPointerUp();
+                        onClick();
+                    }, this);
+            }
+
+            onPointerOver() {
+                this.scene.tweens.add({
+                    targets: this,
+                    scale: this.initialScale * 1.05,
+                    duration: 100,
+                    ease: 'Power1'
+                });
+            }
+
+            onPointerOut() {
+                this.scene.tweens.add({
+                    targets: this,
+                    scale: this.initialScale,
+                    duration: 100,
+                    ease: 'Power1'
+                });
+            }
+
+            onPointerDown() {
+                this.scene.tweens.add({
+                    targets: this,
+                    scale: this.initialScale * 0.95,
+                    duration: 50,
+                    ease: 'Power1'
+                });
+                audioManagerInstance.playSound('click');
+            }
+
+            onPointerUp() {
+                this.scene.tweens.add({
+                    targets: this,
+                    scale: this.initialScale * 1.05,
+                    duration: 50,
+                    ease: 'Power1',
+                    onComplete: () => {
+                        this.scene.tweens.add({
+                            targets: this,
+                            scale: this.initialScale,
+                            duration: 100,
+                            ease: 'Power1'
+                        });
+                    }
+                });
+            }
+
+            setComingSoon(isComingSoon) {
+                if (isComingSoon) {
+                    this.background.setTexture('button-comingsoon');
+                    this.text.setText("به زودی");
+                    this.disableInteractive();
+                }
+            }
+        }
+
+        class LetterTile extends Phaser.GameObjects.Container {
+            constructor(scene, x, y, letter) {
+                super(scene, x, y);
+                scene.add.existing(this);
+
+                this.letter = letter;
+                this.originalX = x;
+                this.originalY = y;
+                this.isInBlank = false;
+                this.blankIndex = -1;
+
+                this.background = scene.add.image(0, 0, 'letter-tile').setOrigin(0.5);
+                this.text = scene.add.text(0, 0, letter, { ...FONT_STYLES.BUTTON, fontSize: '36px', color: `#${COLORS.TEXT_DARK.toString(16)}` }).setOrigin(0.5);
+
+                this.add([this.background, this.text]);
+                this.setSize(this.background.width, this.background.height);
+
+                this.setDepth(1);
+
+                this.setInteractive({ draggable: true, useHandCursor: true });
+
+                this.on('dragstart', this.onDragStart, this);
+                this.on('drag', this.onDrag, this);
+                this.on('dragend', this.onDragEnd, this);
+                this.on('pointerdown', this.onPointerDownClick, this);
+            }
+
+            onDragStart(pointer, dragX, dragY) {
+                if (this.isInBlank) {
+                    this.scene.events.emit('letterRemovedFromBlank', this, this.blankIndex);
+                    this.isInBlank = false;
+                    this.blankIndex = -1;
+                }
+                this.scene.children.bringToTop(this);
+                this.background.setTint(0xAAAAAA);
+            }
+
+            onDrag(pointer, dragX, dragY) {
+                this.x = dragX;
+                this.y = dragY;
+            }
+
+            onDragEnd(pointer, dropped) {
+                this.background.clearTint();
+                if (!dropped) {
+                    this.returnToOriginalPosition();
+                }
+            }
+
+            onPointerDownClick() {
+                if (!this.isInBlank) {
+                    this.scene.events.emit('letterClicked', this);
+                } else {
+                    this.scene.events.emit('letterRemovedFromBlank', this, this.blankIndex);
+                    this.returnToOriginalPosition();
+                }
+            }
+
+            returnToOriginalPosition() {
+                this.scene.tweens.add({
+                    targets: this,
+                    x: this.originalX,
+                    y: this.originalY,
+                    duration: 200,
+                    ease: 'Power1',
+                    onComplete: () => {
+                        this.isInBlank = false;
+                        this.blankIndex = -1;
+                    }
+                });
+            }
+
+            placeInBlank(x, y, blankIndex) {
+                this.scene.tweens.add({
+                    targets: this,
+                    x: x,
+                    y: y,
+                    duration: 150,
+                    ease: 'Power1',
+                    onComplete: () => {
+                        this.isInBlank = true;
+                        this.blankIndex = blankIndex;
+                    }
+                });
+            }
+        }
+
+        class BlankSpace extends Phaser.GameObjects.Image {
+            constructor(scene, x, y, index) {
+                super(scene, x, y, 'blank-space');
+                scene.add.existing(this);
+                this.setOrigin(0.5);
+                this.index = index;
+                this.isFilled = false;
+                this.filledWithTile = '';
+                this.setTint(COLORS.SECONDARY);
+            }
+
+            fill(letter) {
+                this.isFilled = true;
+                this.filledWithTile = letter;
+                this.setTint(COLORS.PRIMARY);
+            }
+
+            empty() {
+                this.isFilled = false;
+                this.filledWithTile = '';
+                this.setTint(COLORS.SECONDARY);
+            }
+
+            showCorrect() {
+                this.setTint(COLORS.GREEN_SUCCESS);
+                this.scene.tweens.add({
+                    targets: this,
+                    scale: 1.1,
+                    duration: 100,
+                    yoyo: true,
+                    onComplete: () => this.setScale(1)
+                });
+            }
+
+            showWrong() {
+                this.setTint(COLORS.RED_ERROR);
+                this.scene.tweens.add({
+                    targets: this,
+                    x: '+=10',
+                    ease: 'Sine.easeInOut',
+                    duration: 50,
+                    yoyo: true,
+                    repeat: 3,
+                    onComplete: () => {
+                        this.setTint(COLORS.SECONDARY);
+                        this.x -= 10 * 4;
+                    }
+                });
+            }
+        }
+
+        // 5. Game Scenes
+        class BaseScene extends Phaser.Scene {
+            constructor(key) {
+                super(key);
+            }
+
+            preload() {
+                if (!this.sys.game.cache.audio.exists('click')) {
+                    this.load.audio('click', '/assets/audio/click-sound.mp3');
+                }
+            }
+
+            create() {
+                // Initialize global audioManagerInstance if it's the first scene
+                if (!audioManagerInstance) {
+                    audioManagerInstance = new AudioManager(this);
+                } else {
+                    audioManagerInstance.scene = this; // Update scene context for AudioManager
+                }
+                audioManagerInstance.addSound('click', '/assets/audio/click-sound.mp3');
+            }
+
+            showModal(title, message, onDismiss) {
+                const modalWidth = this.scale.width * 0.8;
+                const modalHeight = this.scale.height * 0.4;
+
+                const background = this.add.graphics({ fillStyle: { color: COLORS.BACKGROUND, alpha: 0.95 } });
+                background.fillRect(0, 0, this.scale.width, this.scale.height);
+                background.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.scale.width, this.scale.height), Phaser.Geom.Rectangle.Contains);
+
+                const modalBox = this.add.container(this.scale.width / 2, this.scale.height / 2);
+                const boxGraphics = this.add.graphics();
+                boxGraphics.fillStyle(COLORS.SECONDARY, 1);
+                boxGraphics.fillRoundedRect(-modalWidth / 2, -modalHeight / 2, modalWidth, modalHeight, 20);
+                boxGraphics.lineStyle(5, COLORS.PRIMARY, 1);
+                boxGraphics.strokeRoundedRect(-modalWidth / 2, -modalHeight / 2, modalWidth, modalHeight, 20);
+                modalBox.add(boxGraphics);
+
+                const modalTitle = this.add.text(0, -modalHeight / 2 + 50, title, { ...FONT_STYLES.MODAL_TITLE, wordWrap: { width: modalWidth - 60 } }).setOrigin(0.5);
+                modalBox.add(modalTitle);
+
+                const modalMessage = this.add.text(0, 0, message, { ...FONT_STYLES.MODAL_MESSAGE, wordWrap: { width: modalWidth - 60 } }).setOrigin(0.5);
+                modalBox.add(modalMessage);
+
+                const dismissButton = this.add.image(0, modalHeight / 2 - 50, 'button-start')
+                    .setOrigin(0.5)
+                    .setScale(0.8)
+                    .setInteractive({ useHandCursor: true });
+                const buttonText = this.add.text(0, modalHeight / 2 - 50, 'باشه', FONT_STYLES.BUTTON).setOrigin(0.5);
+                modalBox.add([dismissButton, buttonText]);
+
+                modalBox.setDepth(2000);
+                modalBox.setScale(0);
+
+                this.tweens.add({
+                    targets: modalBox,
+                    scale: 1,
+                    alpha: 1,
+                    duration: 300,
+                    ease: 'Back.easeOut'
+                });
+
+                dismissButton.on('pointerdown', () => {
+                    audioManagerInstance.playSound('click');
+                    this.tweens.add({
+                        targets: modalBox,
+                        scale: 0,
+                        alpha: 0,
+                        duration: 200,
+                        ease: 'Back.easeIn',
+                        onComplete: () => {
+                            modalBox.destroy();
+                            background.destroy();
+                            if (onDismiss) {
+                                onDismiss();
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+        class PreloaderScene extends BaseScene {
+            constructor() {
+                super(SceneKeys.PRELOADER);
+            }
+
+            preload() {
+                super.preload();
+
+                this.load.image('mafia-background', '/assets/images/mafia-background.png');
+                this.load.image('avatar-placeholder', '/assets/images/avatar-placeholder.png');
+                this.load.image('button-start', '/assets/images/button-start.png');
+                this.load.image('button-comingsoon', '/assets/images/button-comingsoon.png');
+
+                // Load fonts via CSS (Phaser's load.css is for webfontloader or specific CSS files, not direct TTF in this manner)
+                // For a true single file, font embedding is complex. Relying on CSS in the <style> tag to load it.
+
+                const progressBar = this.add.graphics();
+                const progressBox = this.add.graphics();
+                progressBox.fillStyle(COLORS.SECONDARY, 0.8);
+                progressBox.fillRect(this.scale.width / 2 - 160, this.scale.height / 2 - 30, 320, 50);
+
+                const loadingText = this.make.text({
+                    x: this.scale.width / 2,
+                    y: this.scale.height / 2 - 80,
+                    text: 'درحال بارگذاری...',
+                    style: FONT_STYLES.H2
+                }).setOrigin(0.5);
+
+                const percentText = this.make.text({
+                    x: this.scale.width / 2,
+                    y: this.scale.height / 2 + 50,
+                    text: '0%',
+                    style: FONT_STYLES.BODY
+                }).setOrigin(0.5);
+
+                this.load.on('progress', (value) => {
+                    progressBar.clear();
+                    progressBar.fillStyle(COLORS.PRIMARY, 1);
+                    progressBar.fillRect(this.scale.width / 2 - 150, this.scale.height / 2 - 20, 300 * value, 30);
+                    percentText.setText(`${Math.round(value * 100)}%`);
+                });
+
+                this.load.on('complete', () => {
+                    progressBar.destroy();
+                    progressBox.destroy();
+                    loadingText.destroy();
+                    percentText.destroy();
+                    this.scene.start(SceneKeys.REGISTRATION);
+                });
+            }
+
+            create() {
+                super.create();
+            }
+        }
+
+        class RegistrationScene extends BaseScene {
+            constructor() {
+                super(SceneKeys.REGISTRATION);
+            }
+
+            create() {
+                super.create();
+
+                this.add.image(this.scale.width / 2, this.scale.height / 2, 'mafia-background')
+                    .setDisplaySize(this.scale.width, this.scale.height);
+
+                const overlayDiv = document.getElementById('registration-overlay');
+                const usernameInput = document.getElementById('username-input');
+                const startGameBtn = document.getElementById('start-game-btn');
+                const versionWarningText = document.getElementById('version-warning');
+
+                startGameBtn.onclick = () => this.handleStartGame(usernameInput, startGameBtn, overlayDiv);
+
+                this.checkUserStatus(usernameInput, startGameBtn, versionWarningText, overlayDiv);
+            }
+
+            checkUserStatus(usernameInput, startGameBtn, versionWarningText, overlayDiv) {
+                const userData = StorageManager.loadUserData();
+
+                if (userData) {
+                    usernameInput.value = userData.username;
+                    versionWarningText.textContent = `با نام ${userData.username} به بازی باز می‌گردید.`;
+                    startGameBtn.textContent = 'ادامه بازی';
+                    overlayDiv.classList.add('active');
+                    this.time.delayedCall(1500, () => {
+                        overlayDiv.classList.remove('active');
+                        this.scene.start(SceneKeys.ASSET_LOADER);
+                    });
+                } else {
+                    usernameInput.value = '';
+                    versionWarningText.textContent = `نسخه بازی بروزرسانی شده یا اکانتی یافت نشد.`;
+                    startGameBtn.textContent = 'شروع بازی';
+                    overlayDiv.classList.add('active');
+                }
+            }
+
+            handleStartGame(usernameInput, startGameBtn, overlayDiv) {
+                const username = usernameInput.value.trim();
+                if (username.length < 3) {
+                    usernameInput.style.borderColor = `#${COLORS.RED_ERROR.toString(16)}`;
+                    this.time.delayedCall(500, () => usernameInput.style.borderColor = `#${COLORS.SECONDARY.toString(16)}`);
+                    return;
+                }
+
+                audioManagerInstance.playSound('click');
+                StorageManager.saveUserData(username);
+                overlayDiv.classList.remove('active');
+                this.scene.start(SceneKeys.ASSET_LOADER);
+            }
+        }
+
+        class AssetLoaderScene extends BaseScene {
+            constructor() {
+                super(SceneKeys.ASSET_LOADER);
+            }
+
+            preload() {
+                super.preload();
+
+                this.load.image('letter-tile', '/assets/images/letter-tile.png');
+                this.load.image('blank-space', '/assets/images/blank-space.png');
+
+                this.load.audio('menu-music', '/assets/audio/menu-music.mp3');
+                this.load.audio('correct-sound', '/assets/audio/correct-sound.mp3');
+                this.load.audio('wrong-sound', '/assets/audio/wrong-sound.mp3');
+
+                // Level data is now a global JS variable, no need to load JSON
+                // this.load.json('levels', '/src/data/levels.json');
+
+                const progressBar = this.add.graphics();
+                const progressBox = this.add.graphics();
+                progressBox.fillStyle(COLORS.SECONDARY, 0.8);
+                progressBox.fillRect(this.scale.width / 2 - 160, this.scale.height / 2 - 30, 320, 50);
+
+                const loadingText = this.make.text({
+                    x: this.scale.width / 2,
+                    y: this.scale.height / 2 - 80,
+                    text: 'درحال آماده‌سازی بازی...',
+                    style: FONT_STYLES.H2
+                }).setOrigin(0.5);
+
+                const percentText = this.make.text({
+                    x: this.scale.width / 2,
+                    y: this.scale.height / 2 + 50,
+                    text: '0%',
+                    style: FONT_STYLES.BODY
+                }).setOrigin(0.5);
+
+                this.load.on('progress', (value) => {
+                    progressBar.clear();
+                    progressBar.fillStyle(COLORS.PRIMARY, 1);
+                    progressBar.fillRect(this.scale.width / 2 - 150, this.scale.height / 2 - 20, 300 * value, 30);
+                    percentText.setText(`${Math.round(value * 100)}%`);
+                });
+
+                this.load.on('complete', () => {
+                    progressBar.destroy();
+                    progressBox.destroy();
+                    loadingText.destroy();
+                    percentText.destroy();
+                    this.scene.start(SceneKeys.MAIN_MENU);
+                });
+            }
+
+            create() {
+                super.create();
+            }
+        }
+
+        class MainMenuScene extends BaseScene {
+            constructor() {
+                super(SceneKeys.MAIN_MENU);
+            }
+
+            create() {
+                super.create();
+
+                this.add.image(this.scale.width / 2, this.scale.height / 2, 'mafia-background')
+                    .setDisplaySize(this.scale.width, this.scale.height);
+
+                audioManagerInstance.addMusic('menu-music', '/assets/audio/menu-music.mp3');
+                audioManagerInstance.playMusic('menu-music', { volume: 0.5 });
+
+                const userData = StorageManager.loadUserData();
+                const username = userData ? userData.username : 'بازیکن ناشناس';
+
+                const avatar = this.add.image(this.scale.width - 80, 70, 'avatar-placeholder')
+                    .setScale(0.5)
+                    .setOrigin(0.5);
+
+                this.add.text(avatar.x - 100, avatar.y, username, FONT_STYLES.USERNAME)
+                    .setOrigin(1, 0.5);
+
+                const centerX = this.scale.width / 2;
+                const startY = this.scale.height / 2 + 50;
+
+                new GameButton(this, centerX, startY, 'button-start', 'شروع بازی', () => {
+                    audioManagerInstance.stopMusic();
+                    this.scene.start(SceneKeys.GAME);
+                });
+
+                const bottomButtonsY = this.scale.height - 100;
+                const buttonSpacing = 150;
+
+                new GameButton(this, centerX - buttonSpacing, bottomButtonsY, 'button-comingsoon', 'چت', () => {
+                    this.showModal('به زودی...', 'قابلیت چت در نسخه‌های بعدی فعال خواهد شد.', () => {});
+                }).setScale(0.7);
+
+                new GameButton(this, centerX, bottomButtonsY, 'button-comingsoon', 'کلن', () => {
+                    this.showModal('به زودی...', 'قابلیت کلن در نسخه‌های بعدی فعال خواهد شد.', () => {});
+                }).setScale(0.7);
+
+                new GameButton(this, centerX + buttonSpacing, bottomButtonsY, 'button-comingsoon', 'فروشگاه', () => {
+                    this.showModal('به زودی...', 'قابلیت فروشگاه در نسخه‌های بعدی فعال خواهد شد.', () => {});
+                }).setScale(0.7);
+            }
+        }
+
+        class GameScene extends BaseScene {
+            constructor() {
+                super(SceneKeys.GAME);
+            }
+
+            create() {
+                super.create();
+
+                this.add.image(this.scale.width / 2, this.scale.height / 2, 'mafia-background')
+                    .setDisplaySize(this.scale.width, this.scale.height);
+
+                this.levels = LEVELS_DATA;
+                if (!this.levels || this.levels.length === 0) {
+                    console.error('No levels data found!');
+                    this.scene.start(SceneKeys.MAIN_MENU);
+                    return;
+                }
+
+                const userData = StorageManager.loadUserData();
+                if (userData) {
+                    this.currentLevelIndex = (userData.level - 1) % this.levels.length;
+                    this.score = userData.score;
+                } else {
+                    StorageManager.saveUserData('Player');
+                }
+
+                this.levelText = this.add.text(50, 50, `مرحله: ${this.currentLevelIndex + 1}`, FONT_STYLES.LEVEL_TEXT)
+                    .setOrigin(0, 0.5);
+
+                this.scoreText = this.add.text(this.scale.width - 50, 50, `امتیاز: ${this.score}`, FONT_STYLES.SCORE_TEXT)
+                    .setOrigin(1, 0.5);
+
+                this.hintText = this.add.text(this.scale.width / 2, this.scale.height * 0.2, '', FONT_STYLES.BODY)
+                    .setOrigin(0.5)
+                    .setWordWrapWidth(this.scale.width * 0.8)
+                    .setAlpha(0);
+
+                this.letterTiles = [];
+                this.blankSpaces = [];
+                this.filledLetters = [];
+
+                this.input.setDraggable(this.letterTiles); // This will be updated on each level start
+                this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+                    gameObject.x = dragX;
+                    gameObject.y = dragY;
+                });
+
+                this.input.on('dragend', (pointer, gameObject, dropped) => {
+                    if (!gameObject.isInBlank) {
+                        let droppedOnBlank = null;
+                        for (let i = 0; i < this.blankSpaces.length; i++) {
+                            const blank = this.blankSpaces[i];
+                            if (!blank.isFilled && Phaser.Geom.Intersects.RectangleToRectangle(gameObject.getBounds(), blank.getBounds())) {
+                                droppedOnBlank = blank;
+                                break;
+                            }
+                        }
+
+                        if (droppedOnBlank) {
+                            gameObject.placeInBlank(droppedOnBlank.x, droppedOnBlank.y, droppedOnBlank.index);
+                            droppedOnBlank.fill(gameObject.letter);
+                            this.filledLetters[droppedOnBlank.index] = gameObject.letter;
+                            this.checkWordCompletion();
+                        } else {
+                            gameObject.returnToOriginalPosition();
+                        }
+                    }
+                });
+
+                this.events.on('letterClicked', this.handleLetterClick, this);
+                this.events.on('letterRemovedFromBlank', this.handleLetterRemovedFromBlank, this);
+
+                this.startLevel(this.currentLevelIndex);
+            }
+
+            startLevel(index) {
+                if (index >= this.levels.length) {
+                    this.showModal('تبریک!', 'شما تمام مراحل بازی را با موفقیت به پایان رساندید! مراحل جدید به زودی اضافه خواهند شد.', () => {
+                        this.scene.start(SceneKeys.MAIN_MENU);
+                    });
+                    return;
+                }
+
+                this.currentLevelIndex = index;
+                const levelData = this.levels[this.currentLevelIndex];
+                this.currentWord = levelData.word;
+                this.levelText.setText(`مرحله: ${this.currentLevelIndex + 1}`);
+                this.hintText.setText(levelData.hint);
+                this.showHint();
+
+                this.letterTiles.forEach(tile => tile.destroy());
+                this.blankSpaces.forEach(blank => blank.destroy());
+                this.letterTiles = [];
+                this.blankSpaces = [];
+                this.filledLetters = Array(this.currentWord.length).fill('');
+
+                const blankSize = 100;
+                const totalBlankWidth = this.currentWord.length * blankSize + (this.currentWord.length - 1) * 10;
+                let startX = (this.scale.width - totalBlankWidth) / 2 + blankSize / 2;
+                const blankY = this.scale.height * 0.45;
+
+                for (let i = 0; i < this.currentWord.length; i++) {
+                    const blank = new BlankSpace(this, startX + i * (blankSize + 10), blankY, i);
+                    this.blankSpaces.push(blank);
+                    this.children.bringToTop(blank);
+                }
+
+                const letterBankY = this.scale.height * 0.75;
+                const tileCount = levelData.letters.length;
+                const totalTileWidth = tileCount * blankSize + (tileCount - 1) * 10;
+                startX = (this.scale.width - totalTileWidth) / 2 + blankSize / 2;
+
+                const shuffledLetters = Phaser.Utils.Array.Shuffle([...levelData.letters]);
+
+                for (let i = 0; i < shuffledLetters.length; i++) {
+                    const letter = shuffledLetters[i];
+                    const tile = new LetterTile(this, startX + i * (blankSize + 10), letterBankY, letter);
+                    this.letterTiles.push(tile);
+                    this.children.bringToTop(tile);
+                }
+
+                this.input.setDraggable(this.letterTiles); // Re-set draggable for new tiles
+
+                StorageManager.updateCurrentLevel(this.currentLevelIndex + 1);
+            }
+
+            showHint() {
+                this.tweens.add({
+                    targets: this.hintText,
+                    alpha: 1,
+                    duration: 500,
+                    ease: 'Sine.easeOut',
+                    delay: 500
+                });
+                this.time.delayedCall(3000, () => {
+                    this.tweens.add({
+                        targets: this.hintText,
+                        alpha: 0,
+                        duration: 500,
+                        ease: 'Sine.easeIn'
+                    });
+                });
+            }
+
+            handleLetterClick(clickedTile) {
+                const targetBlank = this.blankSpaces.find(blank => !blank.isFilled);
+
+                if (targetBlank) {
+                    clickedTile.placeInBlank(targetBlank.x, targetBlank.y, targetBlank.index);
+                    targetBlank.fill(clickedTile.letter);
+                    this.filledLetters[targetBlank.index] = clickedTile.letter;
+                    this.checkWordCompletion();
+                } else {
+                    clickedTile.returnToOriginalPosition();
+                    audioManagerInstance.playSound('wrong-sound');
+                }
+            }
+
+            handleLetterRemovedFromBlank(tile, blankIndex) {
+                if (blankIndex !== -1 && this.blankSpaces[blankIndex]) {
+                    this.blankSpaces[blankIndex].empty();
+                    this.filledLetters[blankIndex] = '';
+                }
+            }
+
+            checkWordCompletion() {
+                if (this.filledLetters.includes('')) {
+                    return;
+                }
+
+                const formedWord = this.filledLetters.join('');
+
+                if (formedWord === this.currentWord) {
+                    audioManagerInstance.playSound('correct-sound');
+                    this.score += 100 * (this.currentLevelIndex + 1);
+                    this.scoreText.setText(`امتیاز: ${this.score}`);
+                    StorageManager.updateScore(this.score);
+
+                    this.blankSpaces.forEach(blank => blank.showCorrect());
+                    this.letterTiles.forEach(tile => tile.setInteractive(false).setDepth(0));
+
+                    this.time.delayedCall(1000, () => {
+                        this.tweens.add({
+                            targets: [...this.blankSpaces, ...this.letterTiles],
+                            alpha: 0,
+                            y: '-=50',
+                            duration: 500,
+                            ease: 'Quad.easeIn',
+                            onComplete: () => {
+                                this.startLevel(this.currentLevelIndex + 1);
+                            }
+                        });
+                    });
+                } else {
+                    audioManagerInstance.playSound('wrong-sound');
+                    this.blankSpaces.forEach(blank => blank.showWrong());
+                    this.time.delayedCall(1000, () => {
+                        this.letterTiles.forEach(tile => tile.returnToOriginalPosition());
+                        this.blankSpaces.forEach(blank => blank.empty());
+                        this.filledLetters = Array(this.currentWord.length).fill('');
+                    });
+                }
+            }
+        }
+
+        // 6. Phaser Game Configuration and Initialization
+        const config = {
+            type: Phaser.AUTO,
+            parent: 'game-container',
+            width: GAME_DIMENSIONS.WIDTH,
+            height: GAME_DIMENSIONS.HEIGHT,
+            backgroundColor: COLORS.BACKGROUND,
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+            },
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    debug: false
+                }
+            },
+            scene: [PreloaderScene, RegistrationScene, AssetLoaderScene, MainMenuScene, GameScene],
+            dom: {
+                createContainer: true
+            },
+            audio: {
+                disableWebAudio: false
+            },
+        };
+
+        const game = new Phaser.Game(config);
+
+        // Optional: Register Service Worker for PWA features (requires separate service-worker.js file)
+        /*
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered! Scope:', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('Service Worker registration failed:', err);
+                    });
+            });
+        }
+        */
+    </script>
+</body>
+</html>
