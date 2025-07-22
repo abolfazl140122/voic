@@ -268,7 +268,7 @@
                 </div>
                 
                 <div class="mt-8 text-center">
-                    <p class="text-yellow-400/60 text-sm">نسخه 1.0.1</p>
+                    <p class="text-yellow-400/60 text-sm">نسخه 1.0.2</p>
                     <p class="text-yellow-400/60 text-xs mt-2">تیم اسکورت گیم</p>
                 </div>
             </div>
@@ -314,6 +314,24 @@
         </div>
     </div>
 
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="fixed inset-0 bg-black/80 flex items-center justify-center z-45 hidden p-4">
+        <div class="glass-effect rounded-2xl p-8 max-w-lg w-full text-center relative slide-up">
+            <h3 class="text-3xl font-bold text-yellow-400 mb-4 gold-glow">✨ به بازی خوش آمدید! ✨</h3>
+            <p class="text-yellow-100 text-lg mb-2">
+                برای ساختن کلمه مخفی، حروف پایین صفحه را بکشید...
+            </p>
+            <div class="text-5xl my-4 animate-bounce">👇</div>
+            <p class="text-yellow-100 text-lg mb-6">
+                ... و در جایگاه‌های خالی بالا رها کنید.
+            </p>
+            <button id="tutorialConfirmBtn" class="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 px-10 rounded-xl transition-all button-hover">
+                فهمیدم!
+            </button>
+        </div>
+    </div>
+
+
     <!-- Modal -->
     <div id="modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
         <div class="glass-effect rounded-3xl p-10 max-w-md w-full mx-4 text-center slide-up">
@@ -333,6 +351,7 @@
         const settingsScreen = document.getElementById('settingsScreen');
         const gameScreen = document.getElementById('gameScreen');
         const modal = document.getElementById('modal');
+        const tutorialOverlay = document.getElementById('tutorialOverlay'); // <-- New element
 
         // Game State
         let currentUser = null;
@@ -381,6 +400,7 @@
             if (currentUser) {
                 currentUser.levelIndex = currentLevelIndex;
                 currentUser.score = score;
+                // 'hasSeenTutorial' is already part of the currentUser object
                 localStorage.setItem('mafiaFactUser', JSON.stringify(currentUser));
             }
         }
@@ -398,6 +418,7 @@
             registrationScreen.classList.add('hidden');
             settingsScreen.classList.add('hidden');
             gameScreen.classList.add('hidden');
+            tutorialOverlay.classList.add('hidden'); // Ensure tutorial is hidden
             mainMenu.classList.remove('hidden');
             mainMenu.classList.add('fade-in');
             
@@ -417,6 +438,13 @@
             gameScreen.classList.remove('hidden');
             gameScreen.classList.add('fade-in');
             setupLevel();
+
+            // *** NEW LOGIC: Show tutorial for the first time ***
+            if (currentUser && !currentUser.hasSeenTutorial) {
+                setTimeout(() => { // a small delay makes it feel smoother
+                    tutorialOverlay.classList.remove('hidden');
+                }, 500);
+            }
         }
 
         // --- Game Logic ---
@@ -536,8 +564,6 @@
             } else {
                 // Incorrect answer
                 showModal('اشتباه بود!', 'کلمه ساخته شده صحیح نیست. دوباره تلاش کنید.', 'امتحان مجدد');
-                // Optional: Reset the board after incorrect guess
-                setTimeout(resetLevel, 1500);
             }
         }
 
@@ -554,6 +580,7 @@
                 currentUser = JSON.parse(savedUser);
                 currentLevelIndex = currentUser.levelIndex || 0;
                 score = currentUser.score || 0;
+                // The 'hasSeenTutorial' property will be loaded here if it exists
                 setTimeout(showMainMenu, 1500);
             } else {
                 setTimeout(showRegistration, 3000);
@@ -566,9 +593,19 @@
                 showModal('خطا', 'لطفاً نام کاربری را وارد کنید.');
                 return;
             }
-            currentUser = { username: username, levelIndex: 0, score: 0 };
+            // *** MODIFIED: Add hasSeenTutorial flag for new users ***
+            currentUser = { username: username, levelIndex: 0, score: 0, hasSeenTutorial: false };
             saveUserData();
             showMainMenu();
+        });
+        
+        // *** NEW EVENT LISTENER for the tutorial button ***
+        document.getElementById('tutorialConfirmBtn').addEventListener('click', () => {
+            tutorialOverlay.classList.add('hidden');
+            if (currentUser) {
+                currentUser.hasSeenTutorial = true;
+                saveUserData(); // Save the state so it doesn't show again
+            }
         });
 
         document.getElementById('settingsBtn').addEventListener('click', showSettings);
