@@ -3,69 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مافیا فکت</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
-    
+    <title>مافیا فکت - Mafia Fact</title>
     <style>
-        /* ==================== CSS STYLES ==================== */
-
-        /* عمومی */
+        /* Global Styles */
         body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #1a1a2e;
-            color: #e0e0e0;
             margin: 0;
+            font-family: 'B Homa', Tahoma, Geneva, Verdana, sans-serif; /* A common Persian font, or replace with web-font */
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #e0e0e0;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .game-container {
-            width: 100%;
-            max-width: 400px;
-            height: 100%;
-            max-height: 800px;
-            background-color: #16213e;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            min-height: 100vh;
+            text-align: center;
             position: relative;
-            overflow: hidden;
         }
 
-        /* مدیریت صفحات */
         .screen {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
             position: absolute;
             width: 100%;
             height: 100%;
-            top: 0;
-            left: 0;
-            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.7s ease-in-out, visibility 0.7s ease-in-out;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            z-index: 10;
         }
 
         .screen.active {
-            display: flex;
             opacity: 1;
+            visibility: visible;
+            z-index: 20;
         }
 
-        /* صفحه لودینگ */
+        /* Loading Screens */
+        .loading-text {
+            font-size: 2.5em;
+            color: #0f3460;
+            margin-bottom: 30px;
+            animation: fadeInOut 2s infinite alternate;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
         .spinner {
-            border: 8px solid rgba(255, 255, 255, 0.2);
-            border-top: 8px solid #0f3460;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #e94560;
             border-radius: 50%;
             width: 60px;
             height: 60px;
             animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
         @keyframes spin {
@@ -73,508 +69,678 @@
             100% { transform: rotate(360deg); }
         }
 
-        #loading-screen p {
-            margin-top: 20px;
-            font-size: 1.2em;
+        /* Registration Screen */
+        #registration-screen {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
         }
 
-        /* صفحه ثبت نام */
-        #registration-screen h1 {
+        #registration-screen h2 {
+            font-size: 2.2em;
             color: #e94560;
-        }
-
-        #registration-form {
-            display: flex;
-            flex-direction: column;
-            width: 80%;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         #username-input {
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #533483;
-            background-color: #1a1a2e;
-            color: #e0e0e0;
+            width: calc(100% - 20px);
+            padding: 15px;
+            margin-bottom: 25px;
+            border: 2px solid #0f3460;
             border-radius: 8px;
-            text-align: center;
+            background-color: #27496d;
+            color: #e0e0e0;
             font-size: 1.1em;
+            outline: none;
+            transition: border-color 0.3s ease;
         }
 
-        #registration-form button {
-            padding: 12px;
-            background-color: #e94560;
-            color: white;
+        #username-input::placeholder {
+            color: #a0a0a0;
+        }
+
+        #username-input:focus {
+            border-color: #e94560;
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+
+        .button {
+            padding: 15px 30px;
             border: none;
             border-radius: 8px;
-            cursor: pointer;
+            background-color: #e94560;
+            color: white;
             font-size: 1.2em;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin: 10px 0;
+            text-decoration: none; /* For potential future links */
         }
 
-        #registration-form button:hover {
-            background-color: #c4324c;
+        .button:hover {
+            background-color: #c93550;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
 
-        /* منوی اصلی */
-        #main-menu-screen {
-            justify-content: space-between;
+        .button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .user-profile {
+        /* Main Menu */
+        #main-menu {
+            position: relative;
+            background: none; /* Main menu background is body's gradient */
+        }
+
+        #user-info {
             position: absolute;
             top: 20px;
             right: 20px;
+            background-color: rgba(15, 52, 96, 0.8);
+            padding: 15px 25px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 5px 10px;
-            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
         }
 
-        .user-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-left: 10px;
+        #user-info:hover {
+            transform: scale(1.03);
         }
 
-        .menu-content {
-            text-align: center;
-        }
-
-        .menu-content h1 {
-            font-size: 3em;
-            color: #e94560;
-            text-shadow: 0 0 10px #e94560;
-        }
-
-        .main-button {
-            padding: 15px 40px;
-            font-size: 1.5em;
-            background-color: #16c79a;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.2s;
-        }
-
-        .main-button:hover {
-            transform: scale(1.05);
-        }
-
-        .bottom-menu {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.2);
-        }
-
-        .menu-icon-btn {
-            background: none;
-            border: 2px solid #533483;
-            color: #e0e0e0;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .menu-icon-btn:hover {
-            background-color: #533483;
-        }
-
-        /* صفحه بازی */
-        #game-screen {
-            justify-content: flex-start;
-        }
-        .game-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        #back-to-menu-btn {
-            background: none;
-            border: 1px solid #e94560;
-            color: #e94560;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #answer-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 40px;
-            min-height: 50px;
-            justify-content: center;
-        }
-        .answer-slot {
+        #user-avatar {
             width: 50px;
             height: 50px;
-            border: 2px dashed #533483;
-            border-radius: 10px;
+            background-color: #e94560; /* Placeholder avatar color */
+            border-radius: 50%;
+            margin-left: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.5em;
+            color: white;
             font-weight: bold;
-        }
-        #word-bank {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 40px;
-        }
-        .word-tile {
-            padding: 10px 20px;
-            background-color: #0f3460;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1.2em;
-        }
-        .word-tile:hover {
-            background-color: #1a4a8a;
-        }
-        .word-tile.selected {
-            background-color: #555;
-            color: #888;
-            cursor: not-allowed;
-            transform: scale(0.9);
+            overflow: hidden;
         }
 
-        #check-answer-btn, #reset-level-btn {
-            padding: 10px 30px;
-            border: none;
-            border-radius: 8px;
+        #display-username {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #f0f0f0;
+        }
+
+        #start-game-button {
+            padding: 25px 60px;
+            font-size: 2.5em;
+            background-color: #0f3460;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        #start-game-button:hover {
+            animation: none;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7); }
+            100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        }
+
+        #bottom-buttons {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        #bottom-buttons .button {
+            padding: 12px 25px;
             font-size: 1.1em;
-            cursor: pointer;
-            margin: 5px;
+            background-color: #1a1a2e;
         }
-        #check-answer-btn {
-            background-color: #16c79a;
-            color: white;
+
+        #bottom-buttons .button:hover {
+            background-color: #0f3460;
         }
-        #check-answer-btn:disabled {
-            background-color: #555;
-            cursor: not-allowed;
+
+        /* Coming Soon Popup */
+        #coming-soon-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background-color: #0f3460;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            color: #e0e0e0;
+            font-size: 1.8em;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        #reset-level-btn {
+
+        #coming-soon-popup.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        #coming-soon-popup p {
+            margin: 0 0 20px 0;
+        }
+
+        #close-popup-button {
             background-color: #e94560;
             color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
         }
 
-        /* پاپ آپ */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.7);
-            align-items: center;
+        #close-popup-button:hover {
+            background-color: #c93550;
+        }
+
+        /* Game Screen */
+        #game-screen {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        #game-screen h2 {
+            font-size: 2em;
+            color: #e94560;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        #level-info {
+            font-size: 1.5em;
+            color: #f0f0f0;
+            margin-bottom: 15px;
+        }
+
+        #target-slots {
+            display: flex;
             justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            min-height: 80px;
         }
-        .modal-content {
-            background-color: #16213e;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 300px;
-            border-radius: 10px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+
+        .target-slot {
+            width: 120px;
+            height: 60px;
+            border: 3px dashed #a0a0a0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8em;
+            color: #e0e0e0;
+            background-color: rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+            overflow: hidden;
         }
-        .close-btn {
-            color: #aaa;
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 28px;
-            font-weight: bold;
+
+        .target-slot.filled {
+            border: 3px solid #e94560;
+            background-color: rgba(233, 69, 96, 0.2);
             cursor: pointer;
         }
+         .target-slot.filled:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+
+        #word-pool {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .word-item {
+            padding: 15px 25px;
+            background-color: #1a1a2e;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            font-size: 1.6em;
+            color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .word-item:hover {
+            background-color: #27496d;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .word-item.selected {
+            opacity: 0.5;
+            pointer-events: none; /* Make it unclickable when selected */
+            background-color: #3e5e80;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #submit-answer-button {
+            background-color: #0f3460;
+            font-size: 1.5em;
+            padding: 18px 40px;
+        }
+
+        #submit-answer-button:hover {
+            background-color: #0a2142;
+        }
+
+        #feedback-message {
+            font-size: 1.6em;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            min-height: 1.8em; /* Prevent layout shift */
+        }
+
+        #feedback-message.show {
+            opacity: 1;
+        }
+
+        #feedback-message.correct {
+            color: #4CAF50; /* Green */
+        }
+
+        #feedback-message.incorrect {
+            color: #FF5733; /* Red */
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        /* Congratulations Screen */
+        #congratulations-screen h2 {
+            font-size: 3em;
+            color: #e94560;
+            margin-bottom: 30px;
+            animation: bounceIn 1s ease-out;
+        }
+
+        #congratulations-screen p {
+            font-size: 1.8em;
+            color: #f0f0f0;
+            margin-bottom: 40px;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.1); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        #back-to-menu-button {
+            background-color: #0f3460;
+            font-size: 1.5em;
+            padding: 18px 40px;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="game-container">
-
-        <!-- 1. صفحه لودینگ  -->
-        <div id="loading-screen" class="screen active">
-            <div class="spinner"></div>
-            <p>...در حال بارگذاری</p>
-        </div>
-
-        <!-- 2. صفحه ثبت نام -->
-        <div id="registration-screen" class="screen">
-            <h1>به مافیا فکت خوش آمدید</h1>
-            <p>برای شروع، نام خود را وارد کنید.</p>
-            <form id="registration-form">
-                <input type="text" id="username-input" placeholder="نام کاربری" required minlength="3">
-                <button type="submit">ثبت نام</button>
-            </form>
-        </div>
-
-        <!-- 3. صفحه منوی اصلی -->
-        <div id="main-menu-screen" class="screen">
-            <div class="user-profile">
-                <img src="https://i.pravatar.cc/50" alt="Avatar" id="user-avatar">
-                <span id="username-display"></span>
-            </div>
-            
-            <div class="menu-content">
-                <h1>مافیا فکت</h1>
-                <button id="start-game-btn" class="main-button">شروع بازی</button>
-            </div>
-
-            <div class="bottom-menu">
-                <button class="menu-icon-btn" data-feature="shop">فروشگاه</button>
-                <button class="menu-icon-btn" data-feature="clan">کلن</button>
-                <button class="menu-icon-btn" data-feature="chat">چت</button>
-            </div>
-        </div>
-        
-        <!-- 4. صفحه بازی -->
-        <div id="game-screen" class="screen">
-            <div class="game-header">
-                <h2 id="level-title">مرحله ۱</h2>
-                <button id="back-to-menu-btn">بازگشت</button>
-            </div>
-            <div id="answer-container">
-                <!-- جایگاه‌های خالی اینجا قرار می‌گیرند -->
-            </div>
-            <div id="word-bank">
-                <!-- کلمات قابل کلیک اینجا قرار می‌گیرند -->
-            </div>
-            <div style="margin-top: 20px;">
-                <button id="check-answer-btn" disabled>بررسی</button>
-                <button id="reset-level-btn">شروع مجدد</button>
-            </div>
-        </div>
-
+    <!-- Loading Screen 1 -->
+    <div id="loading-screen-1" class="screen active">
+        <div class="loading-text">در حال بارگذاری مافیا فکت...</div>
+        <div class="spinner"></div>
     </div>
 
-    <!-- پاپ‌آپ "به زودی" -->
-    <div id="coming-soon-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">×</span>
-            <h2>به زودی!</h2>
-            <p>این بخش در به‌روزرسانی‌های آینده اضافه خواهد شد.</p>
+    <!-- Registration Screen -->
+    <div id="registration-screen" class="screen">
+        <h2>به مافیا فکت خوش آمدید!</h2>
+        <input type="text" id="username-input" placeholder="نام کاربری خود را وارد کنید">
+        <button id="register-button" class="button">ثبت نام</button>
+    </div>
+
+    <!-- Loading Screen 2 -->
+    <div id="loading-screen-2" class="screen">
+        <div class="loading-text">آماده‌سازی بازی...</div>
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="main-menu" class="screen">
+        <div id="user-info">
+            <span id="display-username"></span>
+            <div id="user-avatar">?</div>
+        </div>
+        <button id="start-game-button" class="button">شروع بازی</button>
+        <div id="bottom-buttons">
+            <button id="chat-button" class="button">چت</button>
+            <button id="clan-button" class="button">کلن</button>
+            <button id="shop-button" class="button">فروشگاه</button>
         </div>
     </div>
 
-<script>
-    // ================== JAVASCRIPT LOGIC ==================
+    <!-- Coming Soon Popup -->
+    <div id="coming-soon-popup" class="screen">
+        <p>این بخش به زودی در دسترس خواهد بود!</p>
+        <button id="close-popup-button" class="button">باشه</button>
+    </div>
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // انتخاب تمام عناصر لازم از صفحه
-        const screens = document.querySelectorAll('.screen');
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <h2>بازی کلمات مافیا</h2>
+        <div id="level-info"></div>
+        <div id="target-slots">
+            <!-- Slots will be populated here by JS -->
+        </div>
+        <div id="word-pool">
+            <!-- Word pieces will be populated here by JS -->
+        </div>
+        <button id="submit-answer-button" class="button">بررسی جواب</button>
+        <div id="feedback-message"></div>
+    </div>
+
+    <!-- Congratulations Screen -->
+    <div id="congratulations-screen" class="screen">
+        <h2>تبریک می‌گم!</h2>
+        <p>شما تمامی مراحل را با موفقیت پشت سر گذاشتید!</p>
+        <button id="back-to-menu-button" class="button">بازگشت به منو</button>
+    </div>
+
+    <script>
+        const GAME_VERSION = "1.0.0"; // Change this to force re-registration on update
+
+        // DOM Elements
+        const loadingScreen1 = document.getElementById('loading-screen-1');
         const registrationScreen = document.getElementById('registration-screen');
-        const mainMenuScreen = document.getElementById('main-menu-screen');
-        
-        const registrationForm = document.getElementById('registration-form');
         const usernameInput = document.getElementById('username-input');
-        const usernameDisplay = document.getElementById('username-display');
-        
-        const startGameBtn = document.getElementById('start-game-btn');
-        const featureBtns = document.querySelectorAll('.menu-icon-btn');
-        const comingSoonModal = document.getElementById('coming-soon-modal');
-        const closeModalBtn = document.querySelector('.close-btn');
+        const registerButton = document.getElementById('register-button');
+        const loadingScreen2 = document.getElementById('loading-screen-2');
+        const mainMenu = document.getElementById('main-menu');
+        const displayUsername = document.getElementById('display-username');
+        const userAvatar = document.getElementById('user-avatar');
+        const startGameButton = document.getElementById('start-game-button');
+        const chatButton = document.getElementById('chat-button');
+        const clanButton = document.getElementById('clan-button');
+        const shopButton = document.getElementById('shop-button');
+        const comingSoonPopup = document.getElementById('coming-soon-popup');
+        const closePopupButton = document.getElementById('close-popup-button');
+        const gameScreen = document.getElementById('game-screen');
+        const levelInfo = document.getElementById('level-info');
+        const targetSlotsContainer = document.getElementById('target-slots');
+        const wordPoolContainer = document.getElementById('word-pool');
+        const submitAnswerButton = document.getElementById('submit-answer-button');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const congratulationsScreen = document.getElementById('congratulations-screen');
+        const backToMenuButton = document.getElementById('back-to-menu-button');
 
-        const levelTitle = document.getElementById('level-title');
-        const answerContainer = document.getElementById('answer-container');
-        const wordBank = document.getElementById('word-bank');
-        const checkAnswerBtn = document.getElementById('check-answer-btn');
-        const resetLevelBtn = document.getElementById('reset-level-btn');
-        const backToMenuBtn = document.getElementById('back-to-menu-btn');
+        let currentScreen = null;
+        let userName = '';
+        let currentLevel = 0;
+        let selectedWordsInSlots = []; // Stores the actual word strings in slots
 
-        let currentUser = null;
-        let currentLevelIndex = 0;
-        let selectedWords = [];
-        
-        // تعریف مراحل بازی
-        const levels = [
-            { word: "مافیا", parts: ["ما", "فی", "یا"], junk: ["شه", "رو", "ند"] },
-            { word: "گادفادر", parts: ["گاد", "فا", "در"], junk: ["پو", "لی", "س"] },
-            { word: "شهروند", parts: ["شهر", "و", "ند"], junk: ["تفنگ", "ما", "فیا"] },
-            { word: "دکترلکتر", parts: ["دک", "تر", "لک", "تر"], junk: ["نجات", "شب", "روز"] },
-            { word: "کارآگاه", parts: ["کار", "آ", "گاه"], junk: ["شاه", "سرباز", "کش"] }
+        const gameLevels = [
+            {
+                correctWord: "MAFIA",
+                poolWords: ["MA", "FI", "A"]
+            },
+            {
+                correctWord: "DETECTIVE",
+                poolWords: ["DE", "TECT", "IVE"]
+            },
+            {
+                correctWord: "GODFATHER",
+                poolWords: ["GOD", "FATH", "ER"]
+            },
+            {
+                correctWord: "TOWN",
+                poolWords: ["TO", "WN"]
+            }
+            // Add more levels here!
+            // { correctWord: "NEWWORD", poolWords: ["N", "EW", "WORD"] }
         ];
 
-        // تابع برای نمایش یک صفحه خاص و پنهان کردن بقیه
-        function showScreen(screenId) {
-            screens.forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
+        // --- Screen Management ---
+        function showScreen(screenElement) {
+            if (currentScreen) {
+                currentScreen.classList.remove('active');
+            }
+            screenElement.classList.add('active');
+            currentScreen = screenElement;
         }
 
-        // تابع برای چک کردن وجود نام کاربری ذخیره شده
+        // --- Persistence Logic ---
         function checkUserSession() {
-            setTimeout(() => {
-                // از localStorage برای ذخیره نام کاربری استفاده می‌کنیم
-                const savedUser = localStorage.getItem('mafiaFactUsername');
-                if (savedUser) {
-                    currentUser = savedUser;
-                    usernameDisplay.textContent = currentUser;
-                    showScreen('main-menu-screen');
-                } else {
-                    showScreen('registration-screen');
-                }
-            }, 2000); // شبیه‌سازی لودینگ اولیه
+            const storedUsername = localStorage.getItem('mafiaFact_username');
+            const storedVersion = localStorage.getItem('mafiaFact_version');
+
+            if (storedUsername && storedVersion === GAME_VERSION) {
+                userName = storedUsername;
+                userAvatar.textContent = userName.charAt(0).toUpperCase(); // First letter for avatar
+                displayUsername.textContent = userName;
+                setTimeout(() => showScreen(loadingScreen2), 1500); // Go to loading 2 then main menu
+            } else {
+                // Version mismatch or no user, force registration
+                localStorage.removeItem('mafiaFact_username');
+                localStorage.removeItem('mafiaFact_version');
+                setTimeout(() => showScreen(registrationScreen), 1500);
+            }
         }
 
-        // رویداد ثبت نام
-        registrationForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = usernameInput.value.trim();
-            if (username.length >= 3) {
-                currentUser = username;
-                localStorage.setItem('mafiaFactUsername', currentUser);
-                usernameDisplay.textContent = currentUser;
-                
-                // نمایش لودینگ کوتاه قبل از ورود به منو
-                showScreen('loading-screen');
-                setTimeout(() => {
-                    showScreen('main-menu-screen');
-                }, 1500);
+        // --- Event Listeners ---
+        registerButton.addEventListener('click', () => {
+            const inputName = usernameInput.value.trim();
+            if (inputName) {
+                userName = inputName;
+                localStorage.setItem('mafiaFact_username', userName);
+                localStorage.setItem('mafiaFact_version', GAME_VERSION);
+                userAvatar.textContent = userName.charAt(0).toUpperCase();
+                displayUsername.textContent = userName;
+                showScreen(loadingScreen2);
+                setTimeout(() => showScreen(mainMenu), 1500); // After loading 2, go to main menu
             } else {
-                alert('نام کاربری باید حداقل ۳ حرف داشته باشد.');
+                alert('لطفاً نام کاربری خود را وارد کنید.');
+                usernameInput.focus();
             }
         });
 
-        // رویدادهای دکمه‌های "به زودی"
-        featureBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                comingSoonModal.style.display = 'flex';
-            });
+        startGameButton.addEventListener('click', () => {
+            currentLevel = 0; // Reset level for new game
+            loadLevel(currentLevel);
+            showScreen(gameScreen);
         });
 
-        closeModalBtn.addEventListener('click', () => {
-            comingSoonModal.style.display = 'none';
-        });
+        // "Coming Soon" buttons
+        chatButton.addEventListener('click', () => showComingSoon());
+        clanButton.addEventListener('click', () => showComingSoon());
+        shopButton.addEventListener('click', () => showComingSoon());
+        closePopupButton.addEventListener('click', () => hideComingSoon());
 
-        window.addEventListener('click', (event) => {
-            if (event.target == comingSoonModal) {
-                comingSoonModal.style.display = 'none';
-            }
-        });
+        function showComingSoon() {
+            comingSoonPopup.classList.add('active');
+        }
 
-        // شروع بازی
-        startGameBtn.addEventListener('click', () => {
-            currentLevelIndex = 0;
-            loadLevel(currentLevelIndex);
-            showScreen('game-screen');
-        });
+        function hideComingSoon() {
+            comingSoonPopup.classList.remove('active');
+        }
 
-        // بازگشت به منو از صفحه بازی
-        backToMenuBtn.addEventListener('click', () => {
-            showScreen('main-menu-screen');
-        });
+        submitAnswerButton.addEventListener('click', handleSubmitAnswer);
+        backToMenuButton.addEventListener('click', () => showScreen(mainMenu));
 
-        // تابع برای بارگذاری یک مرحله
+
+        // --- Game Logic ---
         function loadLevel(levelIndex) {
-            if (levelIndex >= levels.length) {
-                alert('تبریک! شما تمام مراحل را به پایان رساندید!');
-                showScreen('main-menu-screen');
+            if (levelIndex >= gameLevels.length) {
+                showScreen(congratulationsScreen);
                 return;
             }
 
-            const level = levels[levelIndex];
-            selectedWords = [];
+            currentLevel = levelIndex;
+            const levelData = gameLevels[currentLevel];
+            levelInfo.textContent = `مرحله ${currentLevel + 1}`;
+            selectedWordsInSlots = [];
+            feedbackMessage.classList.remove('show', 'correct', 'incorrect');
+            feedbackMessage.textContent = '';
 
-            levelTitle.textContent = `مرحله ${levelIndex + 1}`;
-            answerContainer.innerHTML = '';
-            wordBank.innerHTML = '';
-            
-            // ایجاد جایگاه‌های خالی
-            level.parts.forEach(() => {
+            // Clear existing slots and words
+            targetSlotsContainer.innerHTML = '';
+            wordPoolContainer.innerHTML = '';
+
+            // Create target slots
+            for (let i = 0; i < levelData.poolWords.length; i++) {
                 const slot = document.createElement('div');
-                slot.classList.add('answer-slot');
-                answerContainer.appendChild(slot);
-            });
-
-            // ایجاد کلمات قابل کلیک و مخلوط کردن آنها
-            const allParts = [...level.parts, ...level.junk].sort(() => Math.random() - 0.5);
-            
-            allParts.forEach(part => {
-                const tile = document.createElement('div');
-                tile.classList.add('word-tile');
-                tile.textContent = part;
-                tile.addEventListener('click', handleTileClick);
-                wordBank.appendChild(tile);
-            });
-
-            checkAnswerBtn.disabled = true;
-        }
-
-        // مدیریت کلیک روی کلمات
-        function handleTileClick(event) {
-            const clickedTile = event.target;
-            if (clickedTile.classList.contains('selected') || selectedWords.length >= levels[currentLevelIndex].parts.length) {
-                return;
+                slot.classList.add('target-slot');
+                slot.dataset.index = i; // Store index for reordering if needed
+                slot.addEventListener('click', removeWordFromSlot);
+                targetSlotsContainer.appendChild(slot);
             }
 
-            clickedTile.classList.add('selected');
-            selectedWords.push(clickedTile.textContent);
-            
-            updateAnswerSlots();
+            // Create word pool items (shuffled)
+            const shuffledWords = shuffleArray([...levelData.poolWords]);
+            shuffledWords.forEach(word => {
+                const wordItem = document.createElement('div');
+                wordItem.classList.add('word-item');
+                wordItem.textContent = word;
+                wordItem.dataset.word = word; // Store the word itself
+                wordItem.addEventListener('click', addWordToSlot);
+                wordPoolContainer.appendChild(wordItem);
+            });
+        }
 
-            if (selectedWords.length === levels[currentLevelIndex].parts.length) {
-                checkAnswerBtn.disabled = false;
+        function addWordToSlot(event) {
+            const wordItem = event.target;
+            const word = wordItem.dataset.word;
+
+            const emptySlot = document.querySelector('.target-slot:not(.filled)');
+            if (emptySlot) {
+                emptySlot.textContent = word;
+                emptySlot.classList.add('filled');
+                emptySlot.dataset.originalWordItem = word; // Reference to the word item that came from the pool
+
+                selectedWordsInSlots.push({ word: word, slotElement: emptySlot });
+                wordItem.classList.add('selected'); // Mark as selected/used
             }
         }
 
-        // به‌روزرسانی جایگاه‌های جواب
-        function updateAnswerSlots() {
-            const slots = answerContainer.querySelectorAll('.answer-slot');
-            slots.forEach((slot, index) => {
-                slot.textContent = selectedWords[index] || '';
-            });
+        function removeWordFromSlot(event) {
+            const slot = event.target;
+            if (slot.classList.contains('filled')) {
+                const wordToRemove = slot.textContent;
+
+                // Find the original word item in the pool and reactivate it
+                const originalWordItem = document.querySelector(`.word-item[data-word="${wordToRemove}"]:not(.selected)`) ||
+                                       document.querySelector(`.word-item.selected[data-word="${wordToRemove}"]`); // Find it even if already marked selected
+                if (originalWordItem) {
+                    originalWordItem.classList.remove('selected');
+                }
+
+                slot.textContent = '';
+                slot.classList.remove('filled');
+                delete slot.dataset.originalWordItem;
+
+                // Remove from our internal tracking array
+                selectedWordsInSlots = selectedWordsInSlots.filter(item => item.slotElement !== slot);
+            }
         }
 
-        // بررسی جواب
-        checkAnswerBtn.addEventListener('click', () => {
-            const userAnswer = selectedWords.join('');
-            const correctAnswer = levels[currentLevelIndex].word;
 
-            if (userAnswer === correctAnswer) {
-                alert('آفرین! جواب درست بود.');
-                currentLevelIndex++;
-                loadLevel(currentLevelIndex);
+        function handleSubmitAnswer() {
+            const levelData = gameLevels[currentLevel];
+            const currentAnswer = selectedWordsInSlots.map(item => item.word).join('');
+
+            feedbackMessage.classList.remove('correct', 'incorrect');
+            feedbackMessage.classList.add('show');
+
+            if (currentAnswer === levelData.correctWord) {
+                feedbackMessage.textContent = 'درست است! آفرین!';
+                feedbackMessage.classList.add('correct');
+                submitAnswerButton.disabled = true; // Prevent multiple submissions
+                setTimeout(() => {
+                    loadLevel(currentLevel + 1);
+                    submitAnswerButton.disabled = false;
+                }, 1500); // Wait a bit before loading next level
             } else {
-                alert('جواب اشتباه است! دوباره تلاش کن.');
-                resetCurrentLevel();
+                feedbackMessage.textContent = 'اشتباه است! دوباره تلاش کنید.';
+                feedbackMessage.classList.add('incorrect');
+                // Clear slots and reset word pool after a short delay
+                setTimeout(() => {
+                    clearGameSlots();
+                }, 1000); // Show feedback then clear
             }
+        }
+
+        function clearGameSlots() {
+            document.querySelectorAll('.target-slot.filled').forEach(slot => {
+                slot.textContent = '';
+                slot.classList.remove('filled');
+                delete slot.dataset.originalWordItem;
+            });
+            document.querySelectorAll('.word-item.selected').forEach(item => {
+                item.classList.remove('selected');
+            });
+            selectedWordsInSlots = [];
+        }
+
+
+        // Utility function to shuffle an array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start with loading screen 1
+            showScreen(loadingScreen1);
+            checkUserSession(); // This will decide where to go next
         });
 
-        // شروع مجدد مرحله فعلی
-        resetLevelBtn.addEventListener('click', resetCurrentLevel);
-        
-        function resetCurrentLevel() {
-            selectedWords = [];
-            updateAnswerSlots();
-            wordBank.querySelectorAll('.word-tile').forEach(tile => tile.classList.remove('selected'));
-            checkAnswerBtn.disabled = true;
-        }
+        // Pre-load a common Persian font (if not already installed on user's system)
+        // This is a basic example. For robust web fonts, use @font-face and external files.
+        const style = document.createElement('style');
+        style.textContent = `
+            @font-face {
+                font-family: 'B Homa';
+                src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/misc/fonts/B_Homa_web.woff2') format('woff2'); /* Example, replace with your font path */
+                font-weight: normal;
+                font-style: normal;
+            }
+        `;
+        document.head.appendChild(style);
 
-        // شروع فرآیند بازی
-        checkUserSession();
-    });
-</script>
-
+    </script>
 </body>
 </html>
