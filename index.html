@@ -2,1122 +2,1353 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مافیا فکت - Mafia Fact</title>
-    <!-- NOTE: PWA manifest.json and service-worker.js cannot be embedded in HTML.
-         They would need to be separate files in the 'public' directory.
-         For a fully functional PWA, uncomment these lines and ensure files exist.
-    -->
-    <!-- <link rel="manifest" href="/manifest.json"> -->
-    <!-- <meta name="theme-color" content="#2c3e50"> -->
-    <!-- <link rel="apple-touch-icon" href="/assets/images/icons/icon-192x192.png"> -->
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مافیا فکت</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* --- CSS STYLES --- */
-        @font-face {
-            font-family: 'Vazirmatn';
-            src: url('/assets/fonts/Vazirmatn-Regular.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
+        :root {
+            --gold-light: #ffd700;
+            --gold-medium: #d4af37;
+            --gold-dark: #b8860b;
+            --black-light: #1a1a1a;
+            --black-medium: #121212;
+            --black-dark: #0a0a0a;
         }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* جلوگیری از اسکرول */
-            width: 100%;
-            height: 100%;
-            background-color: #1a1a1a; /* پس‌زمینه تیره */
+        
+        body {
             font-family: 'Vazirmatn', sans-serif;
-            color: #f5f5f5;
-            direction: rtl; /* برای فارسی */
+            background: linear-gradient(135deg, var(--black-dark) 0%, var(--black-medium) 100%);
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            color: var(--gold-light);
         }
-
-        #game-container {
-            width: 100%;
-            height: 100%;
+        
+        .gold-gradient {
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gold-border {
+            border: 2px solid;
+            border-image: linear-gradient(135deg, var(--gold-light), var(--gold-dark)) 1;
+        }
+        
+        .letter-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, var(--black-light), var(--black-medium));
+            border: 2px solid var(--gold-medium);
+            color: var(--gold-light);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .letter-box.selected {
+            transform: scale(0.9);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            opacity: 0.6;
+        }
+        
+        .empty-slot {
+            width: 50px;
+            height: 50px;
+            border: 2px dashed var(--gold-medium);
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+        
+        .filled-slot {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-medium));
+            color: var(--black-dark);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 5px;
+            animation: pop 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .loading-bar {
+            height: 6px;
+            background: linear-gradient(90deg, var(--gold-light), var(--gold-dark));
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .coming-soon {
+            animation: fadeInOut 2s ease;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.9); }
+            20% { opacity: 1; transform: scale(1); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.9); }
+        }
+        
+        .btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, var(--black-light), var(--black-medium));
+            border: 2px solid var(--gold-medium);
+            color: var(--gold-light);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(255, 215, 0, 0.3);
+            border-color: var(--gold-light);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .gold-text {
+            color: var(--gold-light);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+        }
+        
+        .mystery-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #333, #111);
+            border: 2px solid var(--gold-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-light);
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        .rotate {
+            animation: rotate 10s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .feature-container {
+            position: fixed;
+            bottom: 80px; /* Moved up from 30px */
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
         }
-
-        canvas {
-            display: block; /* حذف فضای اضافی زیر canvas */
+        
+        /* Enhanced registration form - Made smaller */
+        .registration-form {
+            background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+            border: 2px solid var(--gold-medium);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                        0 0 20px rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+            max-width: 350px; /* Made smaller */
         }
-
-        /* Overlay برای RegistrationScene */
-        .overlay {
+        
+        .registration-form::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000; /* بالاتر از Canvas */
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--gold-dark));
         }
-
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
+        
+        .registration-form::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--gold-dark));
         }
-
-        .registration-box {
-            background-color: #2c3e50; /* رنگ آبی تیره */
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            width: 80%; /* ریسپانسیو برای موبایل */
-            max-width: 400px;
-            animation: fadeInScale 0.5s ease-out;
+        
+        .form-decoration {
+            position: absolute;
+            width: 80px; /* Made smaller */
+            height: 80px; /* Made smaller */
+            opacity: 0.1;
         }
-
-        .registration-box h1 {
-            font-size: 2.5em;
-            color: #e67e22; /* رنگ نارنجی جذاب */
-            margin-bottom: 25px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        
+        .form-decoration.top-right {
+            top: -20px;
+            right: -20px;
         }
-
-        .registration-box input[type="text"] {
-            width: calc(100% - 20px);
-            padding: 12px 10px;
+        
+        .form-decoration.bottom-left {
+            bottom: -20px;
+            left: -20px;
+        }
+        
+        .input-wrapper {
+            position: relative;
             margin-bottom: 20px;
-            border: 2px solid #34495e; /* border آبی تیره */
-            border-radius: 8px;
-            background-color: #3f5872; /* پس‌زمینه آبی روشن‌تر */
-            color: #f5f5f5;
-            font-size: 1.1em;
-            outline: none;
-            text-align: center;
-            transition: border-color 0.3s ease;
         }
-
-        .registration-box input[type="text"]:focus {
-            border-color: #e67e22; /* border نارنجی هنگام فوکوس */
+        
+        .input-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-light), var(--gold-dark));
+            transition: width 0.3s ease;
         }
-
-        .registration-box button {
-            background-color: #e67e22;
+        
+        .input-wrapper:focus-within::after {
+            width: 100%;
+        }
+        
+        .styled-input {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
             color: white;
-            padding: 14px 25px;
-            border: none;
+            border: 1px solid var(--gold-dark);
             border-radius: 8px;
-            font-size: 1.3em;
-            font-weight: bold;
+            padding: 12px 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .styled-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            border-color: var(--gold-light);
+        }
+        
+        /* Enhanced profile box */
+        .profile-box {
+            background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+            border: 2px solid var(--gold-medium);
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 
+                        0 0 10px rgba(212, 175, 55, 0.2);
+        }
+        
+        .enhanced-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #333, #111);
+            border: 2px solid var(--gold-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .enhanced-avatar::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, transparent 50%, rgba(212, 175, 55, 0.1) 100%);
+            animation: pulse 2s infinite;
+        }
+        
+        /* Settings button */
+        .settings-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--black-light), var(--black-medium));
+            border: 2px solid var(--gold-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
-
-        .registration-box button:hover {
-            background-color: #d35400;
+        
+        .settings-btn:hover {
+            transform: rotate(30deg);
+            border-color: var(--gold-light);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
-
-        .registration-box button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        
+        /* Settings modal styles */
+        .settings-modal {
+            background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+            border: 2px solid var(--gold-medium);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 
+                        0 0 20px rgba(212, 175, 55, 0.3);
+            max-width: 400px;
+            width: 90%;
         }
-
-        .version-warning {
-            margin-top: 15px;
-            font-size: 0.9em;
-            color: #f39c12; /* رنگ هشدار */
+        
+        .settings-header {
+            border-bottom: 2px solid var(--gold-dark);
+            position: relative;
         }
-
-        /* انیمیشن برای Modal "به زودی" (Phaser Game Object) */
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        
+        .settings-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: var(--gold-light);
+        }
+        
+        .settings-option {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-option:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+        
+        /* Team presentation screen */
+        .presentation-screen {
+            background: linear-gradient(135deg, var(--black-dark) 0%, var(--black-medium) 100%);
+        }
+        
+        .team-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #222, #000);
+            border: 3px solid var(--gold-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .team-logo::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in-delay-1 {
+            animation-delay: 0.5s;
+        }
+        
+        .fade-in-delay-2 {
+            animation-delay: 1.5s;
+        }
+        
+        .fade-out {
+            animation: fadeOut 1s forwards;
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* Team members */
+        .team-member {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .team-member:last-child {
+            border-bottom: none;
+        }
+        
+        .team-role {
+            font-size: 0.85rem;
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
-    <div id="game-container"></div>
-    <div id="registration-overlay" class="overlay">
-        <div class="registration-box">
-            <h1>مافیا فکت</h1>
-            <input type="text" id="username-input" placeholder="نام خود را وارد کنید..." maxlength="15">
-            <button id="start-game-btn">شروع بازی</button>
-            <p id="version-warning" class="version-warning"></p>
+    <!-- Team Presentation Screen (for first-time users) -->
+    <div id="presentation-screen" class="fixed inset-0 flex flex-col items-center justify-center presentation-screen z-60 hidden">
+        <div class="team-logo pulse">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="var(--gold-light)">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/>
+            </svg>
+        </div>
+        <h1 class="text-3xl font-bold mb-6 gold-gradient fade-in">تیم اسکورت گیم</h1>
+        <p class="gold-text text-xl mb-10 fade-in fade-in-delay-1">تقدیم می کند</p>
+        <div class="w-32 h-1 bg-gradient-to-r from-gold-dark via-gold-light to-gold-dark mb-10 fade-in fade-in-delay-1"></div>
+        <h2 class="text-4xl font-bold gold-gradient fade-in fade-in-delay-2 pulse">مافیا فکت</h2>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-black to-gray-900 z-50">
+        <div class="w-32 h-32 mb-8 rotate">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path fill="url(#goldGradient)" d="M50,10 C70,10 85,25 85,50 C85,75 70,90 50,90 C30,90 15,75 15,50 C15,25 30,10 50,10 Z" />
+                <path fill="#0a0a0a" d="M40,35 C45,35 45,45 50,45 C55,45 55,35 60,35 C65,35 70,40 70,50 C70,65 60,70 50,70 C40,70 30,65 30,50 C30,40 35,35 40,35 Z" />
+                <circle fill="var(--gold-light)" cx="40" cy="40" r="5">
+                    <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+                </circle>
+                <circle fill="var(--gold-light)" cx="60" cy="40" r="5">
+                    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
+                </circle>
+                <defs>
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="var(--gold-light)" />
+                        <stop offset="100%" stop-color="var(--gold-dark)" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <h1 class="text-4xl font-bold mb-8 gold-gradient pulse">مافیا فکت</h1>
+        <div class="w-64 bg-gray-900 rounded-full overflow-hidden mb-4 shine">
+            <div id="loading-bar" class="loading-bar"></div>
+        </div>
+        <p id="loading-text" class="gold-text">در حال بارگذاری...</p>
+    </div>
+
+    <!-- Registration Screen - Enhanced Design but smaller -->
+    <div id="registration-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-black to-gray-900 z-40 hidden">
+        <div class="registration-form p-6 w-full relative">
+            <!-- Decorative elements -->
+            <div class="form-decoration top-right">
+                <svg viewBox="0 0 100 100" fill="var(--gold-light)">
+                    <path d="M50,10 C70,10 85,25 85,50 C85,75 70,90 50,90 C30,90 15,75 15,50 C15,25 30,10 50,10 Z" />
+                </svg>
+            </div>
+            <div class="form-decoration bottom-left">
+                <svg viewBox="0 0 100 100" fill="var(--gold-light)">
+                    <path d="M50,10 C70,10 85,25 85,50 C85,75 70,90 50,90 C30,90 15,75 15,50 C15,25 30,10 50,10 Z" />
+                </svg>
+            </div>
+            
+            <!-- Form header with decorative elements -->
+            <div class="text-center mb-6 relative">
+                <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-gold-500 opacity-50"></div>
+                <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-gold-500 opacity-50"></div>
+                <h2 class="text-2xl font-bold gold-gradient">ثبت نام</h2>
+                <div class="mt-2 mx-auto w-20 h-1 bg-gradient-to-r from-gold-dark via-gold-light to-gold-dark"></div>
+            </div>
+            
+            <div class="mb-6">
+                <label for="username" class="block gold-text mb-2">نام کاربری:</label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" class="styled-input" placeholder="نام کاربری خود را وارد کنید">
+                </div>
+            </div>
+            
+            <button id="register-btn" class="w-full py-3 rounded-lg font-bold text-lg btn shine">ثبت نام</button>
+            
+            <!-- Bottom decorative elements -->
+            <div class="flex justify-between mt-4">
+                <div class="w-12 h-1 bg-gradient-to-r from-transparent to-gold-medium"></div>
+                <div class="w-12 h-1 bg-gradient-to-r from-gold-medium to-transparent"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Phaser Library CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <!-- Main Menu Screen -->
+    <div id="menu-screen" class="fixed inset-0 flex flex-col bg-gradient-to-br from-black to-gray-900 z-30 hidden">
+        <!-- Top Bar with Settings and Profile -->
+        <div class="flex justify-between items-center p-4">
+            <!-- Settings Button (left) -->
+            <div id="settings-btn" class="settings-btn">
+                <svg class="w-6 h-6" fill="var(--gold-light)" viewBox="0 0 24 24">
+                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                </svg>
+            </div>
+            
+            <!-- Enhanced User Profile (right) -->
+            <div class="profile-box">
+                <div class="enhanced-avatar" id="user-avatar">
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--gold-light)">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-2xl">?</span>
+                    </div>
+                </div>
+                <span id="user-display-name" class="gold-text font-bold text-lg"></span>
+            </div>
+        </div>
+        
+        <!-- Main Menu Content -->
+        <div class="flex-1 flex flex-col items-center justify-center">
+            <div class="floating mb-8">
+                <svg width="120" height="120" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="url(#goldGradient2)" d="M50,10 C70,10 85,25 85,50 C85,75 70,90 50,90 C30,90 15,75 15,50 C15,25 30,10 50,10 Z" />
+                    <path fill="#0a0a0a" d="M40,35 C45,35 45,45 50,45 C55,45 55,35 60,35 C65,35 70,40 70,50 C70,65 60,70 50,70 C40,70 30,65 30,50 C30,40 35,35 40,35 Z" />
+                    <circle fill="var(--gold-light)" cx="40" cy="40" r="5">
+                        <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                    <circle fill="var(--gold-light)" cx="60" cy="40" r="5">
+                        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                    <defs>
+                        <linearGradient id="goldGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="var(--gold-light)" />
+                            <stop offset="100%" stop-color="var(--gold-dark)" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h1 class="text-5xl font-bold mb-12 gold-gradient pulse">مافیا فکت</h1>
+            
+            <!-- Online Game Button -->
+            <button id="online-game-btn" class="w-48 py-3 rounded-xl font-bold text-lg mb-6 btn shine">بازی آنلاین</button>
+            
+            <!-- Start Game Button (moved lower) -->
+            <button id="start-game-btn" class="w-48 py-3 rounded-xl font-bold text-lg mb-24 btn shine">شروع بازی</button>
+        </div>
+        
+        <!-- Feature buttons moved up -->
+        <div class="feature-container">
+            <div class="flex space-x-4 rtl:space-x-reverse">
+                <button class="feature-btn w-20 h-20 rounded-xl flex items-center justify-center btn">
+                    <div class="text-center">
+                        <svg class="w-6 h-6 mx-auto mb-1" fill="var(--gold-light)" viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                        </svg>
+                        <span class="gold-text text-xs">چت کلن</span>
+                    </div>
+                </button>
+                <button class="feature-btn w-20 h-20 rounded-xl flex items-center justify-center btn">
+                    <div class="text-center">
+                        <svg class="w-6 h-6 mx-auto mb-1" fill="var(--gold-light)" viewBox="0 0 24 24">
+                            <path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                        </svg>
+                        <span class="gold-text text-xs">فروشگاه</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="fixed inset-0 bg-black opacity-70"></div>
+        <div class="settings-modal p-6 relative z-10">
+            <div class="settings-header flex justify-between items-center pb-4 mb-4">
+                <h3 class="text-xl font-bold gold-gradient">تنظیمات</h3>
+                <button id="close-settings" class="gold-text">
+                    <svg class="w-6 h-6" fill="none" stroke="var(--gold-light)" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="settings-options">
+                <div class="settings-option py-4 px-2">
+                    <button class="flex items-center w-full" id="support-btn">
+                        <svg class="w-6 h-6 ml-3" fill="var(--gold-light)" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                        </svg>
+                        <span class="gold-text">ارتباط با پشتیبانی</span>
+                    </button>
+                </div>
+                
+                <div class="settings-option py-4 px-2">
+                    <button class="flex items-center w-full" id="coming-soon-btn">
+                        <svg class="w-6 h-6 ml-3" fill="var(--gold-light)" viewBox="0 0 24 24">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                        <span class="gold-text">به زودی</span>
+                    </button>
+                </div>
+                
+                <div class="settings-option py-4 px-2">
+                    <button class="flex items-center w-full" id="creators-btn">
+                        <svg class="w-6 h-6 ml-3" fill="var(--gold-light)" viewBox="0 0 24 24">
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        </svg>
+                        <span class="gold-text">سازندگان</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coming Soon Modal -->
+    <div id="coming-soon-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="bg-black p-6 rounded-xl shadow-2xl coming-soon border border-gold-500">
+            <p class="gold-text text-xl font-bold">به زودی...</p>
+        </div>
+    </div>
+
+    <!-- Creators Modal -->
+    <div id="creators-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="fixed inset-0 bg-black opacity-70"></div>
+        <div class="settings-modal p-6 relative z-10 max-w-md">
+            <div class="settings-header flex justify-between items-center pb-4 mb-4">
+                <h3 class="text-xl font-bold gold-gradient">سازندگان</h3>
+                <button id="close-creators" class="gold-text">
+                    <svg class="w-6 h-6" fill="none" stroke="var(--gold-light)" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="text-center mb-6">
+                <div class="team-logo w-24 h-24 mb-6">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--gold-light)">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/>
+                    </svg>
+                </div>
+                <h4 class="text-xl font-bold gold-gradient mb-2">تیم اسکورت گیم</h4>
+                <div class="w-32 h-1 bg-gradient-to-r from-gold-dark via-gold-light to-gold-dark mx-auto mb-6"></div>
+            </div>
+            
+            <!-- Team Members -->
+            <div class="text-right">
+                <div class="team-member">
+                    <div class="gold-text font-bold">Ali.k</div>
+                    <div class="team-role gold-text">کدنویس ارشد</div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="gold-text font-bold">abolfazl1401</div>
+                    <div class="team-role gold-text">کدنویس دوم</div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="gold-text font-bold">ivar</div>
+                    <div class="team-role gold-text">طراح</div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="gold-text font-bold">FARHAN</div>
+                    <div class="team-role gold-text">ایده پرداز</div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-6">
+                <p class="gold-text text-sm">نسخه 1.0.0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Modal -->
+    <div id="support-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="fixed inset-0 bg-black opacity-70"></div>
+        <div class="settings-modal p-6 relative z-10 max-w-md">
+            <div class="settings-header flex justify-between items-center pb-4 mb-4">
+                <h3 class="text-xl font-bold gold-gradient">ارتباط با پشتیبانی</h3>
+                <button id="close-support" class="gold-text">
+                    <svg class="w-6 h-6" fill="none" stroke="var(--gold-light)" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="text-center">
+                <svg class="w-16 h-16 mx-auto mb-4" fill="var(--gold-light)" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
+                </svg>
+                <p class="gold-text mb-6">برای ارتباط با پشتیبانی با ایمیل زیر تماس بگیرید:</p>
+                <p class="gold-gradient text-lg font-bold mb-6">support@escortgame.com</p>
+                <div class="w-32 h-1 bg-gradient-to-r from-gold-dark via-gold-light to-gold-dark mx-auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="fixed inset-0 flex flex-col bg-gradient-to-br from-black to-gray-900 z-20 hidden">
+        <!-- Header -->
+        <div class="p-4 flex justify-between items-center">
+            <button id="back-to-menu" class="gold-text bg-black p-3 rounded-xl btn">
+                <svg class="w-6 h-6" fill="none" stroke="var(--gold-light)" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </button>
+            <div class="bg-black px-4 py-2 rounded-xl border border-gold-500 shine">
+                <span class="gold-text font-bold">مرحله <span id="level-display">1</span></span>
+            </div>
+        </div>
+        
+        <!-- Game Content -->
+        <div class="flex-1 flex flex-col items-center justify-center p-4">
+            <!-- Empty Slots -->
+            <div id="word-slots" class="flex justify-center mb-16"></div>
+            
+            <!-- Letter Options -->
+            <div class="bg-black p-6 rounded-2xl border border-gold-500">
+                <div id="letter-options" class="grid grid-cols-4 gap-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Complete Modal -->
+    <div id="level-complete-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="bg-black p-8 rounded-2xl shadow-2xl max-w-md w-full text-center border border-gold-500">
+            <div class="w-20 h-20 mx-auto mb-6 bg-black rounded-full flex items-center justify-center border-2 border-gold-500 pulse">
+                <svg class="w-12 h-12" fill="none" stroke="var(--gold-light)" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold mb-4 gold-gradient">آفرین!</h2>
+            <p class="gold-text mb-6">مرحله با موفقیت تکمیل شد</p>
+            <button id="next-level-btn" class="w-full py-3 rounded-lg font-bold btn shine">مرحله بعدی</button>
+        </div>
+    </div>
 
     <script>
-        /* --- JAVASCRIPT/PHASER GAME LOGIC --- */
-
-        // 1. Constants and Global Settings
-        const GAME_VERSION = '1.0.0'; // Change this to force account reset on new version
-
-        const SceneKeys = {
-            PRELOADER: 'PreloaderScene',
-            REGISTRATION: 'RegistrationScene',
-            ASSET_LOADER: 'AssetLoaderScene',
-            MAIN_MENU: 'MainMenuScene',
-            GAME: 'GameScene',
-        };
-
-        const StorageKeys = {
-            USER_DATA: 'mafiaFactUserData',
-            GAME_VERSION: 'mafiaFactGameVersion',
-            CURRENT_LEVEL: 'mafiaFactCurrentLevel',
-        };
-
-        const GAME_DIMENSIONS = {
-            WIDTH: 720,
-            HEIGHT: 1280,
-        };
-
-        const COLORS = {
-            PRIMARY: 0xE67E22, // نارنجی
-            SECONDARY: 0x34495E, // آبی تیره
-            BACKGROUND: 0x2C3E50, // آبی متوسط
-            TEXT_LIGHT: 0xF5F5F5,
-            TEXT_DARK: 0x1A1A1A,
-            GREEN_SUCCESS: 0x27AE60,
-            RED_ERROR: 0xE74C3C,
-        };
-
-        const FONT_STYLES = {
-            H1: { fontSize: '48px', fontFamily: 'Vazirmatn', color: `#${COLORS.PRIMARY.toString(16)}`, align: 'center' },
-            H2: { fontSize: '32px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}`, align: 'center' },
-            BODY: { fontSize: '24px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}` },
-            BUTTON: { fontSize: '30px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}`, fontWeight: 'bold' },
-            LEVEL_TEXT: { fontSize: '36px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}`, fontWeight: 'bold' },
-            SCORE_TEXT: { fontSize: '36px', fontFamily: 'Vazirmatn', color: `#${COLORS.PRIMARY.toString(16)}`, fontWeight: 'bold' },
-            MODAL_TITLE: { fontSize: '40px', fontFamily: 'Vazirmatn', color: `#${COLORS.PRIMARY.toString(16)}`, fontWeight: 'bold' },
-            MODAL_MESSAGE: { fontSize: '28px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}` },
-            USERNAME: { fontSize: '26px', fontFamily: 'Vazirmatn', color: `#${COLORS.TEXT_LIGHT.toString(16)}`, fontWeight: 'bold' },
-        };
-
-        // 2. Data for Game Levels
-        const LEVELS_DATA = [
-            {
-                level: 1,
-                word: "مافیا",
-                letters: ["م", "ا", "ف", "ی", "ا"],
-                hint: "این کلمه را برای اولین بار در فیلم Godfather شنیدید."
-            },
-            {
-                level: 2,
-                word: "شهروند",
-                letters: ["و", "ن", "د", "ش", "ه", "ر"],
-                hint: "نقش ساده و بی گناه در بازی."
-            },
-            {
-                level: 3,
-                word: "پلیس",
-                letters: ["پ", "ل", "ی", "س", "ش"],
-                hint: "شب‌ها به دنبال کشف هویت خلافکاران است."
-            },
-            {
-                level: 4,
-                word: "دکتر",
-                letters: ["ک", "ت", "د", "ر", "ل"],
-                hint: "می‌تواند جان کسی را نجات دهد."
-            },
-            {
-                level: 5,
-                word: "قتل",
-                letters: ["ق", "ل", "ت", "پ"],
-                hint: "عملی که مافیا شب‌ها انجام می‌دهد."
-            },
-            {
-                level: 6,
-                word: "اعتماد",
-                letters: ["ا", "ع", "ت", "م", "ا", "د", "ن"],
-                hint: "چیزی که در این بازی خیلی سخت به دست می‌آید."
-            }
-            // ... Add more levels here
+        // Game data - Expanded to 30 levels
+        const levels = [
+            { word: "مافیا", letters: ["م", "ا", "ف", "ی", "ا", "ن", "ت", "ر"] },
+            { word: "پلیس", letters: ["پ", "ل", "ی", "س", "ق", "ا", "ت", "ل"] },
+            { word: "دکتر", letters: ["د", "ک", "ت", "ر", "ش", "ه", "ر", "و"] },
+            { word: "شهروند", letters: ["ش", "ه", "ر", "و", "ن", "د", "ب", "ت"] },
+            { word: "قاتل", letters: ["ق", "ا", "ت", "ل", "ن", "م", "ر", "د"] },
+            { word: "تفنگدار", letters: ["ت", "ف", "ن", "گ", "د", "ا", "ر", "س"] },
+            { word: "ناتو", letters: ["ن", "ا", "ت", "و", "ر", "ل", "ی", "ک"] },
+            { word: "کابوی", letters: ["ک", "ا", "ب", "و", "ی", "ت", "ر", "ن"] },
+            { word: "جادوگر", letters: ["ج", "ا", "د", "و", "گ", "ر", "ت", "ن"] },
+            { word: "روانی", letters: ["ر", "و", "ا", "ن", "ی", "ت", "ل", "ب"] },
+            { word: "ساقی", letters: ["س", "ا", "ق", "ی", "ت", "ر", "ن", "م"] },
+            { word: "نگهبان", letters: ["ن", "گ", "ه", "ب", "ا", "ن", "ت", "ر"] },
+            { word: "کدخدا", letters: ["ک", "د", "خ", "د", "ا", "ت", "ر", "ن"] },
+            { word: "گروگان", letters: ["گ", "ر", "و", "گ", "ا", "ن", "ت", "ب"] },
+            { word: "افسونگر", letters: ["ا", "ف", "س", "و", "ن", "گ", "ر", "ت"] },
+            { word: "محافظ", letters: ["م", "ح", "ا", "ف", "ظ", "ت", "ر", "ن"] },
+            { word: "فرشته", letters: ["ف", "ر", "ش", "ت", "ه", "ن", "م", "ل"] },
+            { word: "گرگنما", letters: ["گ", "ر", "گ", "ن", "م", "ا", "ت", "ب"] },
+            { word: "منجی", letters: ["م", "ن", "ج", "ی", "ت", "ر", "ل", "ب"] },
+            { word: "ناظر", letters: ["ن", "ا", "ظ", "ر", "ت", "ل", "ب", "م"] },
+            { word: "خرابکار", letters: ["خ", "ر", "ا", "ب", "ک", "ا", "ر", "ت"] },
+            { word: "تروریست", letters: ["ت", "ر", "و", "ر", "ی", "س", "ت", "ن"] },
+            { word: "رئیس", letters: ["ر", "ئ", "ی", "س", "ت", "ن", "م", "ل"] },
+            { word: "معشوقه", letters: ["م", "ع", "ش", "و", "ق", "ه", "ت", "ر"] },
+            { word: "دزد", letters: ["د", "ز", "د", "ت", "ر", "ن", "م", "ل"] },
+            { word: "قهرمان", letters: ["ق", "ه", "ر", "م", "ا", "ن", "ت", "ب"] },
+            { word: "وکیل", letters: ["و", "ک", "ی", "ل", "ت", "ر", "ن", "م"] },
+            { word: "کلانتر", letters: ["ک", "ل", "ا", "ن", "ت", "ر", "ب", "م"] },
+            { word: "یاغی", letters: ["ی", "ا", "غ", "ی", "ت", "ر", "ن", "م"] },
+            { word: "شیاد", letters: ["ش", "ی", "ا", "د", "ت", "ر", "ن", "م"] }
         ];
 
+        // Game state
+        let currentLevel = 0;
+        let selectedLetters = [];
+        let username = "";
+        let isFirstTime = true;
 
-        // 3. Utility Classes/Objects
-        const StorageManager = {
-            saveUserData: function(username) {
-                const userData = {
-                    username: username,
-                    level: 1,
-                    score: 0,
-                };
-                localStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(userData));
-                localStorage.setItem(StorageKeys.GAME_VERSION, GAME_VERSION);
-            },
+        // DOM Elements
+        const presentationScreen = document.getElementById('presentation-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingText = document.getElementById('loading-text');
+        const registrationScreen = document.getElementById('registration-screen');
+        const menuScreen = document.getElementById('menu-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const levelCompleteModal = document.getElementById('level-complete-modal');
+        const comingSoonModal = document.getElementById('coming-soon-modal');
+        const settingsModal = document.getElementById('settings-modal');
+        const creatorsModal = document.getElementById('creators-modal');
+        const supportModal = document.getElementById('support-modal');
 
-            loadUserData: function() {
-                const storedVersion = localStorage.getItem(StorageKeys.GAME_VERSION);
-                if (storedVersion !== GAME_VERSION) {
-                    console.warn(`Game version mismatch. Stored: ${storedVersion}, Current: ${GAME_VERSION}. Resetting user data.`);
-                    StorageManager.clearUserData();
-                    return null;
-                }
+        // Check if user is already registered
+        function checkRegistration() {
+            const savedUsername = localStorage.getItem('mafiaFactUsername');
+            isFirstTime = !localStorage.getItem('mafiaFactFirstTime');
+            
+            if (isFirstTime) {
+                showPresentationScreen();
+                localStorage.setItem('mafiaFactFirstTime', 'false');
+            } else if (savedUsername) {
+                username = savedUsername;
+                showMenuScreen();
+            } else {
+                showRegistrationScreen();
+            }
+        }
 
-                const userDataString = localStorage.getItem(StorageKeys.USER_DATA);
-                if (userDataString) {
-                    try {
-                        return JSON.parse(userDataString);
-                    } catch (e) {
-                        console.error("Error parsing user data from localStorage:", e);
-                        StorageManager.clearUserData();
-                        return null;
+        // Show team presentation screen
+        function showPresentationScreen() {
+            loadingScreen.classList.add('hidden');
+            presentationScreen.classList.remove('hidden');
+            
+            // Auto transition to registration after 4 seconds
+            setTimeout(() => {
+                presentationScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    presentationScreen.classList.add('hidden');
+                    presentationScreen.classList.remove('fade-out');
+                    
+                    const savedUsername = localStorage.getItem('mafiaFactUsername');
+                    if (savedUsername) {
+                        username = savedUsername;
+                        showMenuScreen();
+                    } else {
+                        showRegistrationScreen();
                     }
-                }
-                return null;
-            },
-
-            updateCurrentLevel: function(level) {
-                const userData = StorageManager.loadUserData();
-                if (userData) {
-                    userData.level = level;
-                    localStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(userData));
-                }
-            },
-
-            updateScore: function(score) {
-                const userData = StorageManager.loadUserData();
-                if (userData) {
-                    userData.score = score;
-                    localStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(userData));
-                }
-            },
-
-            clearUserData: function() {
-                localStorage.removeItem(StorageKeys.USER_DATA);
-                localStorage.removeItem(StorageKeys.GAME_VERSION);
-                localStorage.removeItem(StorageKeys.CURRENT_LEVEL);
-            }
-        };
-
-        // Global AudioManager instance for simplicity in single-file setup
-        let audioManagerInstance = null;
-
-        class AudioManager {
-            constructor(scene) {
-                this.scene = scene;
-                this.sounds = new Map();
-                this.music = null;
-            }
-
-            addSound(key, path) {
-                if (!this.sounds.has(key)) {
-                    this.sounds.set(key, this.scene.sound.add(key));
-                    this.scene.load.audio(key, path);
-                }
-            }
-
-            playSound(key, config) {
-                const sound = this.sounds.get(key);
-                if (sound) {
-                    sound.play(config);
-                } else {
-                    console.warn(`Sound "${key}" not found.`);
-                }
-            }
-
-            addMusic(key, path) {
-                if (!this.sounds.has(key)) {
-                    this.music = this.scene.sound.add(key, { loop: true });
-                    this.scene.load.audio(key, path);
-                }
-            }
-
-            playMusic(key, config) {
-                if (this.music && this.music.key === key) {
-                    if (!this.music.isPlaying) {
-                        this.music.play(config);
-                    }
-                } else {
-                    this.music && this.music.stop();
-                    this.music = this.scene.sound.add(key, { loop: true });
-                    this.music.play(config);
-                }
-            }
-
-            stopMusic() {
-                this.music && this.music.stop();
-            }
+                }, 1000);
+            }, 4000);
         }
 
-
-        // 4. Game Objects
-        class GameButton extends Phaser.GameObjects.Container {
-            constructor(scene, x, y, texture, text, onClick, textStyle = {}) {
-                super(scene, x, y);
-                scene.add.existing(this);
-
-                this.initialScale = 1;
-
-                this.background = scene.add.image(0, 0, texture).setOrigin(0.5);
-                this.text = scene.add.text(0, 0, text, { ...FONT_STYLES.BUTTON, ...textStyle }).setOrigin(0.5);
-
-                this.add([this.background, this.text]);
-                this.setSize(this.background.width, this.background.height);
-
-                this.setInteractive({ useHandCursor: true })
-                    .on('pointerover', this.onPointerOver, this)
-                    .on('pointerout', this.onPointerOut, this)
-                    .on('pointerdown', this.onPointerDown, this)
-                    .on('pointerup', () => {
-                        this.onPointerUp();
-                        onClick();
-                    }, this);
-            }
-
-            onPointerOver() {
-                this.scene.tweens.add({
-                    targets: this,
-                    scale: this.initialScale * 1.05,
-                    duration: 100,
-                    ease: 'Power1'
-                });
-            }
-
-            onPointerOut() {
-                this.scene.tweens.add({
-                    targets: this,
-                    scale: this.initialScale,
-                    duration: 100,
-                    ease: 'Power1'
-                });
-            }
-
-            onPointerDown() {
-                this.scene.tweens.add({
-                    targets: this,
-                    scale: this.initialScale * 0.95,
-                    duration: 50,
-                    ease: 'Power1'
-                });
-                audioManagerInstance.playSound('click');
-            }
-
-            onPointerUp() {
-                this.scene.tweens.add({
-                    targets: this,
-                    scale: this.initialScale * 1.05,
-                    duration: 50,
-                    ease: 'Power1',
-                    onComplete: () => {
-                        this.scene.tweens.add({
-                            targets: this,
-                            scale: this.initialScale,
-                            duration: 100,
-                            ease: 'Power1'
-                        });
-                    }
-                });
-            }
-
-            setComingSoon(isComingSoon) {
-                if (isComingSoon) {
-                    this.background.setTexture('button-comingsoon');
-                    this.text.setText("به زودی");
-                    this.disableInteractive();
+        // Loading screen animation with enhanced effects
+        function startLoadingAnimation() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 3;
+                loadingBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        checkRegistration();
+                    }, 800);
                 }
-            }
+            }, 60);
         }
 
-        class LetterTile extends Phaser.GameObjects.Container {
-            constructor(scene, x, y, letter) {
-                super(scene, x, y);
-                scene.add.existing(this);
-
-                this.letter = letter;
-                this.originalX = x;
-                this.originalY = y;
-                this.isInBlank = false;
-                this.blankIndex = -1;
-
-                this.background = scene.add.image(0, 0, 'letter-tile').setOrigin(0.5);
-                this.text = scene.add.text(0, 0, letter, { ...FONT_STYLES.BUTTON, fontSize: '36px', color: `#${COLORS.TEXT_DARK.toString(16)}` }).setOrigin(0.5);
-
-                this.add([this.background, this.text]);
-                this.setSize(this.background.width, this.background.height);
-
-                this.setDepth(1);
-
-                this.setInteractive({ draggable: true, useHandCursor: true });
-
-                this.on('dragstart', this.onDragStart, this);
-                this.on('drag', this.onDrag, this);
-                this.on('dragend', this.onDragEnd, this);
-                this.on('pointerdown', this.onPointerDownClick, this);
-            }
-
-            onDragStart(pointer, dragX, dragY) {
-                if (this.isInBlank) {
-                    this.scene.events.emit('letterRemovedFromBlank', this, this.blankIndex);
-                    this.isInBlank = false;
-                    this.blankIndex = -1;
-                }
-                this.scene.children.bringToTop(this);
-                this.background.setTint(0xAAAAAA);
-            }
-
-            onDrag(pointer, dragX, dragY) {
-                this.x = dragX;
-                this.y = dragY;
-            }
-
-            onDragEnd(pointer, dropped) {
-                this.background.clearTint();
-                if (!dropped) {
-                    this.returnToOriginalPosition();
-                }
-            }
-
-            onPointerDownClick() {
-                if (!this.isInBlank) {
-                    this.scene.events.emit('letterClicked', this);
-                } else {
-                    this.scene.events.emit('letterRemovedFromBlank', this, this.blankIndex);
-                    this.returnToOriginalPosition();
-                }
-            }
-
-            returnToOriginalPosition() {
-                this.scene.tweens.add({
-                    targets: this,
-                    x: this.originalX,
-                    y: this.originalY,
-                    duration: 200,
-                    ease: 'Power1',
-                    onComplete: () => {
-                        this.isInBlank = false;
-                        this.blankIndex = -1;
-                    }
-                });
-            }
-
-            placeInBlank(x, y, blankIndex) {
-                this.scene.tweens.add({
-                    targets: this,
-                    x: x,
-                    y: y,
-                    duration: 150,
-                    ease: 'Power1',
-                    onComplete: () => {
-                        this.isInBlank = true;
-                        this.blankIndex = blankIndex;
-                    }
-                });
-            }
+        // Show registration screen
+        function showRegistrationScreen() {
+            loadingScreen.classList.add('hidden');
+            presentationScreen.classList.add('hidden');
+            registrationScreen.classList.remove('hidden');
         }
 
-        class BlankSpace extends Phaser.GameObjects.Image {
-            constructor(scene, x, y, index) {
-                super(scene, x, y, 'blank-space');
-                scene.add.existing(this);
-                this.setOrigin(0.5);
-                this.index = index;
-                this.isFilled = false;
-                this.filledWithTile = '';
-                this.setTint(COLORS.SECONDARY);
-            }
-
-            fill(letter) {
-                this.isFilled = true;
-                this.filledWithTile = letter;
-                this.setTint(COLORS.PRIMARY);
-            }
-
-            empty() {
-                this.isFilled = false;
-                this.filledWithTile = '';
-                this.setTint(COLORS.SECONDARY);
-            }
-
-            showCorrect() {
-                this.setTint(COLORS.GREEN_SUCCESS);
-                this.scene.tweens.add({
-                    targets: this,
-                    scale: 1.1,
-                    duration: 100,
-                    yoyo: true,
-                    onComplete: () => this.setScale(1)
-                });
-            }
-
-            showWrong() {
-                this.setTint(COLORS.RED_ERROR);
-                this.scene.tweens.add({
-                    targets: this,
-                    x: '+=10',
-                    ease: 'Sine.easeInOut',
-                    duration: 50,
-                    yoyo: true,
-                    repeat: 3,
-                    onComplete: () => {
-                        this.setTint(COLORS.SECONDARY);
-                        this.x -= 10 * 4;
-                    }
-                });
-            }
+        // Show menu screen
+        function showMenuScreen() {
+            loadingScreen.classList.add('hidden');
+            presentationScreen.classList.add('hidden');
+            registrationScreen.classList.add('hidden');
+            gameScreen.classList.add('hidden');
+            menuScreen.classList.remove('hidden');
+            
+            // Update user profile
+            document.getElementById('user-display-name').textContent = username;
         }
 
-        // 5. Game Scenes
-        class BaseScene extends Phaser.Scene {
-            constructor(key) {
-                super(key);
-            }
-
-            preload() {
-                if (!this.sys.game.cache.audio.exists('click')) {
-                    this.load.audio('click', '/assets/audio/click-sound.mp3');
-                }
-            }
-
-            create() {
-                // Initialize global audioManagerInstance if it's the first scene
-                if (!audioManagerInstance) {
-                    audioManagerInstance = new AudioManager(this);
-                } else {
-                    audioManagerInstance.scene = this; // Update scene context for AudioManager
-                }
-                audioManagerInstance.addSound('click', '/assets/audio/click-sound.mp3');
-            }
-
-            showModal(title, message, onDismiss) {
-                const modalWidth = this.scale.width * 0.8;
-                const modalHeight = this.scale.height * 0.4;
-
-                const background = this.add.graphics({ fillStyle: { color: COLORS.BACKGROUND, alpha: 0.95 } });
-                background.fillRect(0, 0, this.scale.width, this.scale.height);
-                background.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.scale.width, this.scale.height), Phaser.Geom.Rectangle.Contains);
-
-                const modalBox = this.add.container(this.scale.width / 2, this.scale.height / 2);
-                const boxGraphics = this.add.graphics();
-                boxGraphics.fillStyle(COLORS.SECONDARY, 1);
-                boxGraphics.fillRoundedRect(-modalWidth / 2, -modalHeight / 2, modalWidth, modalHeight, 20);
-                boxGraphics.lineStyle(5, COLORS.PRIMARY, 1);
-                boxGraphics.strokeRoundedRect(-modalWidth / 2, -modalHeight / 2, modalWidth, modalHeight, 20);
-                modalBox.add(boxGraphics);
-
-                const modalTitle = this.add.text(0, -modalHeight / 2 + 50, title, { ...FONT_STYLES.MODAL_TITLE, wordWrap: { width: modalWidth - 60 } }).setOrigin(0.5);
-                modalBox.add(modalTitle);
-
-                const modalMessage = this.add.text(0, 0, message, { ...FONT_STYLES.MODAL_MESSAGE, wordWrap: { width: modalWidth - 60 } }).setOrigin(0.5);
-                modalBox.add(modalMessage);
-
-                const dismissButton = this.add.image(0, modalHeight / 2 - 50, 'button-start')
-                    .setOrigin(0.5)
-                    .setScale(0.8)
-                    .setInteractive({ useHandCursor: true });
-                const buttonText = this.add.text(0, modalHeight / 2 - 50, 'باشه', FONT_STYLES.BUTTON).setOrigin(0.5);
-                modalBox.add([dismissButton, buttonText]);
-
-                modalBox.setDepth(2000);
-                modalBox.setScale(0);
-
-                this.tweens.add({
-                    targets: modalBox,
-                    scale: 1,
-                    alpha: 1,
-                    duration: 300,
-                    ease: 'Back.easeOut'
-                });
-
-                dismissButton.on('pointerdown', () => {
-                    audioManagerInstance.playSound('click');
-                    this.tweens.add({
-                        targets: modalBox,
-                        scale: 0,
-                        alpha: 0,
-                        duration: 200,
-                        ease: 'Back.easeIn',
-                        onComplete: () => {
-                            modalBox.destroy();
-                            background.destroy();
-                            if (onDismiss) {
-                                onDismiss();
-                            }
-                        }
-                    });
-                });
-            }
+        // Show game screen
+        function showGameScreen() {
+            menuScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            setupLevel(currentLevel);
         }
 
-        class PreloaderScene extends BaseScene {
-            constructor() {
-                super(SceneKeys.PRELOADER);
+        // Setup level with enhanced animations
+        function setupLevel(levelIndex) {
+            if (levelIndex >= levels.length) {
+                // Game completed
+                currentLevel = 0;
+                showMenuScreen();
+                return;
             }
 
-            preload() {
-                super.preload();
-
-                this.load.image('mafia-background', '/assets/images/mafia-background.png');
-                this.load.image('avatar-placeholder', '/assets/images/avatar-placeholder.png');
-                this.load.image('button-start', '/assets/images/button-start.png');
-                this.load.image('button-comingsoon', '/assets/images/button-comingsoon.png');
-
-                // Load fonts via CSS (Phaser's load.css is for webfontloader or specific CSS files, not direct TTF in this manner)
-                // For a true single file, font embedding is complex. Relying on CSS in the <style> tag to load it.
-
-                const progressBar = this.add.graphics();
-                const progressBox = this.add.graphics();
-                progressBox.fillStyle(COLORS.SECONDARY, 0.8);
-                progressBox.fillRect(this.scale.width / 2 - 160, this.scale.height / 2 - 30, 320, 50);
-
-                const loadingText = this.make.text({
-                    x: this.scale.width / 2,
-                    y: this.scale.height / 2 - 80,
-                    text: 'درحال بارگذاری...',
-                    style: FONT_STYLES.H2
-                }).setOrigin(0.5);
-
-                const percentText = this.make.text({
-                    x: this.scale.width / 2,
-                    y: this.scale.height / 2 + 50,
-                    text: '0%',
-                    style: FONT_STYLES.BODY
-                }).setOrigin(0.5);
-
-                this.load.on('progress', (value) => {
-                    progressBar.clear();
-                    progressBar.fillStyle(COLORS.PRIMARY, 1);
-                    progressBar.fillRect(this.scale.width / 2 - 150, this.scale.height / 2 - 20, 300 * value, 30);
-                    percentText.setText(`${Math.round(value * 100)}%`);
+            // Update level display
+            document.getElementById('level-display').textContent = levelIndex + 1;
+            
+            // Reset selected letters
+            selectedLetters = [];
+            
+            // Setup word slots
+            const wordSlotsContainer = document.getElementById('word-slots');
+            wordSlotsContainer.innerHTML = '';
+            
+            const currentWord = levels[levelIndex].word;
+            for (let i = 0; i < currentWord.length; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'empty-slot';
+                slot.dataset.index = i;
+                
+                // Add delay to each slot for staggered animation
+                setTimeout(() => {
+                    wordSlotsContainer.appendChild(slot);
+                }, i * 100);
+            }
+            
+            // Setup letter options
+            const letterOptionsContainer = document.getElementById('letter-options');
+            letterOptionsContainer.innerHTML = '';
+            
+            const shuffledLetters = [...levels[levelIndex].letters].sort(() => Math.random() - 0.5);
+            shuffledLetters.forEach((letter, index) => {
+                const letterBox = document.createElement('div');
+                letterBox.className = 'letter-box';
+                letterBox.textContent = letter;
+                letterBox.dataset.letter = letter;
+                letterBox.dataset.index = index;
+                
+                letterBox.addEventListener('click', () => {
+                    handleLetterClick(letterBox, letter);
                 });
-
-                this.load.on('complete', () => {
-                    progressBar.destroy();
-                    progressBox.destroy();
-                    loadingText.destroy();
-                    percentText.destroy();
-                    this.scene.start(SceneKeys.REGISTRATION);
-                });
-            }
-
-            create() {
-                super.create();
-            }
-        }
-
-        class RegistrationScene extends BaseScene {
-            constructor() {
-                super(SceneKeys.REGISTRATION);
-            }
-
-            create() {
-                super.create();
-
-                this.add.image(this.scale.width / 2, this.scale.height / 2, 'mafia-background')
-                    .setDisplaySize(this.scale.width, this.scale.height);
-
-                const overlayDiv = document.getElementById('registration-overlay');
-                const usernameInput = document.getElementById('username-input');
-                const startGameBtn = document.getElementById('start-game-btn');
-                const versionWarningText = document.getElementById('version-warning');
-
-                startGameBtn.onclick = () => this.handleStartGame(usernameInput, startGameBtn, overlayDiv);
-
-                this.checkUserStatus(usernameInput, startGameBtn, versionWarningText, overlayDiv);
-            }
-
-            checkUserStatus(usernameInput, startGameBtn, versionWarningText, overlayDiv) {
-                const userData = StorageManager.loadUserData();
-
-                if (userData) {
-                    usernameInput.value = userData.username;
-                    versionWarningText.textContent = `با نام ${userData.username} به بازی باز می‌گردید.`;
-                    startGameBtn.textContent = 'ادامه بازی';
-                    overlayDiv.classList.add('active');
-                    this.time.delayedCall(1500, () => {
-                        overlayDiv.classList.remove('active');
-                        this.scene.start(SceneKeys.ASSET_LOADER);
-                    });
-                } else {
-                    usernameInput.value = '';
-                    versionWarningText.textContent = `نسخه بازی بروزرسانی شده یا اکانتی یافت نشد.`;
-                    startGameBtn.textContent = 'شروع بازی';
-                    overlayDiv.classList.add('active');
-                }
-            }
-
-            handleStartGame(usernameInput, startGameBtn, overlayDiv) {
-                const username = usernameInput.value.trim();
-                if (username.length < 3) {
-                    usernameInput.style.borderColor = `#${COLORS.RED_ERROR.toString(16)}`;
-                    this.time.delayedCall(500, () => usernameInput.style.borderColor = `#${COLORS.SECONDARY.toString(16)}`);
-                    return;
-                }
-
-                audioManagerInstance.playSound('click');
-                StorageManager.saveUserData(username);
-                overlayDiv.classList.remove('active');
-                this.scene.start(SceneKeys.ASSET_LOADER);
-            }
-        }
-
-        class AssetLoaderScene extends BaseScene {
-            constructor() {
-                super(SceneKeys.ASSET_LOADER);
-            }
-
-            preload() {
-                super.preload();
-
-                this.load.image('letter-tile', '/assets/images/letter-tile.png');
-                this.load.image('blank-space', '/assets/images/blank-space.png');
-
-                this.load.audio('menu-music', '/assets/audio/menu-music.mp3');
-                this.load.audio('correct-sound', '/assets/audio/correct-sound.mp3');
-                this.load.audio('wrong-sound', '/assets/audio/wrong-sound.mp3');
-
-                // Level data is now a global JS variable, no need to load JSON
-                // this.load.json('levels', '/src/data/levels.json');
-
-                const progressBar = this.add.graphics();
-                const progressBox = this.add.graphics();
-                progressBox.fillStyle(COLORS.SECONDARY, 0.8);
-                progressBox.fillRect(this.scale.width / 2 - 160, this.scale.height / 2 - 30, 320, 50);
-
-                const loadingText = this.make.text({
-                    x: this.scale.width / 2,
-                    y: this.scale.height / 2 - 80,
-                    text: 'درحال آماده‌سازی بازی...',
-                    style: FONT_STYLES.H2
-                }).setOrigin(0.5);
-
-                const percentText = this.make.text({
-                    x: this.scale.width / 2,
-                    y: this.scale.height / 2 + 50,
-                    text: '0%',
-                    style: FONT_STYLES.BODY
-                }).setOrigin(0.5);
-
-                this.load.on('progress', (value) => {
-                    progressBar.clear();
-                    progressBar.fillStyle(COLORS.PRIMARY, 1);
-                    progressBar.fillRect(this.scale.width / 2 - 150, this.scale.height / 2 - 20, 300 * value, 30);
-                    percentText.setText(`${Math.round(value * 100)}%`);
-                });
-
-                this.load.on('complete', () => {
-                    progressBar.destroy();
-                    progressBox.destroy();
-                    loadingText.destroy();
-                    percentText.destroy();
-                    this.scene.start(SceneKeys.MAIN_MENU);
-                });
-            }
-
-            create() {
-                super.create();
-            }
-        }
-
-        class MainMenuScene extends BaseScene {
-            constructor() {
-                super(SceneKeys.MAIN_MENU);
-            }
-
-            create() {
-                super.create();
-
-                this.add.image(this.scale.width / 2, this.scale.height / 2, 'mafia-background')
-                    .setDisplaySize(this.scale.width, this.scale.height);
-
-                audioManagerInstance.addMusic('menu-music', '/assets/audio/menu-music.mp3');
-                audioManagerInstance.playMusic('menu-music', { volume: 0.5 });
-
-                const userData = StorageManager.loadUserData();
-                const username = userData ? userData.username : 'بازیکن ناشناس';
-
-                const avatar = this.add.image(this.scale.width - 80, 70, 'avatar-placeholder')
-                    .setScale(0.5)
-                    .setOrigin(0.5);
-
-                this.add.text(avatar.x - 100, avatar.y, username, FONT_STYLES.USERNAME)
-                    .setOrigin(1, 0.5);
-
-                const centerX = this.scale.width / 2;
-                const startY = this.scale.height / 2 + 50;
-
-                new GameButton(this, centerX, startY, 'button-start', 'شروع بازی', () => {
-                    audioManagerInstance.stopMusic();
-                    this.scene.start(SceneKeys.GAME);
-                });
-
-                const bottomButtonsY = this.scale.height - 100;
-                const buttonSpacing = 150;
-
-                new GameButton(this, centerX - buttonSpacing, bottomButtonsY, 'button-comingsoon', 'چت', () => {
-                    this.showModal('به زودی...', 'قابلیت چت در نسخه‌های بعدی فعال خواهد شد.', () => {});
-                }).setScale(0.7);
-
-                new GameButton(this, centerX, bottomButtonsY, 'button-comingsoon', 'کلن', () => {
-                    this.showModal('به زودی...', 'قابلیت کلن در نسخه‌های بعدی فعال خواهد شد.', () => {});
-                }).setScale(0.7);
-
-                new GameButton(this, centerX + buttonSpacing, bottomButtonsY, 'button-comingsoon', 'فروشگاه', () => {
-                    this.showModal('به زودی...', 'قابلیت فروشگاه در نسخه‌های بعدی فعال خواهد شد.', () => {});
-                }).setScale(0.7);
-            }
-        }
-
-        class GameScene extends BaseScene {
-            constructor() {
-                super(SceneKeys.GAME);
-            }
-
-            create() {
-                super.create();
-
-                this.add.image(this.scale.width / 2, this.scale.height / 2, 'mafia-background')
-                    .setDisplaySize(this.scale.width, this.scale.height);
-
-                this.levels = LEVELS_DATA;
-                if (!this.levels || this.levels.length === 0) {
-                    console.error('No levels data found!');
-                    this.scene.start(SceneKeys.MAIN_MENU);
-                    return;
-                }
-
-                const userData = StorageManager.loadUserData();
-                if (userData) {
-                    this.currentLevelIndex = (userData.level - 1) % this.levels.length;
-                    this.score = userData.score;
-                } else {
-                    StorageManager.saveUserData('Player');
-                }
-
-                this.levelText = this.add.text(50, 50, `مرحله: ${this.currentLevelIndex + 1}`, FONT_STYLES.LEVEL_TEXT)
-                    .setOrigin(0, 0.5);
-
-                this.scoreText = this.add.text(this.scale.width - 50, 50, `امتیاز: ${this.score}`, FONT_STYLES.SCORE_TEXT)
-                    .setOrigin(1, 0.5);
-
-                this.hintText = this.add.text(this.scale.width / 2, this.scale.height * 0.2, '', FONT_STYLES.BODY)
-                    .setOrigin(0.5)
-                    .setWordWrapWidth(this.scale.width * 0.8)
-                    .setAlpha(0);
-
-                this.letterTiles = [];
-                this.blankSpaces = [];
-                this.filledLetters = [];
-
-                this.input.setDraggable(this.letterTiles); // This will be updated on each level start
-                this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-                    gameObject.x = dragX;
-                    gameObject.y = dragY;
-                });
-
-                this.input.on('dragend', (pointer, gameObject, dropped) => {
-                    if (!gameObject.isInBlank) {
-                        let droppedOnBlank = null;
-                        for (let i = 0; i < this.blankSpaces.length; i++) {
-                            const blank = this.blankSpaces[i];
-                            if (!blank.isFilled && Phaser.Geom.Intersects.RectangleToRectangle(gameObject.getBounds(), blank.getBounds())) {
-                                droppedOnBlank = blank;
-                                break;
-                            }
-                        }
-
-                        if (droppedOnBlank) {
-                            gameObject.placeInBlank(droppedOnBlank.x, droppedOnBlank.y, droppedOnBlank.index);
-                            droppedOnBlank.fill(gameObject.letter);
-                            this.filledLetters[droppedOnBlank.index] = gameObject.letter;
-                            this.checkWordCompletion();
-                        } else {
-                            gameObject.returnToOriginalPosition();
-                        }
-                    }
-                });
-
-                this.events.on('letterClicked', this.handleLetterClick, this);
-                this.events.on('letterRemovedFromBlank', this.handleLetterRemovedFromBlank, this);
-
-                this.startLevel(this.currentLevelIndex);
-            }
-
-            startLevel(index) {
-                if (index >= this.levels.length) {
-                    this.showModal('تبریک!', 'شما تمام مراحل بازی را با موفقیت به پایان رساندید! مراحل جدید به زودی اضافه خواهند شد.', () => {
-                        this.scene.start(SceneKeys.MAIN_MENU);
-                    });
-                    return;
-                }
-
-                this.currentLevelIndex = index;
-                const levelData = this.levels[this.currentLevelIndex];
-                this.currentWord = levelData.word;
-                this.levelText.setText(`مرحله: ${this.currentLevelIndex + 1}`);
-                this.hintText.setText(levelData.hint);
-                this.showHint();
-
-                this.letterTiles.forEach(tile => tile.destroy());
-                this.blankSpaces.forEach(blank => blank.destroy());
-                this.letterTiles = [];
-                this.blankSpaces = [];
-                this.filledLetters = Array(this.currentWord.length).fill('');
-
-                const blankSize = 100;
-                const totalBlankWidth = this.currentWord.length * blankSize + (this.currentWord.length - 1) * 10;
-                let startX = (this.scale.width - totalBlankWidth) / 2 + blankSize / 2;
-                const blankY = this.scale.height * 0.45;
-
-                for (let i = 0; i < this.currentWord.length; i++) {
-                    const blank = new BlankSpace(this, startX + i * (blankSize + 10), blankY, i);
-                    this.blankSpaces.push(blank);
-                    this.children.bringToTop(blank);
-                }
-
-                const letterBankY = this.scale.height * 0.75;
-                const tileCount = levelData.letters.length;
-                const totalTileWidth = tileCount * blankSize + (tileCount - 1) * 10;
-                startX = (this.scale.width - totalTileWidth) / 2 + blankSize / 2;
-
-                const shuffledLetters = Phaser.Utils.Array.Shuffle([...levelData.letters]);
-
-                for (let i = 0; i < shuffledLetters.length; i++) {
-                    const letter = shuffledLetters[i];
-                    const tile = new LetterTile(this, startX + i * (blankSize + 10), letterBankY, letter);
-                    this.letterTiles.push(tile);
-                    this.children.bringToTop(tile);
-                }
-
-                this.input.setDraggable(this.letterTiles); // Re-set draggable for new tiles
-
-                StorageManager.updateCurrentLevel(this.currentLevelIndex + 1);
-            }
-
-            showHint() {
-                this.tweens.add({
-                    targets: this.hintText,
-                    alpha: 1,
-                    duration: 500,
-                    ease: 'Sine.easeOut',
-                    delay: 500
-                });
-                this.time.delayedCall(3000, () => {
-                    this.tweens.add({
-                        targets: this.hintText,
-                        alpha: 0,
-                        duration: 500,
-                        ease: 'Sine.easeIn'
-                    });
-                });
-            }
-
-            handleLetterClick(clickedTile) {
-                const targetBlank = this.blankSpaces.find(blank => !blank.isFilled);
-
-                if (targetBlank) {
-                    clickedTile.placeInBlank(targetBlank.x, targetBlank.y, targetBlank.index);
-                    targetBlank.fill(clickedTile.letter);
-                    this.filledLetters[targetBlank.index] = clickedTile.letter;
-                    this.checkWordCompletion();
-                } else {
-                    clickedTile.returnToOriginalPosition();
-                    audioManagerInstance.playSound('wrong-sound');
-                }
-            }
-
-            handleLetterRemovedFromBlank(tile, blankIndex) {
-                if (blankIndex !== -1 && this.blankSpaces[blankIndex]) {
-                    this.blankSpaces[blankIndex].empty();
-                    this.filledLetters[blankIndex] = '';
-                }
-            }
-
-            checkWordCompletion() {
-                if (this.filledLetters.includes('')) {
-                    return;
-                }
-
-                const formedWord = this.filledLetters.join('');
-
-                if (formedWord === this.currentWord) {
-                    audioManagerInstance.playSound('correct-sound');
-                    this.score += 100 * (this.currentLevelIndex + 1);
-                    this.scoreText.setText(`امتیاز: ${this.score}`);
-                    StorageManager.updateScore(this.score);
-
-                    this.blankSpaces.forEach(blank => blank.showCorrect());
-                    this.letterTiles.forEach(tile => tile.setInteractive(false).setDepth(0));
-
-                    this.time.delayedCall(1000, () => {
-                        this.tweens.add({
-                            targets: [...this.blankSpaces, ...this.letterTiles],
-                            alpha: 0,
-                            y: '-=50',
-                            duration: 500,
-                            ease: 'Quad.easeIn',
-                            onComplete: () => {
-                                this.startLevel(this.currentLevelIndex + 1);
-                            }
-                        });
-                    });
-                } else {
-                    audioManagerInstance.playSound('wrong-sound');
-                    this.blankSpaces.forEach(blank => blank.showWrong());
-                    this.time.delayedCall(1000, () => {
-                        this.letterTiles.forEach(tile => tile.returnToOriginalPosition());
-                        this.blankSpaces.forEach(blank => blank.empty());
-                        this.filledLetters = Array(this.currentWord.length).fill('');
-                    });
-                }
-            }
-        }
-
-        // 6. Phaser Game Configuration and Initialization
-        const config = {
-            type: Phaser.AUTO,
-            parent: 'game-container',
-            width: GAME_DIMENSIONS.WIDTH,
-            height: GAME_DIMENSIONS.HEIGHT,
-            backgroundColor: COLORS.BACKGROUND,
-            scale: {
-                mode: Phaser.Scale.FIT,
-                autoCenter: Phaser.Scale.CENTER_BOTH,
-            },
-            physics: {
-                default: 'arcade',
-                arcade: {
-                    debug: false
-                }
-            },
-            scene: [PreloaderScene, RegistrationScene, AssetLoaderScene, MainMenuScene, GameScene],
-            dom: {
-                createContainer: true
-            },
-            audio: {
-                disableWebAudio: false
-            },
-        };
-
-        const game = new Phaser.Game(config);
-
-        // Optional: Register Service Worker for PWA features (requires separate service-worker.js file)
-        /*
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registered! Scope:', registration.scope);
-                    })
-                    .catch(err => {
-                        console.log('Service Worker registration failed:', err);
-                    });
+                
+                // Add delay to each letter for staggered animation
+                setTimeout(() => {
+                    letterOptionsContainer.appendChild(letterBox);
+                    // Add a subtle entrance animation
+                    letterBox.style.opacity = '0';
+                    letterBox.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        letterBox.style.opacity = '1';
+                        letterBox.style.transform = 'scale(1)';
+                    }, 50);
+                }, index * 80);
             });
         }
-        */
+
+        // Handle letter click with enhanced effects
+        function handleLetterClick(letterBox, letter) {
+            if (letterBox.classList.contains('selected')) {
+                return;
+            }
+            
+            // Add click effect
+            letterBox.classList.add('selected');
+            
+            // Add sound effect (visual only since we can't use audio)
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.width = '10px';
+            ripple.style.height = '10px';
+            ripple.style.background = 'rgba(255, 215, 0, 0.5)';
+            ripple.style.borderRadius = '50%';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.pointerEvents = 'none';
+            letterBox.style.position = 'relative';
+            letterBox.appendChild(ripple);
+            
+            // Animate ripple
+            ripple.animate(
+                [
+                    { transform: 'scale(0)', opacity: 1 },
+                    { transform: 'scale(10)', opacity: 0 }
+                ],
+                {
+                    duration: 600,
+                    easing: 'ease-out'
+                }
+            );
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+            
+            selectedLetters.push(letter);
+            
+            // Update word slots with animation
+            const wordSlotsContainer = document.getElementById('word-slots');
+            const emptySlots = wordSlotsContainer.querySelectorAll('.empty-slot');
+            
+            if (emptySlots.length > 0) {
+                const slot = emptySlots[0];
+                slot.className = 'filled-slot';
+                slot.textContent = letter;
+                
+                // Check if word is complete
+                if (wordSlotsContainer.querySelectorAll('.empty-slot').length === 0) {
+                    checkWord();
+                }
+            }
+        }
+
+        // Check if the word is correct with enhanced feedback
+        function checkWord() {
+            const currentWord = levels[currentLevel].word;
+            const filledSlots = document.querySelectorAll('.filled-slot');
+            let formedWord = '';
+            
+            filledSlots.forEach(slot => {
+                formedWord += slot.textContent;
+            });
+            
+            if (formedWord === currentWord) {
+                // Word is correct - add celebration effect
+                filledSlots.forEach((slot, index) => {
+                    setTimeout(() => {
+                        slot.style.transform = 'scale(1.2)';
+                        slot.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+                        setTimeout(() => {
+                            slot.style.transform = 'scale(1)';
+                        }, 200);
+                    }, index * 100);
+                });
+                
+                setTimeout(() => {
+                    showLevelCompleteModal();
+                }, filledSlots.length * 100 + 500);
+            } else {
+                // Word is incorrect - add shake effect
+                const wordSlotsContainer = document.getElementById('word-slots');
+                wordSlotsContainer.style.animation = 'shake 0.5s ease';
+                
+                setTimeout(() => {
+                    wordSlotsContainer.style.animation = '';
+                    setupLevel(currentLevel);
+                }, 800);
+            }
+        }
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                20%, 60% { transform: translateX(-5px); }
+                40%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Show level complete modal with enhanced animation
+        function showLevelCompleteModal() {
+            levelCompleteModal.classList.remove('hidden');
+            levelCompleteModal.style.opacity = '0';
+            levelCompleteModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                levelCompleteModal.style.opacity = '1';
+                levelCompleteModal.style.transform = 'scale(1)';
+                levelCompleteModal.style.transition = 'all 0.3s ease';
+            }, 50);
+        }
+
+        // Show settings modal
+        function showSettingsModal() {
+            settingsModal.classList.remove('hidden');
+            settingsModal.style.opacity = '0';
+            settingsModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                settingsModal.style.opacity = '1';
+                settingsModal.style.transform = 'scale(1)';
+                settingsModal.style.transition = 'all 0.3s ease';
+            }, 50);
+        }
+
+        // Hide settings modal
+        function hideSettingsModal() {
+            settingsModal.style.opacity = '0';
+            settingsModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                settingsModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Show creators modal
+        function showCreatorsModal() {
+            creatorsModal.classList.remove('hidden');
+            creatorsModal.style.opacity = '0';
+            creatorsModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                creatorsModal.style.opacity = '1';
+                creatorsModal.style.transform = 'scale(1)';
+                creatorsModal.style.transition = 'all 0.3s ease';
+            }, 50);
+        }
+
+        // Hide creators modal
+        function hideCreatorsModal() {
+            creatorsModal.style.opacity = '0';
+            creatorsModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                creatorsModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Show support modal
+        function showSupportModal() {
+            supportModal.classList.remove('hidden');
+            supportModal.style.opacity = '0';
+            supportModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                supportModal.style.opacity = '1';
+                supportModal.style.transform = 'scale(1)';
+                supportModal.style.transition = 'all 0.3s ease';
+            }, 50);
+        }
+
+        // Hide support modal
+        function hideSupportModal() {
+            supportModal.style.opacity = '0';
+            supportModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                supportModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Event Listeners
+        document.getElementById('register-btn').addEventListener('click', () => {
+            const usernameInput = document.getElementById('username');
+            username = usernameInput.value.trim();
+            
+            if (username) {
+                localStorage.setItem('mafiaFactUsername', username);
+                
+                // Show loading before menu with enhanced transition
+                loadingScreen.classList.remove('hidden');
+                registrationScreen.classList.add('hidden');
+                loadingText.textContent = 'در حال ورود...';
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    loadingBar.style.width = `${progress}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            showMenuScreen();
+                        }, 800);
+                    }
+                }, 60);
+            }
+        });
+
+        document.getElementById('start-game-btn').addEventListener('click', () => {
+            // Add button press effect
+            const btn = document.getElementById('start-game-btn');
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+                showGameScreen();
+            }, 150);
+        });
+        
+        document.getElementById('online-game-btn').addEventListener('click', () => {
+            // Add button press effect
+            const btn = document.getElementById('online-game-btn');
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+                comingSoonModal.classList.remove('hidden');
+                comingSoonModal.style.opacity = '0';
+                comingSoonModal.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    comingSoonModal.style.opacity = '1';
+                    comingSoonModal.style.transform = 'scale(1)';
+                    comingSoonModal.style.transition = 'all 0.3s ease';
+                    
+                    setTimeout(() => {
+                        comingSoonModal.style.opacity = '0';
+                        comingSoonModal.style.transform = 'scale(0.9)';
+                        
+                        setTimeout(() => {
+                            comingSoonModal.classList.add('hidden');
+                        }, 300);
+                    }, 1500);
+                }, 50);
+            }, 150);
+        });
+
+        document.getElementById('back-to-menu').addEventListener('click', () => {
+            showMenuScreen();
+        });
+
+        document.getElementById('next-level-btn').addEventListener('click', () => {
+            levelCompleteModal.style.opacity = '0';
+            levelCompleteModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                levelCompleteModal.classList.add('hidden');
+                currentLevel++;
+                setupLevel(currentLevel);
+            }, 300);
+        });
+
+        // Settings button
+        document.getElementById('settings-btn').addEventListener('click', () => {
+            showSettingsModal();
+        });
+
+        // Close settings button
+        document.getElementById('close-settings').addEventListener('click', () => {
+            hideSettingsModal();
+        });
+
+        // Support button
+        document.getElementById('support-btn').addEventListener('click', () => {
+            hideSettingsModal();
+            showSupportModal();
+        });
+
+        // Close support button
+        document.getElementById('close-support').addEventListener('click', () => {
+            hideSupportModal();
+        });
+
+        // Coming soon button
+        document.getElementById('coming-soon-btn').addEventListener('click', () => {
+            hideSettingsModal();
+            comingSoonModal.classList.remove('hidden');
+            comingSoonModal.style.opacity = '0';
+            comingSoonModal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                comingSoonModal.style.opacity = '1';
+                comingSoonModal.style.transform = 'scale(1)';
+                comingSoonModal.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    comingSoonModal.style.opacity = '0';
+                    comingSoonModal.style.transform = 'scale(0.9)';
+                    
+                    setTimeout(() => {
+                        comingSoonModal.classList.add('hidden');
+                    }, 300);
+                }, 1500);
+            }, 50);
+        });
+
+        // Creators button
+        document.getElementById('creators-btn').addEventListener('click', () => {
+            hideSettingsModal();
+            showCreatorsModal();
+        });
+
+        // Close creators button
+        document.getElementById('close-creators').addEventListener('click', () => {
+            hideCreatorsModal();
+        });
+
+        // Feature buttons (chat and shop) with enhanced feedback
+        document.querySelectorAll('.feature-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    btn.style.transform = '';
+                    comingSoonModal.classList.remove('hidden');
+                    comingSoonModal.style.opacity = '0';
+                    comingSoonModal.style.transform = 'scale(0.9)';
+                    
+                    setTimeout(() => {
+                        comingSoonModal.style.opacity = '1';
+                        comingSoonModal.style.transform = 'scale(1)';
+                        comingSoonModal.style.transition = 'all 0.3s ease';
+                        
+                        setTimeout(() => {
+                            comingSoonModal.style.opacity = '0';
+                            comingSoonModal.style.transform = 'scale(0.9)';
+                            
+                            setTimeout(() => {
+                                comingSoonModal.classList.add('hidden');
+                            }, 300);
+                        }, 1500);
+                    }, 50);
+                }, 150);
+            });
+        });
+
+        // Start the game with enhanced loading
+        window.addEventListener('load', () => {
+            startLoadingAnimation();
+        });
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9639912df74f2e12',t:'MTc1MzI1NjgxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
