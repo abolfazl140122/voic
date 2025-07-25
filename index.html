@@ -20,465 +20,971 @@
             font-family: 'Vazirmatn', sans-serif;
             background-color: var(--black);
             color: var(--gold-light);
-            overflow: hidden;
-        }
-
-        #app-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
+            overflow-x: hidden;
         }
         
-        .screen {
+        .gold-gradient {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+        }
+        
+        .black-gradient {
+            background: linear-gradient(135deg, var(--black-light), var(--black), var(--black-dark));
+        }
+        
+        .gold-text {
+            background: linear-gradient(to right, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .gold-border {
+            border: 2px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to right, var(--gold-light), var(--gold-dark));
+        }
+        
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shine-effect::after {
+            content: '';
             position: absolute;
-            inset: 0;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease-in-out, visibility 0.4s;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        .scale-in {
+            animation: scaleIn 0.5s ease-in-out;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .rotate {
+            animation: rotate 10s linear infinite;
+        }
+        
+        .puzzle-container {
+            min-height: 200px;
+        }
+        
+        .word-piece {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .word-piece:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--gold);
+        }
+        
+        .word-piece.selected {
+            background-color: var(--gold);
+            color: var(--black);
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            color: var(--black);
+            transition: all 0.3s;
+        }
+        
+        .btn-gold:hover {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+        
+        .btn-dark {
+            background: linear-gradient(135deg, #333, #111);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            transition: all 0.3s;
+        }
+        
+        .btn-dark:hover {
+            background: linear-gradient(135deg, #222, #000);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .glow {
+            box-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold-light);
+        }
+        
+        .split-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .split-circle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--gold);
+        }
+        
+        .split-circle::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--black-light);
+        }
+        
+        .creator-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #ff0000, #ff6600);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--black); /* Ensure background for each screen */
-            z-index: 10;
-        }
-
-        .screen.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .gold-gradient { background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark)); }
-        .gold-text { background: linear-gradient(to right, var(--gold-light), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gold-border { border: 2px solid; border-image-slice: 1; border-image-source: linear-gradient(to right, var(--gold-light), var(--gold-dark)); }
-        
-        .fade-in { animation: fadeIn 1s ease-in-out; }
-        .scale-in { animation: scaleIn 0.5s ease-in-out forwards; }
-        .pulse { animation: pulse 2s infinite; }
-        .float { animation: float 3s ease-in-out infinite; }
-        .rotate { animation: rotate 10s linear infinite; }
-        .shine-effect { position: relative; overflow: hidden; }
-        .shine-effect::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
-            transform: rotate(30deg); animation: shine 3s infinite linear;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleIn { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        
-        .word-piece { cursor: pointer; transition: all 0.3s ease; }
-        .word-piece:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); }
-        .word-piece.selected { transform: scale(0.9); opacity: 0.2; pointer-events: none; }
-        
-        .btn { transition: all 0.2s ease-out; }
-        .btn:active { transform: scale(0.95); }
-        .btn-gold { background: linear-gradient(135deg, var(--gold-light), var(--gold)); color: var(--black); }
-        .btn-gold:hover { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4); }
-        .btn-dark { background: linear-gradient(135deg, #333, #111); border: 1px solid var(--gold); color: var(--gold); }
-        .btn-dark:hover { background: linear-gradient(135deg, #222, #000); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); }
-
-        .creator-badge {
-            position: absolute; top: -5px; right: -5px; width: 20px; height: 20px;
-            background: linear-gradient(135deg, #ff0000, #ff6600); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; color: white; font-weight: bold; box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
         }
     </style>
 </head>
 <body>
-    <div id="app-container">
-        <!-- Splash Screen -->
-        <div id="splash-screen" class="screen flex-col visible z-50">
-            <div class="text-center fade-in">
-                <h1 class="text-5xl font-black mb-4 gold-text">استدیو اسکورت گیم</h1>
-                <p class="text-2xl text-gold-300">تقدیم میکند</p>
-                <div class="mt-8 float">
-                    <svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="50" r="45" stroke="url(#goldGradientSplash)" stroke-width="2" />
-                        <path d="M30 65L45 35L55 65L70 35" stroke="url(#goldGradientSplash)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                        <circle cx="50" cy="50" r="20" stroke="url(#goldGradientSplash)" stroke-width="2" fill="none" class="rotate" />
-                        <defs>
-                            <linearGradient id="goldGradientSplash" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#f5d76e" /> <stop offset="50%" stop-color="#d4af37" /> <stop offset="100%" stop-color="#996515" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loading Screen -->
-        <div id="loading-screen" class="screen flex-col z-40">
-             <h1 class="text-5xl font-black mb-8 gold-text">مغز شو</h1>
-            <div class="relative mb-8">
-                <svg class="w-24 h-24 rotate" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="45" stroke="url(#goldGradientLoading)" stroke-width="2" />
-                    <path class="pulse" d="M30 65L45 35L55 65L70 35" stroke="url(#goldGradientLoading)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                    <defs><linearGradient id="goldGradientLoading" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f5d76e" /><stop offset="50%" stop-color="#d4af37" /><stop offset="100%" stop-color="#996515" /></linearGradient></defs>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-50">
+        <div class="text-center fade-in">
+            <h1 class="text-5xl font-black mb-4 gold-text">استدیو اسکورت گیم</h1>
+            <p class="text-2xl text-gold-300">تقدیم میکند</p>
+            <div class="mt-8 float">
+                <svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" stroke="url(#goldGradient)" stroke-width="2" />
+                    <path d="M30 65L45 35L55 65L70 35" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="50" cy="50" r="20" stroke="url(#goldGradient)" stroke-width="2" fill="none" class="rotate" />
+                    <defs>
+                        <linearGradient id="goldGradient" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#f5d76e" />
+                            <stop offset="50%" stop-color="#d4af37" />
+                            <stop offset="100%" stop-color="#996515" />
+                        </linearGradient>
+                    </defs>
                 </svg>
-                <div class="absolute inset-0 flex items-center justify-center"><div class="w-12 h-12 gold-gradient rounded-full opacity-50 pulse"></div></div>
-            </div>
-            <div class="w-64 h-3 bg-gray-800 rounded-full overflow-hidden">
-                <div id="loading-bar" class="h-full gold-gradient rounded-full" style="width: 0%"></div>
-            </div>
-            <p id="loading-text" class="mt-4 text-gold-300">در حال بارگذاری... 0%</p>
-        </div>
-
-        <!-- Registration Screen -->
-        <div id="registration-screen" class="screen z-30">
-            <div class="bg-gray-900 rounded-lg p-8 max-w-md w-full gold-border scale-in">
-                <h2 class="text-3xl font-bold mb-6 text-center gold-text">ثبت نام در مغز شو</h2>
-                <form id="registration-form" class="space-y-4">
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-gold-300">نام کاربری</label>
-                        <input type="text" id="username" class="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gold-500 text-white" required>
-                    </div>
-                    <button type="submit" class="btn w-full flex justify-center py-3 px-4 rounded-md shadow-sm text-lg font-medium btn-gold shine-effect">ثبت نام و ورود</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Main Menu -->
-        <div id="main-menu" class="screen flex-col justify-start z-20 overflow-y-auto">
-             <div class="container mx-auto px-4 py-6 h-full flex flex-col w-full">
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-8">
-                    <h1 class="text-4xl font-black gold-text">مغز شو</h1>
-                    <button id="settings-button" class="btn bg-gray-900 p-2 rounded-lg gold-border">
-                        <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    </button>
-                </div>
-                <!-- Profile -->
-                <div class="flex justify-center mb-8">
-                    <div class="bg-gray-900 p-4 rounded-lg gold-border w-64"><div class="flex flex-col items-center"><div class="w-[60px] h-[60px] rounded-full relative overflow-hidden mb-3"><div class="absolute top-0 left-0 w-1/2 h-full bg-gold"></div><div class="absolute top-0 right-0 w-1/2 h-full bg-black-light"></div><div id="creator-badge" class="creator-badge hidden">C</div></div><h3 id="profile-name" class="text-xl font-bold gold-text mb-2">بازیکن</h3><div class="flex justify-between w-full mt-2"><div class="flex items-center"><svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg><span id="player-level" class="text-gold-300">1</span></div><div class="flex items-center"><svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" /><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" /></svg><span id="player-coins" class="text-gold-300">0</span></div><div class="flex items-center"><svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" /></svg><span id="player-cups" class="text-gold-300">0</span></div></div></div></div>
-                </div>
-                <!-- Buttons -->
-                <div class="flex-1 flex flex-col items-center">
-                    <div class="w-full max-w-md">
-                        <button id="start-game" class="btn w-full btn-gold py-4 px-6 rounded-xl text-2xl font-bold mb-4 shadow-lg shine-effect">شروع بازی</button>
-                        <button id="online-play" class="btn w-full bg-gray-800 text-gold-300 border border-gold py-3 px-6 rounded-xl text-xl font-bold mb-8 shadow-lg hover:bg-gray-700 transition-all opacity-50 cursor-not-allowed">بازی آنلاین<span class="text-xs block mt-1 opacity-70">به زودی</span></button>
-                        <div class="grid grid-cols-3 gap-3">
-                            <button class="btn btn-dark py-2 rounded-lg shadow-md text-sm opacity-50 cursor-not-allowed">چالش ها<div class="text-xs mt-1 opacity-70">به زودی</div></button>
-                            <button class="btn btn-dark py-2 rounded-lg shadow-md text-sm opacity-50 cursor-not-allowed">چت<div class="text-xs mt-1 opacity-70">به زودی</div></button>
-                            <button class="btn btn-dark py-2 rounded-lg shadow-md text-sm opacity-50 cursor-not-allowed">فروشگاه<div class="text-xs mt-1 opacity-70">به زودی</div></button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer -->
-                <div class="text-center text-gray-500 text-sm py-4 mt-auto">نسخه 1.1 - استدیو اسکورت گیم</div>
-            </div>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="game-screen" class="screen flex-col justify-start z-10 overflow-y-auto">
-            <div class="container mx-auto px-4 py-6 h-full flex flex-col w-full">
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-6">
-                    <button id="back-to-menu" class="btn bg-gray-900 p-2 rounded-lg gold-border">
-                        <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                    </button>
-                    <div class="bg-gray-900 px-4 py-2 rounded-lg gold-border">
-                        <span class="text-gold-300 font-medium">مرحله: </span>
-                        <span id="current-level" class="text-gold-300 font-bold">1</span>
-                    </div>
-                    <button id="hint-button" class="btn bg-gray-900 p-2 rounded-lg gold-border hidden">
-                        <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                    </button>
-                </div>
-                <!-- Content -->
-                <div class="flex-1 flex flex-col">
-                    <div class="bg-gray-900 rounded-xl p-6 mb-6 shadow-lg gold-border">
-                        <h2 id="puzzle-question" class="text-xl font-bold text-gold-300 mb-4 text-center min-h-[56px]">معمای مرحله</h2>
-                    </div>
-                    <div id="answer-container" class="bg-gray-900 rounded-xl p-6 shadow-lg gold-border">
-                        <h3 class="text-lg font-medium text-gold-300 mb-4">پاسخ خود را انتخاب کنید:</h3>
-                        <div id="answer-options" class="grid grid-cols-2 gap-4"></div>
-                    </div>
-                    <div id="word-puzzle-container" class="bg-gray-900 rounded-xl p-6 shadow-lg hidden flex-col flex-grow">
-                        <h3 class="text-lg font-medium text-gold-300 mb-2">پاسخ شما:</h3>
-                        <div id="word-answer-slot" class="bg-gray-800 rounded-lg p-3 mb-4 flex flex-wrap gap-2 min-h-[50px] gold-border items-center justify-center"></div>
-                        <h3 class="text-lg font-medium text-gold-300 mb-2 mt-4">کلمات موجود:</h3>
-                        <div id="word-options" class="flex flex-wrap gap-3 mt-2 justify-center"></div>
-                        <button id="check-word-puzzle" class="btn btn-gold w-full mt-auto py-3 rounded-lg text-lg font-bold">بررسی پاسخ</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Modal -->
-        <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-            <div class="bg-gray-900 rounded-xl p-6 max-w-md w-full gold-border scale-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold gold-text">تنظیمات</h3>
-                    <button id="close-settings" class="text-gray-400 hover:text-white">
-                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between"><span class="text-gold-300">صدا</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" value="" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div></label></div>
-                    <div class="flex items-center justify-between"><span class="text-gold-300">موسیقی</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" value="" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div></label></div>
-                    <div class="mt-6"><label for="gift-code" class="block text-sm font-medium text-gold-300 mb-1">کد هدیه</label><div class="flex"><input type="text" id="gift-code" class="block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-r-none rounded-l-md shadow-sm focus:outline-none focus:ring-1 focus:ring-gold-500 text-white"><button id="redeem-code" class="btn px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-none rounded-r-md text-gold-300 hover:bg-gray-700">اعمال</button></div></div>
-                    <div class="mt-6 pt-4 border-t border-gray-800"><h4 class="text-lg font-medium gold-text mb-3">سازندگان</h4><ul class="space-y-2 text-sm"><li class="flex justify-between"><span class="text-gray-400">کدنویس ارشد:</span><span class="text-gold-300">Ali.k</span></li><li class="flex justify-between"><span class="text-gray-400">کد نویس دوم:</span><span class="text-gold-300">abolfazl1401</span></li><li class="flex justify-between"><span class="text-gray-400">طراح:</span><span class="text-gold-300">ivar</span></li></ul></div>
-                    <div class="text-center text-gray-500 text-xs mt-6">نسخه 1.1.0</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Result Modal -->
-        <div id="result-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-            <div class="bg-gray-900 rounded-xl p-6 max-w-sm w-full text-center gold-border scale-in">
-                <div id="result-icon" class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"></div>
-                <h3 id="result-title" class="text-2xl font-bold mb-2 gold-text">عنوان نتیجه</h3>
-                <p id="result-message" class="text-gray-300 mb-6">پیام نتیجه</p>
-                <button id="result-button" class="btn w-full py-3 px-4 rounded-lg text-white font-medium shine-effect">ادامه</button>
-            </div>
-        </div>
-
-        <!-- Creator Modal -->
-        <div id="creator-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-            <div class="bg-gray-900 rounded-xl p-6 max-w-sm w-full text-center gold-border scale-in">
-                <div class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 gold-gradient"><svg class="w-8 h-8 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg></div>
-                <h3 class="text-2xl font-bold mb-2 gold-text">حالت سازنده فعال شد!</h3>
-                <p class="text-gray-300 mb-6">شما اکنون به امکانات ویژه سازندگان دسترسی دارید.</p>
-                <button id="creator-ok-button" class="btn w-full py-3 px-4 rounded-lg text-black font-medium btn-gold shine-effect">متوجه شدم</button>
             </div>
         </div>
     </div>
 
-<script>
-    // --- START OF CORRECTED SCRIPT ---
-    const puzzles = [
-        { type: 'multiple-choice', question: 'کدام حیوان بلندترین حیوان روی زمین است؟', options: ['زرافه', 'فیل', 'نهنگ', 'دایناسور'], correctAnswer: 'زرافه', hint: 'این حیوان گردن بسیار بلندی دارد.' },
-        { type: 'multiple-choice', question: 'اگر ساعت 3:15 باشد، زاویه بین عقربه‌ها چند درجه است؟', options: ['7.5 درجه', '45 درجه', '90 درجه', '0 درجه'], correctAnswer: '7.5 درجه', hint: 'فرمول زاویه: |(30 * H) - (5.5 * M)|' },
-        { type: 'word-puzzle', question: 'با کنار هم قرار دادن کلمات، نام یک شهر ایران را بسازید.', words: ['اص', 'فه', 'ان'], correctAnswer: 'اصفهان', hint: 'این شهر به نصف جهان معروف است.' },
-        { type: 'multiple-choice', question: 'کدام گزینه ادامه منطقی این دنباله است؟ 2، 4، 8، 16، ...', options: ['24', '32', '64', '128'], correctAnswer: '32', hint: 'هر عدد دو برابر عدد قبلی است.' },
-        { type: 'multiple-choice', question: 'کدام گزینه با بقیه متفاوت است؟', options: ['سیب', 'پرتقال', 'گوجه', 'موز'], correctAnswer: 'گوجه', hint: 'کدامیک از نظر گیاه‌شناسی در دسته متفاوتی قرار می‌گیرد؟ (سبزیجات)' },
-        { type: 'word-puzzle', question: 'با کنار هم قرار دادن کلمات، ضرب المثل معروف را بسازید.', words: ['عجله', 'کار', 'شیطان', 'است'], correctAnswer: 'عجلهکارشیطاناست', hint: 'این ضرب المثل درباره عواقب شتاب‌زدگی است.' },
-        { type: 'multiple-choice', question: 'اگر امروز سه‌شنبه باشد، 100 روز بعد چه روزی خواهد بود؟', options: ['سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'], correctAnswer: 'پنج‌شنبه', hint: '100 تقسیم بر 7 باقیمانده 2 دارد. دو روز بعد از سه‌شنبه.' },
-        { type: 'multiple-choice', question: 'پایتخت استرالیا کدام شهر است؟', options: ['سیدنی', 'ملبورن', 'کانبرا', 'پرت'], correctAnswer: 'کانبرا', hint: 'برخلاف تصور عموم، سیدنی پایتخت نیست.' },
-        { type: 'word-puzzle', question: 'با حروف "د ا ن ش م ن د" یک شغل بسازید.', words: ['ش', 'م', 'د', 'ا', 'ن', 'د', 'ن'], correctAnswer: 'دشمن', hint: 'کلمه "دشمن" را میتوان از حروف "دانشمند" ساخت.' },
-        { type: 'multiple-choice', question: 'کدام سیاره به "سیاره سرخ" معروف است؟', options: ['زهره', 'مریخ', 'مشتری', 'زحل'], correctAnswer: 'مریخ', hint: 'این سیاره به دلیل وجود اکسید آهن در سطح آن، قرمز به نظر می‌رسد.' },
-        { type: 'multiple-choice', question: 'اگر 5 گربه، 5 موش را در 5 دقیقه بگیرند، 100 گربه، 100 موش را در چند دقیقه می‌گیرند؟', options: ['100 دقیقه', '50 دقیقه', '10 دقیقه', '5 دقیقه'], correctAnswer: '5 دقیقه', hint: 'هر گربه برای گرفتن یک موش 5 دقیقه زمان نیاز دارد.' },
-        { type: 'word-puzzle', question: 'نام کتاب حافظ را با کلمات زیر بسازید.', words: ['دیوان', 'حافظ'], correctAnswer: 'دیوانحافظ', hint: 'نام کامل کتاب چیست؟' },
-        { type: 'multiple-choice', question: 'عدد بعدی در این دنباله چیست؟ ۱، ۱، ۲، ۳، ۵، ۸، ...', options: ['۱۱', '۱۲', '۱۳', '۱۴'], correctAnswer: '۱۳', hint: 'این دنباله فیبوناچی است. هر عدد حاصل جمع دو عدد قبلی است.' },
-        { type: 'multiple-choice', question: '"من همیشه دروغ می‌گویم." این جمله راست است یا دروغ؟', options: ['راست', 'دروغ', 'هر دو', 'یک پارادوکس است'], correctAnswer: 'یک پارادوکس است', hint: 'اگر راست باشد، پس گوینده دروغگوست که تناقض دارد. اگر دروغ باشد، پس گوینده راستگوست که باز هم تناقض دارد.' },
-        { type: 'word-puzzle', question: 'پایتخت ایران را بسازید.', words: ['ته', 'ران'], correctAnswer: 'تهران', hint: 'برج میلاد در این شهر است.' },
-        { type: 'multiple-choice', question: 'سبک‌ترین عنصر در جدول تناوبی کدام است؟', options: ['هلیوم', 'اکسیژن', 'هیدروژن', 'لیتیوم'], correctAnswer: 'هیدروژن', hint: 'این عنصر عدد اتمی ۱ را دارد.' },
-    ];
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-40 hidden">
+        <h1 class="text-5xl font-black mb-8 gold-text">مغز شو</h1>
+        
+        <!-- Animated Logo -->
+        <div class="relative mb-8">
+            <svg class="w-24 h-24 rotate" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" stroke="url(#goldGradient)" stroke-width="2" />
+                <path class="pulse" d="M30 65L45 35L55 65L70 35" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-12 h-12 gold-gradient rounded-full opacity-50 pulse"></div>
+            </div>
+        </div>
+        
+        <div class="w-64 h-3 bg-gray-800 rounded-full overflow-hidden">
+            <div id="loading-bar" class="h-full gold-gradient rounded-full" style="width: 0%"></div>
+        </div>
+        <p id="loading-text" class="mt-4 text-gold-300">در حال بارگذاری... 0%</p>
+    </div>
 
-    let currentLevel = 0;
-    let playerData = { username: '', level: 0, coins: 0, cups: 0, isCreator: false };
-    let selectedWordPieces = [];
+    <!-- Registration Screen -->
+    <div id="registration-screen" class="fixed inset-0 flex items-center justify-center bg-black z-30 hidden">
+        <div class="bg-gray-900 rounded-lg p-8 max-w-md w-full gold-border">
+            <h2 class="text-3xl font-bold mb-6 text-center gold-text">ثبت نام در مغز شو</h2>
+            <form id="registration-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gold-300">نام کاربری</label>
+                    <input type="text" id="username" class="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gold-500 text-white" required>
+                </div>
+                <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-md shadow-sm text-lg font-medium btn-gold shine-effect">
+                    ثبت نام و ورود
+                </button>
+            </form>
+        </div>
+    </div>
 
-    const DOM = {
-        screens: { splash: document.getElementById('splash-screen'), loading: document.getElementById('loading-screen'), registration: document.getElementById('registration-screen'), mainMenu: document.getElementById('main-menu'), game: document.getElementById('game-screen'), },
-        modals: { result: document.getElementById('result-modal'), settings: document.getElementById('settings-modal'), creator: document.getElementById('creator-modal'), },
-        buttons: { startGame: document.getElementById('start-game'), backToMenu: document.getElementById('back-to-menu'), result: document.getElementById('result-button'), settings: document.getElementById('settings-button'), closeSettings: document.getElementById('close-settings'), redeemCode: document.getElementById('redeem-code'), creatorOk: document.getElementById('creator-ok-button'), hint: document.getElementById('hint-button'), checkWordPuzzle: document.getElementById('check-word-puzzle'), },
-        registrationForm: document.getElementById('registration-form'),
-        usernameInput: document.getElementById('username'),
-        loadingBar: document.getElementById('loading-bar'),
-        loadingText: document.getElementById('loading-text'),
-        profile: { name: document.getElementById('profile-name'), level: document.getElementById('player-level'), coins: document.getElementById('player-coins'), cups: document.getElementById('player-cups'), creatorBadge: document.getElementById('creator-badge'), },
-        game: { level: document.getElementById('current-level'), question: document.getElementById('puzzle-question'), answerContainer: document.getElementById('answer-container'), answerOptions: document.getElementById('answer-options'), wordPuzzleContainer: document.getElementById('word-puzzle-container'), wordAnswerSlot: document.getElementById('word-answer-slot'), wordOptions: document.getElementById('word-options'), },
-        result: { icon: document.getElementById('result-icon'), title: document.getElementById('result-title'), message: document.getElementById('result-message'), button: document.getElementById('result-button'), }
-    };
+    <!-- Main Menu -->
+    <div id="main-menu" class="fixed inset-0 bg-black z-20 hidden">
+        <div class="container mx-auto px-4 py-6 h-full flex flex-col">
+            <!-- Header with settings and title -->
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-4xl font-black gold-text">مغز شو</h1>
+                <button id="settings-button" class="bg-gray-900 p-2 rounded-lg gold-border">
+                    <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Player profile card (centered) -->
+            <div class="flex justify-center mb-8">
+                <div class="bg-gray-900 p-4 rounded-lg gold-border w-64">
+                    <div class="flex flex-col items-center">
+                        <!-- Split circle avatar -->
+                        <div class="split-circle mb-3 relative">
+                            <div id="creator-badge" class="creator-badge hidden">C</div>
+                        </div>
+                        
+                        <h3 id="profile-name" class="text-xl font-bold gold-text mb-2">بازیکن</h3>
+                        
+                        <!-- Stats -->
+                        <div class="flex justify-between w-full mt-2">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                </svg>
+                                <span id="player-level" class="text-gold-300">1</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
+                                </svg>
+                                <span id="player-coins" class="text-gold-300">0</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+                                </svg>
+                                <span id="player-cups" class="text-gold-300">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <div class="flex-1 flex flex-col items-center">
+                <div class="w-full max-w-md">
+                    <button id="start-game" class="w-full btn-gold py-4 px-6 rounded-xl text-2xl font-bold mb-4 shadow-lg shine-effect">
+                        شروع بازی
+                    </button>
+                    
+                    <button id="online-play" class="w-full bg-gray-800 text-gold-300 border border-gold py-3 px-6 rounded-xl text-xl font-bold mb-8 shadow-lg hover:bg-gray-700 transition-all">
+                        بازی آنلاین
+                        <span class="text-xs block mt-1 opacity-70">به زودی</span>
+                    </button>
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <button class="btn-dark py-2 rounded-lg shadow-md text-sm">
+                            چالش ها
+                            <div class="text-xs mt-1 opacity-70">به زودی</div>
+                        </button>
+                        <button class="btn-dark py-2 rounded-lg shadow-md text-sm">
+                            چت
+                            <div class="text-xs mt-1 opacity-70">به زودی</div>
+                        </button>
+                        <button class="btn-dark py-2 rounded-lg shadow-md text-sm">
+                            فروشگاه
+                            <div class="text-xs mt-1 opacity-70">به زودی</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="text-center text-gray-500 text-sm py-4">
+                نسخه 1.0 - استدیو اسکورت گیم
+            </div>
+        </div>
+    </div>
 
-    function showScreen(screenId) {
-        Object.values(DOM.screens).forEach(s => s.classList.remove('visible'));
-        if (DOM.screens[screenId]) {
-            DOM.screens[screenId].classList.add('visible');
-        }
-    }
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-900 rounded-xl p-6 max-w-md w-full gold-border scale-in">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold gold-text">تنظیمات</h3>
+                <button id="close-settings" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Sound Settings -->
+                <div class="flex items-center justify-between">
+                    <span class="text-gold-300">صدا</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+                    </label>
+                </div>
+                
+                <!-- Music Settings -->
+                <div class="flex items-center justify-between">
+                    <span class="text-gold-300">موسیقی</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+                    </label>
+                </div>
+                
+                <!-- Gift Code -->
+                <div class="mt-6">
+                    <label for="gift-code" class="block text-sm font-medium text-gold-300 mb-1">کد هدیه</label>
+                    <div class="flex">
+                        <input type="text" id="gift-code" class="block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-r-none rounded-l-md shadow-sm focus:outline-none focus:ring-1 focus:ring-gold-500 text-white">
+                        <button id="redeem-code" class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-none rounded-r-md text-gold-300 hover:bg-gray-700">اعمال</button>
+                    </div>
+                </div>
+                
+                <!-- Creators Section -->
+                <div class="mt-6 pt-4 border-t border-gray-800">
+                    <h4 class="text-lg font-medium gold-text mb-3">سازندگان</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex justify-between">
+                            <span class="text-gray-400">کدنویس ارشد:</span>
+                            <span class="text-gold-300">Ali.k</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span class="text-gray-400">کد نویس دوم:</span>
+                            <span class="text-gold-300">abolfazl1401</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span class="text-gray-400">طراح:</span>
+                            <span class="text-gold-300">ivar</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Version -->
+                <div class="text-center text-gray-500 text-xs mt-6">
+                    نسخه 1.0.0
+                </div>
+            </div>
+        </div>
+    </div>
 
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            DOM.screens.splash.classList.remove('visible');
+    <!-- Game Screen -->
+    <div id="game-screen" class="fixed inset-0 bg-black z-10 hidden">
+        <div class="container mx-auto px-4 py-6 h-full flex flex-col">
+            <!-- Header with level info -->
+            <div class="flex items-center justify-between mb-6">
+                <button id="back-to-menu" class="bg-gray-900 p-2 rounded-lg gold-border">
+                    <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </button>
+                <div class="bg-gray-900 px-4 py-2 rounded-lg gold-border">
+                    <span class="text-gold-300 font-medium">مرحله: </span>
+                    <span id="current-level" class="text-gold-300 font-bold">1</span>
+                </div>
+                
+                <!-- Hint button (visible only in creator mode) -->
+                <button id="hint-button" class="bg-gray-900 p-2 rounded-lg gold-border hidden">
+                    <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Game content -->
+            <div class="flex-1 flex flex-col">
+                <!-- Puzzle container -->
+                <div class="bg-gray-900 rounded-xl p-6 mb-6 shadow-lg puzzle-container gold-border">
+                    <h2 id="puzzle-question" class="text-xl font-bold text-gold-300 mb-4 text-center">معمای مرحله</h2>
+                    <div id="puzzle-content" class="flex justify-center items-center min-h-[100px]">
+                        <!-- Puzzle content will be inserted here -->
+                    </div>
+                </div>
+                
+                <!-- Answer container -->
+                <div id="answer-container" class="bg-gray-900 rounded-xl p-6 shadow-lg gold-border">
+                    <h3 class="text-lg font-medium text-gold-300 mb-4">پاسخ خود را انتخاب کنید:</h3>
+                    <div id="answer-options" class="grid grid-cols-2 gap-4">
+                        <!-- Answer options will be inserted here -->
+                    </div>
+                </div>
+                
+                <!-- Word puzzle container (initially hidden) -->
+                <div id="word-puzzle-container" class="bg-gray-900 rounded-xl p-6 shadow-lg mt-6 hidden gold-border">
+                    <h3 class="text-lg font-medium text-gold-300 mb-4">کلمات را کنار هم بچینید:</h3>
+                    <div id="word-answer-slot" class="bg-gray-800 rounded-lg p-3 mb-4 flex flex-wrap gap-2 min-h-[50px] gold-border">
+                        <!-- Selected words will appear here -->
+                    </div>
+                    <div id="word-options" class="flex flex-wrap gap-2 mt-4">
+                        <!-- Word options will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-900 rounded-xl p-6 max-w-sm w-full text-center gold-border scale-in">
+            <div id="result-icon" class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <!-- Icon will be inserted here -->
+            </div>
+            <h3 id="result-title" class="text-2xl font-bold mb-2 gold-text">عنوان نتیجه</h3>
+            <p id="result-message" class="text-gray-300 mb-6">پیام نتیجه</p>
+            <button id="result-button" class="w-full py-3 px-4 rounded-lg text-white font-medium shine-effect">
+                ادامه
+            </button>
+        </div>
+    </div>
+
+    <!-- Creator Mode Activated Modal -->
+    <div id="creator-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-900 rounded-xl p-6 max-w-sm w-full text-center gold-border scale-in">
+            <div class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 gold-gradient">
+                <svg class="w-8 h-8 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2 gold-text">حالت سازنده فعال شد!</h3>
+            <p class="text-gray-300 mb-6">شما اکنون به امکانات ویژه سازندگان دسترسی دارید.</p>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <svg class="w-6 h-6 mx-auto text-gold-300 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    <p class="text-sm text-gold-300">راهنمای نامحدود</p>
+                </div>
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <svg class="w-6 h-6 mx-auto text-gold-300 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <p class="text-sm text-gold-300">دسترسی به تمام مراحل</p>
+                </div>
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <svg class="w-6 h-6 mx-auto text-gold-300 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                    </svg>
+                    <p class="text-sm text-gold-300">جایزه های ویژه</p>
+                </div>
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <svg class="w-6 h-6 mx-auto text-gold-300 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    <p class="text-sm text-gold-300">افکت های ویژه</p>
+                </div>
+            </div>
+            <button id="creator-ok-button" class="w-full py-3 px-4 rounded-lg text-black font-medium btn-gold shine-effect">
+                متوجه شدم
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game data
+        const puzzles = [
+            {
+                type: 'multiple-choice',
+                question: 'کدام حیوان بلندترین حیوان روی زمین است؟',
+                options: ['زرافه', 'فیل', 'نهنگ', 'دایناسور'],
+                correctAnswer: 'زرافه',
+                hint: 'این حیوان گردن بسیار بلندی دارد.'
+            },
+            {
+                type: 'multiple-choice',
+                question: 'اگر ساعت 3:15 باشد، زاویه بین عقربه‌های ساعت چند درجه است؟',
+                options: ['7.5 درجه', '45 درجه', '90 درجه', '180 درجه'],
+                correctAnswer: '7.5 درجه',
+                hint: 'عقربه ساعت‌شمار هر ساعت 30 درجه و عقربه دقیقه‌شمار هر دقیقه 6 درجه حرکت می‌کند.'
+            },
+            {
+                type: 'word-puzzle',
+                question: 'با کنار هم قرار دادن کلمات، نام یک شهر ایران را بسازید.',
+                words: ['اص', 'فه', 'ان'],
+                correctAnswer: 'اصفهان',
+                hint: 'این شهر به نصف جهان معروف است.'
+            },
+            {
+                type: 'multiple-choice',
+                question: 'کدام گزینه ادامه منطقی این دنباله است؟ 2، 4، 8، 16، ...',
+                options: ['24', '32', '64', '128'],
+                correctAnswer: '32',
+                hint: 'هر عدد دو برابر عدد قبلی است.'
+            },
+            {
+                type: 'multiple-choice',
+                question: 'کدام گزینه با بقیه متفاوت است؟',
+                options: ['سیب', 'پرتقال', 'گوجه', 'موز'],
+                correctAnswer: 'گوجه',
+                hint: 'به دسته‌بندی این موارد فکر کنید. کدام یک میوه نیست؟'
+            },
+            {
+                type: 'word-puzzle',
+                question: 'با کنار هم قرار دادن کلمات، ضرب المثل معروف را بسازید.',
+                words: ['عجله', 'کار', 'شیطان', 'است'],
+                correctAnswer: 'عجلهکارشیطاناست',
+                hint: 'این ضرب المثل درباره عواقب شتاب‌زدگی است.'
+            },
+            {
+                type: 'multiple-choice',
+                question: 'اگر امروز سه‌شنبه باشد، 100 روز بعد چه روزی خواهد بود؟',
+                options: ['سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'],
+                correctAnswer: 'چهارشنبه',
+                hint: '100 را بر 7 تقسیم کنید و به باقیمانده توجه کنید.'
+            }
+        ];
+
+        // Game state
+        let currentLevel = 0;
+        let playerData = {
+            username: '',
+            level: 0,
+            coins: 0,
+            cups: 0,
+            isCreator: false
+        };
+        let selectedWords = [];
+        let availableWords = [];
+
+        // DOM Elements
+        const splashScreen = document.getElementById('splash-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const registrationScreen = document.getElementById('registration-screen');
+        const mainMenu = document.getElementById('main-menu');
+        const gameScreen = document.getElementById('game-screen');
+        const resultModal = document.getElementById('result-modal');
+        const settingsModal = document.getElementById('settings-modal');
+        const creatorModal = document.getElementById('creator-modal');
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if player data exists in local storage
             const savedPlayerData = localStorage.getItem('brainShowPlayerData');
-            if (savedPlayerData) {
-                playerData = JSON.parse(savedPlayerData);
-                showScreen('loading');
-                startLoading();
-            } else {
-                showScreen('registration');
-            }
-        }, 2500);
-        setupEventListeners();
-    });
+            
+            // Show splash screen for 2 seconds
+            setTimeout(() => {
+                splashScreen.classList.add('hidden');
+                
+                if (savedPlayerData) {
+                    playerData = JSON.parse(savedPlayerData);
+                    showLoadingScreen();
+                } else {
+                    showRegistrationScreen();
+                }
+            }, 2000);
+            
+            // Set up event listeners
+            setupEventListeners();
+        });
 
-    function setupEventListeners() {
-        DOM.registrationForm.addEventListener('submit', handleRegistration);
-        DOM.buttons.startGame.addEventListener('click', () => { showScreen('game'); loadLevel(playerData.level); });
-        DOM.buttons.backToMenu.addEventListener('click', () => showScreen('mainMenu'));
-        DOM.buttons.result.addEventListener('click', handleResultClick);
-        DOM.buttons.settings.addEventListener('click', () => DOM.modals.settings.classList.remove('hidden'));
-        DOM.buttons.closeSettings.addEventListener('click', () => DOM.modals.settings.classList.add('hidden'));
-        DOM.buttons.redeemCode.addEventListener('click', handleRedeemCode);
-        DOM.buttons.creatorOk.addEventListener('click', () => DOM.modals.creator.classList.add('hidden'));
-        DOM.buttons.hint.addEventListener('click', showHint);
-        DOM.buttons.checkWordPuzzle.addEventListener('click', checkWordPuzzleAnswer);
-    }
-    
-    function startLoading() {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.floor(Math.random() * 10) + 1;
-            if (progress > 100) progress = 100;
-            DOM.loadingBar.style.width = `${progress}%`;
-            DOM.loadingText.textContent = `در حال بارگذاری... ${progress}%`;
-            if (progress >= 100) {
-                clearInterval(interval);
-                setTimeout(() => { showScreen('mainMenu'); updateMainMenuUI(); }, 500);
-            }
-        }, 150);
-    }
-
-    function updateMainMenuUI() {
-        DOM.profile.name.innerHTML = playerData.username;
-        DOM.profile.level.textContent = playerData.level + 1;
-        DOM.profile.coins.textContent = playerData.coins;
-        DOM.profile.cups.textContent = playerData.cups;
-        DOM.buttons.hint.classList.toggle('hidden', !playerData.isCreator);
-        if (playerData.isCreator) {
-            DOM.profile.creatorBadge.classList.remove('hidden');
-            DOM.profile.name.innerHTML += ` <span class="text-xs bg-gradient-to-r from-red-500 to-yellow-500 text-white px-1 rounded">سازنده</span>`;
-        }
-    }
-
-    function handleRegistration(e) {
-        e.preventDefault();
-        const username = DOM.usernameInput.value.trim();
-        if (username) {
-            playerData = { username, level: 0, coins: 0, cups: 0, isCreator: false };
-            localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
-            showScreen('loading');
-            startLoading();
-        }
-    }
-    
-    function updatePlayerProgress() {
-        if (currentLevel >= playerData.level) {
-            playerData.level = currentLevel + 1;
-        }
-        playerData.coins += 10;
-        if ((currentLevel + 1) % 5 === 0) { playerData.cups += 1; }
-        localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
-        updateMainMenuUI();
-    }
-    
-    function loadLevel(levelIndex) {
-        currentLevel = levelIndex;
-        if (levelIndex >= puzzles.length) {
-            showResult('تبریک!', 'شما تمام مراحل بازی را با موفقیت به پایان رساندید!', 'game-won');
-            return;
-        }
-        
-        const puzzle = puzzles[levelIndex];
-        DOM.game.level.textContent = levelIndex + 1;
-        DOM.game.question.textContent = puzzle.question;
-        
-        DOM.game.answerContainer.classList.toggle('hidden', puzzle.type !== 'multiple-choice');
-        DOM.game.wordPuzzleContainer.classList.toggle('hidden', puzzle.type !== 'word-puzzle');
-        
-        if (puzzle.type === 'multiple-choice') {
-            DOM.game.answerOptions.innerHTML = '';
-            [...puzzle.options].sort(() => Math.random() - 0.5).forEach(option => {
-                const button = document.createElement('button');
-                button.className = 'btn btn-dark py-3 px-4 rounded-lg';
-                button.textContent = option;
-                button.addEventListener('click', () => checkAnswer(option, puzzle.correctAnswer));
-                DOM.game.answerOptions.appendChild(button);
+        function setupEventListeners() {
+            // Registration form
+            document.getElementById('registration-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                
+                if (username.trim() !== '') {
+                    playerData.username = username;
+                    playerData.level = 0;
+                    playerData.coins = 0;
+                    playerData.cups = 0;
+                    playerData.isCreator = false;
+                    
+                    // Save to local storage
+                    localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
+                    
+                    showLoadingScreen();
+                }
             });
-        } else if (puzzle.type === 'word-puzzle') {
-            DOM.game.wordAnswerSlot.innerHTML = '';
-            DOM.game.wordOptions.innerHTML = '';
-            selectedWordPieces = [];
-            [...puzzle.words].sort(() => Math.random() - 0.5).forEach(word => {
-                const wordPiece = document.createElement('div');
-                wordPiece.className = 'word-piece bg-gray-800 text-gold-300 py-2 px-4 rounded-lg gold-border';
-                wordPiece.textContent = word;
-                wordPiece.dataset.word = word;
-                wordPiece.addEventListener('click', () => selectWord(wordPiece));
-                DOM.game.wordOptions.appendChild(wordPiece);
+            
+            // Start game button
+            document.getElementById('start-game').addEventListener('click', () => {
+                mainMenu.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                loadLevel(playerData.level);
+            });
+            
+            // Back to menu button
+            document.getElementById('back-to-menu').addEventListener('click', () => {
+                gameScreen.classList.add('hidden');
+                mainMenu.classList.remove('hidden');
+            });
+            
+            // Result button
+            document.getElementById('result-button').addEventListener('click', () => {
+                resultModal.classList.add('hidden');
+                if (document.getElementById('result-title').textContent === 'آفرین!') {
+                    loadNextLevel();
+                }
+            });
+            
+            // Settings button
+            document.getElementById('settings-button').addEventListener('click', () => {
+                settingsModal.classList.remove('hidden');
+            });
+            
+            // Close settings button
+            document.getElementById('close-settings').addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+            });
+            
+            // Redeem code button
+            document.getElementById('redeem-code').addEventListener('click', () => {
+                const code = document.getElementById('gift-code').value;
+                if (code === 'a.av1401.d1401a.av.li.vd.ab.') {
+                    activateCreatorMode();
+                } else {
+                    alert('کد وارد شده معتبر نیست.');
+                }
+            });
+            
+            // Creator modal OK button
+            document.getElementById('creator-ok-button').addEventListener('click', () => {
+                creatorModal.classList.add('hidden');
+            });
+            
+            // Hint button
+            document.getElementById('hint-button').addEventListener('click', () => {
+                if (playerData.isCreator) {
+                    showHint();
+                }
             });
         }
-    }
 
-    function selectWord(wordPiece) {
-        wordPiece.classList.add('selected');
-        const answerPiece = wordPiece.cloneNode(true);
-        answerPiece.classList.remove('selected');
-        answerPiece.addEventListener('click', () => deselectWord(wordPiece, answerPiece));
-        DOM.game.wordAnswerSlot.appendChild(answerPiece);
-    }
-
-    function deselectWord(originalPiece, answerPiece) {
-        originalPiece.classList.remove('selected');
-        answerPiece.remove();
-    }
-    
-    function checkAnswer(selected, correct) {
-        if (selected === correct) {
-            showResult('آفرین!', 'پاسخ شما صحیح است!', 'success');
-            updatePlayerProgress();
-        } else {
-            showResult('اشتباه!', 'پاسخ صحیح نیست. دوباره تلاش کنید.', 'error');
-        }
-    }
-
-    function checkWordPuzzleAnswer() {
-        const userAnswer = Array.from(DOM.game.wordAnswerSlot.children).map(p => p.dataset.word).join('');
-        checkAnswer(userAnswer, puzzles[currentLevel].correctAnswer);
-    }
-    
-    function handleResultClick() {
-        DOM.modals.result.classList.add('hidden');
-        const type = DOM.result.button.dataset.type;
-        if (type === 'success') {
-            loadLevel(currentLevel + 1);
-        } else if (type === 'error') {
-            loadLevel(currentLevel);
-        } else if (type === 'game-won') {
-            showScreen('mainMenu');
-        }
-    }
-
-    function showResult(title, message, type) {
-        DOM.modals.result.classList.remove('hidden');
-        DOM.result.title.textContent = title;
-        DOM.result.message.textContent = message;
-        DOM.result.button.dataset.type = type;
-
-        if (type === 'success' || type === 'game-won') {
-            DOM.result.icon.innerHTML = `<svg class="w-10 h-10 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
-            DOM.result.button.className = 'btn w-full py-3 rounded-lg font-medium btn-gold shine-effect';
-            DOM.result.button.textContent = type === 'game-won' ? 'بازگشت به منو' : 'مرحله بعد';
-        } else {
-            DOM.result.icon.innerHTML = `<svg class="w-10 h-10 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
-            DOM.result.button.className = 'btn w-full py-3 rounded-lg font-medium bg-gray-800 text-white border border-red-500';
-            DOM.result.button.textContent = 'تلاش مجدد';
-        }
-    }
-    
-    function handleRedeemCode() {
-        if (document.getElementById('gift-code').value === 'a.av1401.d1401a.av.li.vd.ab.') {
+        function activateCreatorMode() {
             playerData.isCreator = true;
             playerData.coins = 9999;
             playerData.cups = 99;
+            
+            // Save to local storage
             localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
-            updateMainMenuUI();
-            DOM.modals.settings.classList.add('hidden');
-            DOM.modals.creator.classList.remove('hidden');
-        } else { alert('کد وارد شده معتبر نیست.'); }
-    }
-    
-    function showHint() {
-        if (playerData.isCreator) {
-            alert(`راهنمایی سازنده: ${puzzles[currentLevel].hint}`);
+            
+            // Update UI
+            document.getElementById('player-coins').textContent = playerData.coins;
+            document.getElementById('player-cups').textContent = playerData.cups;
+            document.getElementById('creator-badge').classList.remove('hidden');
+            document.getElementById('hint-button').classList.remove('hidden');
+            
+            // Close settings modal and show creator modal
+            settingsModal.classList.add('hidden');
+            creatorModal.classList.remove('hidden');
+            
+            // Update profile name with creator badge
+            document.getElementById('profile-name').innerHTML = `${playerData.username} <span class="text-xs bg-gradient-to-r from-red-500 to-yellow-500 text-white px-1 rounded">سازنده</span>`;
         }
-    }
-</script>
-</body>
+
+        function showHint() {
+            const puzzle = puzzles[currentLevel];
+            if (puzzle && puzzle.hint) {
+                alert(`راهنمایی: ${puzzle.hint}`);
+            }
+        }
+
+        function showLoadingScreen() {
+            registrationScreen.classList.add('hidden');
+            loadingScreen.classList.remove('hidden');
+            
+            const loadingBar = document.getElementById('loading-bar');
+            const loadingText = document.getElementById('loading-text');
+            let progress = 0;
+            
+            const loadingInterval = setInterval(() => {
+                progress += 5;
+                loadingBar.style.width = `${progress}%`;
+                loadingText.textContent = `در حال بارگذاری... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                        showMainMenu();
+                    }, 500);
+                }
+            }, 100);
+        }
+
+        function showRegistrationScreen() {
+            registrationScreen.classList.remove('hidden');
+        }
+
+        function showMainMenu() {
+            mainMenu.classList.remove('hidden');
+            
+            // Update player info
+            document.getElementById('profile-name').textContent = playerData.username;
+            document.getElementById('player-level').textContent = playerData.level + 1;
+            document.getElementById('player-coins').textContent = playerData.coins;
+            document.getElementById('player-cups').textContent = playerData.cups;
+            
+            // Show creator badge if player is creator
+            if (playerData.isCreator) {
+                document.getElementById('creator-badge').classList.remove('hidden');
+                document.getElementById('profile-name').innerHTML = `${playerData.username} <span class="text-xs bg-gradient-to-r from-red-500 to-yellow-500 text-white px-1 rounded">سازنده</span>`;
+            }
+        }
+
+        function loadLevel(level) {
+            currentLevel = level;
+            document.getElementById('current-level').textContent = level + 1;
+            
+            if (level >= puzzles.length) {
+                // Game completed
+                showResult('تبریک!', 'شما تمام مراحل بازی را با موفقیت به پایان رساندید!', 'success');
+                return;
+            }
+            
+            const puzzle = puzzles[level];
+            document.getElementById('puzzle-question').textContent = puzzle.question;
+            
+            // Reset containers
+            document.getElementById('puzzle-content').innerHTML = '';
+            document.getElementById('answer-options').innerHTML = '';
+            document.getElementById('answer-container').classList.remove('hidden');
+            document.getElementById('word-puzzle-container').classList.add('hidden');
+            
+            // Show hint button if player is creator
+            if (playerData.isCreator) {
+                document.getElementById('hint-button').classList.remove('hidden');
+            } else {
+                document.getElementById('hint-button').classList.add('hidden');
+            }
+            
+            if (puzzle.type === 'multiple-choice') {
+                loadMultipleChoicePuzzle(puzzle);
+            } else if (puzzle.type === 'word-puzzle') {
+                loadWordPuzzle(puzzle);
+            }
+        }
+
+        function loadMultipleChoicePuzzle(puzzle) {
+            const answerOptions = document.getElementById('answer-options');
+            
+            // Shuffle options
+            const shuffledOptions = [...puzzle.options].sort(() => Math.random() - 0.5);
+            
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'btn-dark py-3 px-4 rounded-lg transition-all';
+                button.textContent = option;
+                button.addEventListener('click', () => {
+                    checkAnswer(option, puzzle.correctAnswer);
+                });
+                answerOptions.appendChild(button);
+            });
+        }
+
+        function loadWordPuzzle(puzzle) {
+            document.getElementById('answer-container').classList.add('hidden');
+            document.getElementById('word-puzzle-container').classList.remove('hidden');
+            
+            // Reset word puzzle
+            document.getElementById('word-answer-slot').innerHTML = '';
+            document.getElementById('word-options').innerHTML = '';
+            selectedWords = [];
+            
+            // Shuffle words
+            availableWords = [...puzzle.words].sort(() => Math.random() - 0.5);
+            
+            // Create word pieces
+            availableWords.forEach((word, index) => {
+                const wordPiece = document.createElement('div');
+                wordPiece.className = 'word-piece bg-gray-800 text-gold-300 py-2 px-4 rounded-lg gold-border';
+                wordPiece.textContent = word;
+                wordPiece.dataset.index = index;
+                wordPiece.dataset.word = word;
+                wordPiece.addEventListener('click', () => {
+                    toggleWordSelection(wordPiece);
+                });
+                document.getElementById('word-options').appendChild(wordPiece);
+            });
+            
+            // Auto-check answer when all words are selected
+            const observer = new MutationObserver(() => {
+                const selectedCount = document.querySelectorAll('.word-piece.selected').length;
+                if (selectedCount === availableWords.length) {
+                    checkWordPuzzleAnswer();
+                }
+            });
+            
+            observer.observe(document.getElementById('word-answer-slot'), { 
+                childList: true 
+            });
+        }
+
+        function toggleWordSelection(element) {
+            const word = element.dataset.word;
+            const index = element.dataset.index;
+            
+            if (element.classList.contains('selected')) {
+                // Remove from selection
+                element.classList.remove('selected');
+                selectedWords = selectedWords.filter(w => w.index !== index);
+            } else {
+                // Add to selection
+                element.classList.add('selected');
+                selectedWords.push({ word, index });
+            }
+            
+            updateWordAnswerSlot();
+        }
+
+        function updateWordAnswerSlot() {
+            const answerSlot = document.getElementById('word-answer-slot');
+            answerSlot.innerHTML = '';
+            
+            // Sort by selection order
+            selectedWords.forEach(item => {
+                const wordElement = document.createElement('div');
+                wordElement.className = 'bg-gray-700 text-gold-300 py-1 px-3 rounded gold-border';
+                wordElement.textContent = item.word;
+                answerSlot.appendChild(wordElement);
+            });
+        }
+
+        function checkWordPuzzleAnswer() {
+            const puzzle = puzzles[currentLevel];
+            const userAnswer = selectedWords.map(item => item.word).join('');
+            
+            if (userAnswer === puzzle.correctAnswer) {
+                showResult('آفرین!', 'پاسخ شما صحیح است!', 'success');
+                updatePlayerProgress();
+            } else {
+                showResult('اشتباه!', 'پاسخ صحیح نیست. دوباره تلاش کنید.', 'error');
+            }
+        }
+
+        function checkAnswer(selectedAnswer, correctAnswer) {
+            if (selectedAnswer === correctAnswer) {
+                showResult('آفرین!', 'پاسخ شما صحیح است!', 'success');
+                updatePlayerProgress();
+            } else {
+                showResult('اشتباه!', 'پاسخ صحیح نیست. دوباره تلاش کنید.', 'error');
+            }
+        }
+        
+        function updatePlayerProgress() {
+            // Update level
+            if (currentLevel >= playerData.level) {
+                playerData.level = currentLevel + 1;
+            }
+            
+            // Add coins and cups
+            playerData.coins += 10;
+            if ((currentLevel + 1) % 3 === 0) {
+                playerData.cups += 1;
+            }
+            
+            // Save to local storage
+            localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
+            
+            // Update UI
+            document.getElementById('player-level').textContent = playerData.level + 1;
+            document.getElementById('player-coins').textContent = playerData.coins;
+            document.getElementById('player-cups').textContent = playerData.cups;
+        }
+
+        function showResult(title, message, type) {
+            const resultModal = document.getElementById('result-modal');
+            const resultIcon = document.getElementById('result-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultMessage = document.getElementById('result-message');
+            const resultButton = document.getElementById('result-button');
+            
+            resultTitle.textContent = title;
+            resultMessage.textContent = message;
+            
+            if (type === 'success') {
+                resultIcon.className = 'mx-auto w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-4 gold-border';
+                resultIcon.innerHTML = `
+                    <svg class="w-8 h-8 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                `;
+                resultButton.className = 'w-full py-3 px-4 rounded-lg font-medium btn-gold shine-effect';
+                resultButton.textContent = 'ادامه';
+            } else {
+                resultIcon.className = 'mx-auto w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-4 gold-border';
+                resultIcon.innerHTML = `
+                    <svg class="w-8 h-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                `;
+                resultButton.className = 'w-full py-3 px-4 rounded-lg font-medium bg-gray-800 text-white border border-red-500';
+                resultButton.textContent = 'تلاش مجدد';
+            }
+            
+            resultModal.classList.remove('hidden');
+        }
+
+        function loadNextLevel() {
+            loadLevel(currentLevel + 1);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'964ded2a529b2dfa',t:'MTc1MzQ3MDMwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
