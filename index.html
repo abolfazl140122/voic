@@ -3,93 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مغز شو - چالش هوش و سرگرمی</title>
-    <meta name="description" content="بازی فکری مغز شو - چالش‌های هوش و معماهای جذاب">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23d4af37'/></svg>">
+    <title>مغز شو</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold-light: #f5d76e;
-            --gold: #d4af37;
-            --gold-dark: #996515;
-            --black-light: #222222;
-            --black: #111111;
-            --black-dark: #000000;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
+        * {
+            font-family: 'Vazirmatn', sans-serif;
         }
         
         body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: var(--black);
-            color: var(--gold-light);
+            background-color: #121212;
+            color: #e0e0e0;
             overflow-x: hidden;
-            touch-action: manipulation;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.08) 0%, transparent 30%);
         }
         
-        /* گرادیانت طلایی */
-        .gold-gradient {
-            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
-            background-size: 200% 200%;
-            animation: gradientAnimation 3s ease infinite;
-        }
-        
-        /* گرادیانت مشکی */
-        .black-gradient {
-            background: linear-gradient(135deg, var(--black-light), var(--black), var(--black-dark));
-        }
-        
-        /* متن طلایی */
         .gold-text {
-            background: linear-gradient(to right, var(--gold-light), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% 200%;
-            animation: gradientAnimation 3s ease infinite;
+            color: #FFD700;
         }
         
-        /* حاشیه طلایی */
         .gold-border {
-            border: 2px solid;
-            border-image-slice: 1;
-            border-image-source: linear-gradient(to right, var(--gold-light), var(--gold-dark));
+            border-color: #FFD700;
         }
         
-        /* افکت درخشش */
-        .shine-effect {
-            position: relative;
-            overflow: hidden;
+        .gold-bg {
+            background-color: #FFD700;
         }
         
-        .shine-effect::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.1) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(30deg);
-            animation: shine 3s infinite;
+        .btn {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
         
-        /* انیمیشن‌ها */
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .btn:hover {
+            background: linear-gradient(145deg, #FFD700, #FFC000);
+            color: #121212;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
         }
         
-        @keyframes shine {
-            0% { transform: translateX(-100%) rotate(30deg); }
-            100% { transform: translateX(100%) rotate(30deg); }
+        .btn-small {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .puzzle-card {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border: 2px solid #FFD700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .option {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border: 2px solid #555;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: #FFD700;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            border-color: #FFD700;
+            background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
+        }
+        
+        .option.correct {
+            border-color: #4CAF50;
+            background: linear-gradient(145deg, #1a1a1a, #2a6a2a);
+        }
+        
+        .option.wrong {
+            border-color: #F44336;
+            background: linear-gradient(145deg, #1a1a1a, #6a2a2a);
+        }
+        
+        .logo-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in;
         }
         
         @keyframes fadeIn {
@@ -97,1304 +113,2187 @@
             to { opacity: 1; }
         }
         
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
         @keyframes slideIn {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         
-        @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        .glow {
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .creator-glow {
+            animation: creatorGlow 2s infinite;
         }
         
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        @keyframes creatorGlow {
+            0% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; }
+            50% { text-shadow: 0 0 15px #FF5722, 0 0 30px #FF5722; }
+            100% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; }
         }
         
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .vip-glow {
+            animation: vipGlow 2s infinite;
         }
         
-        /* کلاس‌های کاربردی */
-        .fade-in { animation: fadeIn 1s ease-in-out; }
-        .slide-in { animation: slideIn 0.5s ease-in-out; }
-        .scale-in { animation: scaleIn 0.5s ease-in-out; }
-        .pulse { animation: pulse 2s infinite; }
-        .float { animation: float 3s ease-in-out infinite; }
-        .rotate { animation: rotate 10s linear infinite; }
-        
-        /* استایل‌های اختصاصی بازی */
-        .puzzle-container {
-            min-height: 200px;
-            transition: all 0.3s ease;
+        @keyframes vipGlow {
+            0% { text-shadow: 0 0 10px #9C27B0, 0 0 20px #9C27B0; }
+            50% { text-shadow: 0 0 15px #673AB7, 0 0 30px #673AB7; }
+            100% { text-shadow: 0 0 10px #9C27B0, 0 0 20px #9C27B0; }
         }
         
         .word-piece {
-            cursor: pointer;
-            transition: all 0.3s;
-            user-select: none;
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 5px;
+            background: #2a2a2a;
+            border: 2px solid #555;
+            border-radius: 8px;
+            cursor: grab;
+            transition: all 0.2s;
         }
         
         .word-piece:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px var(--gold);
+            border-color: #FFD700;
         }
         
         .word-piece.selected {
-            background-color: var(--gold);
-            color: var(--black);
-            transform: scale(0.95);
+            border-color: #FFD700;
+            background: #3a3a3a;
         }
         
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold-light), var(--gold));
-            color: var(--black);
-            transition: all 0.3s;
-            font-weight: 700;
+        .word-container {
+            min-height: 60px;
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed #555;
+            border-radius: 8px;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #FFD700;
+            opacity: 0;
+        }
+        
+        .profile-box {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border: 2px solid #FFD700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .profile-avatar {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .settings-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .settings-icon:hover {
+            transform: rotate(90deg);
+        }
+        
+        .badge {
+            background: linear-gradient(145deg, #FFD700, #FFC000);
+            color: #121212;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .menu-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .trophy-icon {
+            color: #FFD700;
+            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
+        }
+        
+        .coin-icon {
+            color: #FFC107;
+            filter: drop-shadow(0 0 3px rgba(255, 193, 7, 0.5));
+        }
+        
+        .creator-badge {
+            background: linear-gradient(145deg, #FF5722, #FF9800);
+            animation: badgePulse 2s infinite;
+        }
+        
+        .vip-badge {
+            background: linear-gradient(145deg, #9C27B0, #673AB7);
+            animation: badgePulse 2s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .creator-bg {
+            background: linear-gradient(to bottom right, #1a1a1a, #2a2a2a), 
+                        radial-gradient(circle at top left, rgba(255, 87, 34, 0.2), transparent 70%),
+                        radial-gradient(circle at bottom right, rgba(255, 152, 0, 0.2), transparent 70%);
+        }
+        
+        .vip-bg {
+            background: linear-gradient(to bottom right, #1a1a1a, #2a2a2a),
+                        radial-gradient(circle at top left, rgba(156, 39, 176, 0.2), transparent 70%),
+                        radial-gradient(circle at bottom right, rgba(103, 58, 183, 0.2), transparent 70%);
+        }
+        
+        .hint-button {
+            background: linear-gradient(145deg, #9C27B0, #673AB7);
             border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
         }
         
-        .btn-gold:hover {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+        .hint-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
         
-        .btn-dark {
-            background: linear-gradient(135deg, #333, #111);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            transition: all 0.3s;
+        .skip-button {
+            background: linear-gradient(145deg, #FF5722, #FF9800);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
         }
         
-        .btn-dark:hover {
-            background: linear-gradient(135deg, #222, #000);
+        .skip-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
         
-        .glow {
-            box-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold-light);
+        .edit-button {
+            background: linear-gradient(145deg, #FF5722, #FF9800);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
         }
         
-        /* آواتار دایره‌ای تقسیم شده */
-        .split-circle {
+        .edit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        
+        .creator-confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-image: linear-gradient(145deg, #FF5722, #FF9800);
+            opacity: 0;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        
+        .vip-confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-image: linear-gradient(145deg, #9C27B0, #673AB7);
+            opacity: 0;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        
+        .shop-item {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border: 2px solid #555;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .shop-item:hover {
+            border-color: #FFD700;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .shop-item.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .avatar-preview {
             width: 60px;
             height: 60px;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s;
+            border-radius: 0.5rem;
+            margin: 0 auto;
+            margin-bottom: 0.5rem;
         }
         
-        .split-circle:hover {
-            transform: rotate(15deg);
+        .avatar-black-gold {
+            background: linear-gradient(135deg, #000000 50%, #FFD700 50%);
         }
         
-        .split-circle::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 50%;
-            height: 100%;
-            background: var(--gold);
+        .avatar-black-red {
+            background: linear-gradient(135deg, #000000 50%, #F44336 50%);
         }
         
-        .split-circle::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 100%;
-            background: var(--black-light);
+        .avatar-red-gold {
+            background: linear-gradient(135deg, #F44336 50%, #FFD700 50%);
         }
         
-        /* نشان سازنده */
-        .creator-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 20px;
-            height: 20px;
-            background: linear-gradient(135deg, #ff0000, #ff6600);
-            border-radius: 50%;
+        .avatar-purple-gold {
+            background: linear-gradient(135deg, #9C27B0 50%, #FFD700 50%);
+        }
+        
+        .avatar-blue-gold {
+            background: linear-gradient(135deg, #2196F3 50%, #FFD700 50%);
+        }
+        
+        .avatar-green-gold {
+            background: linear-gradient(135deg, #4CAF50 50%, #FFD700 50%);
+        }
+        
+        .avatar-rainbow {
+            background: linear-gradient(to right, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #9400D3);
+        }
+        
+        .avatar-creator {
+            background: linear-gradient(135deg, #FF5722 50%, #FFD700 50%);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+            animation: creatorAvatarGlow 2s infinite;
+        }
+        
+        @keyframes creatorAvatarGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
+            100% { box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
+        }
+        
+        .avatar-vip {
+            background: linear-gradient(135deg, #9C27B0 50%, #673AB7 50%);
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
+            animation: vipAvatarGlow 2s infinite;
+        }
+        
+        @keyframes vipAvatarGlow {
+            0% { box-shadow: 0 0 10px rgba(156, 39, 176, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(103, 58, 183, 0.7); }
+            100% { box-shadow: 0 0 10px rgba(156, 39, 176, 0.5); }
+        }
+        
+        .timer-bar {
+            height: 6px;
+            background: linear-gradient(to right, #FFD700, #FF5722);
+            border-radius: 3px;
+            transition: width 1s linear;
+        }
+        
+        .math-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .math-cell {
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .sequence-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .sequence-box {
+            width: 40px;
+            height: 40px;
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 0.25rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
-            color: white;
             font-weight: bold;
-            box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
-            z-index: 10;
         }
         
-        /* پاسخ صحیح */
-        .correct-answer {
-            animation: correctAnswer 0.5s ease;
+        .sequence-box.empty {
+            border: 1px dashed #555;
+            background: rgba(255,255,255,0.05);
         }
         
-        @keyframes correctAnswer {
-            0% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
-            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
-            100% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+        .difficulty-badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
         }
         
-        /* پاسخ اشتباه */
-        .wrong-answer {
-            animation: wrongAnswer 0.5s ease;
+        .difficulty-easy {
+            background: linear-gradient(145deg, #4CAF50, #8BC34A);
+            color: white;
         }
         
-        @keyframes wrongAnswer {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(-10px); }
-            40% { transform: translateX(10px); }
-            60% { transform: translateX(-10px); }
-            80% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
+        .difficulty-medium {
+            background: linear-gradient(145deg, #FF9800, #FFC107);
+            color: #121212;
         }
         
-        /* دکمه‌های پاسخ */
-        .answer-btn {
-            transition: all 0.3s;
-            perspective: 1000px;
+        .difficulty-hard {
+            background: linear-gradient(145deg, #F44336, #FF5722);
+            color: white;
         }
         
-        .answer-btn:hover {
-            transform: translateY(-3px) rotateX(10deg);
-        }
-        
-        /* صفحه نمایش کوچک */
-        @media (max-width: 640px) {
-            .puzzle-container {
-                min-height: 150px;
-                padding: 1rem;
-            }
-            
-            #answer-options {
-                grid-template-columns: 1fr;
-            }
-            
-            .word-piece {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.9rem;
-            }
-        }
-        
-        /* انیمیشن ورود صفحه */
-        .page-enter {
-            animation: pageEnter 0.5s ease-out;
-        }
-        
-        @keyframes pageEnter {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* افکت تایپ کردن برای سوالات */
-        .typing-effect {
-            overflow: hidden;
-            white-space: nowrap;
-            animation: typing 2s steps(40, end);
-        }
-        
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
+        .difficulty-expert {
+            background: linear-gradient(145deg, #9C27B0, #673AB7);
+            color: white;
         }
     </style>
 </head>
-<body class="select-none">
+<body class="min-h-screen">
     <!-- Splash Screen -->
     <div id="splash-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-50">
-        <div class="text-center fade-in">
-            <h1 class="text-5xl font-black mb-4 gold-text">استدیو اسکورت گیم</h1>
-            <p class="text-2xl text-gold-300">تقدیم میکند</p>
-            <div class="mt-8 float">
-                <svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="45" stroke="url(#goldGradient)" stroke-width="2" />
-                    <path d="M30 65L45 35L55 65L70 35" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                    <circle cx="50" cy="50" r="20" stroke="url(#goldGradient)" stroke-width="2" fill="none" class="rotate" />
-                    <defs>
-                        <linearGradient id="goldGradient" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#f5d76e" />
-                            <stop offset="50%" stop-color="#d4af37" />
-                            <stop offset="100%" stop-color="#996515" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-            </div>
+        <div class="text-center">
+            <h1 class="text-4xl font-bold gold-text mb-4 glow">استدیو اسکورت گیم</h1>
+            <p class="text-xl text-gray-300">تقدیم می‌کند</p>
         </div>
     </div>
 
     <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-40 hidden">
-        <h1 class="text-5xl font-black mb-8 gold-text">مغز شو</h1>
-        
-        <!-- Animated Logo -->
-        <div class="relative mb-8">
-            <svg class="w-24 h-24 rotate" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="45" stroke="url(#goldGradient)" stroke-width="2" />
-                <path class="pulse" d="M30 65L45 35L55 65L70 35" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        <div class="logo-animation mb-8">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#FFD700" stroke-width="5" />
+                <path d="M30,50 Q50,20 70,50 T30,50" fill="none" stroke="#FFD700" stroke-width="5" />
+                <circle cx="40" cy="40" r="5" fill="#FFD700">
+                    <animate attributeName="cx" values="40;60;40" dur="3s" repeatCount="indefinite" />
+                </circle>
             </svg>
-            
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="w-12 h-12 gold-gradient rounded-full opacity-50 pulse"></div>
-            </div>
         </div>
-        
-        <div class="w-64 h-3 bg-gray-800 rounded-full overflow-hidden">
-            <div id="loading-bar" class="h-full gold-gradient rounded-full" style="width: 0%"></div>
+        <h1 class="text-4xl font-bold gold-text mb-4 glow">مغز شو</h1>
+        <div class="w-64 h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div id="loading-bar" class="h-full gold-bg" style="width: 0%"></div>
         </div>
-        <p id="loading-text" class="mt-4 text-gold-300">در حال بارگذاری... <span id="loading-percent">0</span>%</p>
+        <p id="loading-text" class="mt-2 text-gray-400">در حال بارگذاری... 0%</p>
     </div>
 
     <!-- Registration Screen -->
-    <div id="registration-screen" class="fixed inset-0 flex items-center justify-center bg-black z-30 hidden page-enter">
-        <div class="bg-gray-900 rounded-lg p-8 max-w-md w-full gold-border scale-in">
-            <h2 class="text-3xl font-bold mb-6 text-center gold-text">ثبت نام در مغز شو</h2>
-            <form id="registration-form" class="space-y-4">
+    <div id="registration-screen" class="fixed inset-0 flex items-center justify-center bg-black z-30 hidden">
+        <div class="puzzle-card p-8 rounded-lg w-11/12 max-w-md slide-in">
+            <h2 class="text-3xl font-bold gold-text text-center mb-6">ثبت نام</h2>
+            <form id="registration-form" class="space-y-6">
                 <div>
-                    <label for="username" class="block text-sm font-medium text-gold-300">نام کاربری</label>
-                    <input type="text" id="username" class="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gold-500 text-white" required minlength="3" maxlength="15" placeholder="نام خود را وارد کنید">
-                    <p class="text-xs text-gray-500 mt-1">بین 3 تا 15 کاراکتر</p>
+                    <label for="username" class="block text-sm font-medium mb-1">نام کاربری</label>
+                    <input type="text" id="username" class="w-full px-4 py-3 bg-gray-900 border gold-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
                 </div>
-                <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-md shadow-sm text-lg font-medium btn-gold shine-effect">
-                    ثبت نام و ورود
-                </button>
+                <button type="submit" class="w-full btn py-3 px-4 rounded-lg text-lg font-bold">ورود به بازی</button>
             </form>
         </div>
     </div>
 
     <!-- Main Menu -->
-    <div id="main-menu" class="fixed inset-0 bg-black z-20 hidden page-enter">
+    <div id="main-menu" class="fixed inset-0 bg-black z-20 hidden">
         <div class="container mx-auto px-4 py-6 h-full flex flex-col">
-            <!-- Header with settings and title -->
-            <div class="flex items-center justify-between mb-8">
-                <h1 class="text-4xl font-black gold-text">مغز شو</h1>
-                <button id="settings-button" class="bg-gray-900 p-2 rounded-lg gold-border hover:bg-gray-800 transition-all">
-                    <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Header with settings -->
+            <div class="flex items-center justify-between mb-4">
+                <div></div> <!-- Empty div for flex spacing -->
+                <button id="settings-button" class="settings-icon p-2 rounded-full bg-gray-900 gold-border">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </button>
             </div>
             
-            <!-- Player profile card (centered) -->
+            <!-- Profile Box -->
             <div class="flex justify-center mb-8">
-                <div class="bg-gray-900 p-4 rounded-lg gold-border w-64 hover:shadow-lg transition-all">
+                <div class="profile-box p-4 rounded-lg flex items-center space-x-4 rtl:space-x-reverse">
+                    <div class="flex flex-col items-end">
+                        <div class="flex items-center mb-1">
+                            <span class="trophy-icon mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                </svg>
+                            </span>
+                            <span id="player-trophies" class="text-sm font-bold gold-text">0</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="coin-icon mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </span>
+                            <span id="player-coins" class="text-sm font-bold text-yellow-400">100</span>
+                        </div>
+                    </div>
+                    
                     <div class="flex flex-col items-center">
-                        <!-- Split circle avatar -->
-                        <div class="split-circle mb-3 relative">
-                            <div id="creator-badge" class="creator-badge hidden">C</div>
+                        <div id="player-avatar" class="profile-avatar w-16 h-16 rounded-lg mb-1 avatar-black-gold"></div>
+                        <span id="player-name" class="gold-text font-bold text-sm">بازیکن</span>
+                        <div id="player-badges" class="flex mt-1 space-x-1 rtl:space-x-reverse">
+                            <!-- Badges will be added here dynamically -->
                         </div>
-                        
-                        <h3 id="profile-name" class="text-xl font-bold gold-text mb-2">بازیکن</h3>
-                        
-                        <!-- Stats -->
-                        <div class="flex justify-between w-full mt-2">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                                </svg>
-                                <span id="player-level" class="text-gold-300">1</span>
-                            </div>
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
-                                </svg>
-                                <span id="player-coins" class="text-gold-300">0</span>
-                            </div>
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
-                                </svg>
-                                <span id="player-cups" class="text-gold-300">0</span>
-                            </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-start">
+                        <div class="flex items-center mb-1">
+                            <span id="player-level" class="text-sm font-bold gold-text">سطح 1</span>
+                        </div>
+                        <div class="w-16 h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div id="player-xp-bar" class="h-full gold-bg" style="width: 20%"></div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Main content -->
-            <div class="flex-1 flex flex-col items-center">
-                <div class="w-full max-w-md">
-                    <button id="start-game" class="w-full btn-gold py-4 px-6 rounded-xl text-2xl font-bold mb-4 shadow-lg shine-effect hover:scale-105 transition-transform">
-                        شروع بازی
-                    </button>
-                    
-                    <button id="online-play" class="w-full bg-gray-800 text-gold-300 border border-gold py-3 px-6 rounded-xl text-xl font-bold mb-8 shadow-lg hover:bg-gray-700 transition-all">
-                        بازی آنلاین
-                        <span class="text-xs block mt-1 opacity-70">به زودی</span>
-                    </button>
-                    
-                    <div class="grid grid-cols-3 gap-3">
-                        <button class="btn-dark py-2 rounded-lg shadow-md text-sm hover:bg-gray-700">
-                            چالش ها
-                            <div class="text-xs mt-1 opacity-70">به زودی</div>
-                        </button>
-                        <button class="btn-dark py-2 rounded-lg shadow-md text-sm hover:bg-gray-700">
-                            چت
-                            <div class="text-xs mt-1 opacity-70">به زودی</div>
-                        </button>
-                        <button class="btn-dark py-2 rounded-lg shadow-md text-sm hover:bg-gray-700">
-                            فروشگاه
-                            <div class="text-xs mt-1 opacity-70">به زودی</div>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Footer -->
-            <div class="text-center text-gray-500 text-sm py-4">
-                نسخه 1.1 - استدیو اسکورت گیم
-            </div>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-900 rounded-xl p-6 max-w-md w-full gold-border scale-in">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold gold-text">تنظیمات</h3>
-                <button id="close-settings" class="text-gray-400 hover:text-white transition-colors">
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <!-- Game Logo -->
+            <div class="flex-grow flex flex-col items-center justify-center">
+                <div class="logo-animation mb-8">
+                    <svg width="100" height="100" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="#FFD700" stroke-width="5" />
+                        <path d="M30,50 Q50,20 70,50 T30,50" fill="none" stroke="#FFD700" stroke-width="5" />
+                        <circle cx="40" cy="40" r="5" fill="#FFD700">
+                            <animate attributeName="cx" values="40;60;40" dur="3s" repeatCount="indefinite" />
+                        </circle>
                     </svg>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <!-- Sound Settings -->
-                <div class="flex items-center justify-between">
-                    <span class="text-gold-300">صدا</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="sound-toggle" class="sr-only peer" checked>
-                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
-                    </label>
+                </div>
+                <h1 id="game-title" class="text-5xl font-bold gold-text mb-10 glow">مغز شو</h1>
+                
+                <!-- Game buttons -->
+                <div class="flex flex-col items-center space-y-4 mb-12">
+                    <button id="start-game" class="btn py-3 px-8 rounded-lg text-xl font-bold w-48">شروع بازی</button>
+                    <button id="online-game" class="btn py-2 px-6 rounded-lg text-lg font-bold w-40">بازی آنلاین</button>
                 </div>
                 
-                <!-- Music Settings -->
-                <div class="flex items-center justify-between">
-                    <span class="text-gold-300">موسیقی</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="music-toggle" class="sr-only peer" checked>
-                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
-                    </label>
-                </div>
-                
-                <!-- Vibration Settings -->
-                <div class="flex items-center justify-between">
-                    <span class="text-gold-300">لرزش</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="vibration-toggle" class="sr-only peer" checked>
-                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
-                    </label>
-                </div>
-                
-                <!-- Gift Code -->
-                <div class="mt-6">
-                    <label for="gift-code" class="block text-sm font-medium text-gold-300 mb-1">کد هدیه</label>
-                    <div class="flex">
-                        <input type="text" id="gift-code" class="block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-r-none rounded-l-md shadow-sm focus:outline-none focus:ring-1 focus:ring-gold-500 text-white" placeholder="کد خود را وارد کنید">
-                        <button id="redeem-code" class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-none rounded-r-md text-gold-300 hover:bg-gray-700 transition-colors">اعمال</button>
-                    </div>
-                </div>
-                
-                <!-- Creators Section -->
-                <div class="mt-6 pt-4 border-t border-gray-800">
-                    <h4 class="text-lg font-medium gold-text mb-3">سازندگان</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex justify-between">
-                            <span class="text-gray-400">کدنویس ارشد:</span>
-                            <span class="text-gold-300">Ali.k</span>
-                        </li>
-                        <li class="flex justify-between">
-                            <span class="text-gray-400">کد نویس دوم:</span>
-                            <span class="text-gold-300">abolfazl1401</span>
-                        </li>
-                        <li class="flex justify-between">
-                            <span class="text-gray-400">طراح:</span>
-                            <span class="text-gold-300">ivar</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- Reset Progress -->
-                <div class="mt-6 pt-4 border-t border-gray-800">
-                    <button id="reset-progress" class="w-full py-2 px-4 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors">
-                        بازنشانی پیشرفت
-                    </button>
-                </div>
-                
-                <!-- Version -->
-                <div class="text-center text-gray-500 text-xs mt-6">
-                    نسخه 1.1.0
+                <!-- Bottom buttons -->
+                <div class="menu-buttons mb-6">
+                    <button id="challenges-btn" class="btn btn-small rounded-lg">چالش‌ها</button>
+                    <button id="chat-btn" class="btn btn-small rounded-lg">چت</button>
+                    <button id="shop-btn" class="btn btn-small rounded-lg">فروشگاه</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Game Screen -->
-    <div id="game-screen" class="fixed inset-0 bg-black z-10 hidden page-enter">
+    <div id="game-screen" class="fixed inset-0 bg-black z-10 hidden">
         <div class="container mx-auto px-4 py-6 h-full flex flex-col">
             <!-- Header with level info -->
-            <div class="flex items-center justify-between mb-6">
-                <button id="back-to-menu" class="bg-gray-900 p-2 rounded-lg gold-border hover:bg-gray-800 transition-colors">
-                    <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="flex items-center justify-between mb-4">
+                <button id="back-to-menu" class="btn py-2 px-4 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </button>
-                <div class="bg-gray-900 px-4 py-2 rounded-lg gold-border hover:shadow-lg transition-all">
-                    <span class="text-gold-300 font-medium">مرحله: </span>
-                    <span id="current-level" class="text-gold-300 font-bold">1</span>
-                    <span class="text-gold-300 mx-2">|</span>
-                    <span class="text-gold-300 font-medium">امتیاز: </span>
-                    <span id="current-score" class="text-gold-300 font-bold">0</span>
+                <div class="flex items-center">
+                    <span id="difficulty-badge" class="difficulty-badge difficulty-easy">آسان</span>
+                    <span class="gold-text font-bold">مرحله: </span>
+                    <span id="level-number" class="gold-text font-bold mr-1">1</span>
                 </div>
-                
-                <!-- Hint button (visible only in creator mode) -->
-                <button id="hint-button" class="bg-gray-900 p-2 rounded-lg gold-border hidden hover:bg-gray-800 transition-colors">
-                    <svg class="w-6 h-6 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                <div id="special-buttons" class="flex space-x-2 rtl:space-x-reverse">
+                    <!-- Special buttons will be added here dynamically -->
+                </div>
+            </div>
+            
+            <!-- Timer Bar -->
+            <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden mb-4">
+                <div id="timer-bar" class="timer-bar" style="width: 100%"></div>
+            </div>
+            
+            <!-- Puzzle Container -->
+            <div class="flex-grow flex flex-col items-center justify-center">
+                <div id="puzzle-container" class="w-full max-w-lg">
+                    <!-- Puzzle content will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold gold-text">تنظیمات</h2>
+                <button id="close-settings" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
             
-            <!-- Game content -->
-            <div class="flex-1 flex flex-col">
-                <!-- Timer -->
-                <div id="timer-container" class="bg-gray-900 rounded-lg p-2 mb-4 gold-border hidden">
-                    <div class="flex items-center justify-between">
-                        <svg class="w-5 h-5 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div class="space-y-4">
+                <button id="creators-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
+                    سازندگان
+                </button>
+                
+                <div>
+                    <label for="gift-code" class="block text-sm font-medium mb-1">کد هدیه</label>
+                    <div class="flex space-x-2 rtl:space-x-reverse">
+                        <input type="text" id="gift-code" class="flex-grow px-4 py-2 bg-gray-900 border gold-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        <button id="submit-code" class="btn py-2 px-4 rounded-lg">ثبت</button>
+                    </div>
+                </div>
+                
+                <div id="account-status" class="p-3 bg-gray-900 rounded-lg hidden">
+                    <h3 class="font-bold gold-text mb-2">وضعیت حساب</h3>
+                    <div id="account-details" class="text-sm">
+                        <!-- Account details will be added here dynamically -->
+                    </div>
+                </div>
+                
+                <div id="creator-tools" class="p-3 bg-gray-900 rounded-lg hidden">
+                    <h3 class="font-bold mb-2" style="color: #FF5722;">ابزارهای سازنده</h3>
+                    <div class="space-y-2">
+                        <button id="create-puzzle-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
+                            ساخت معمای جدید
+                        </button>
+                        <button id="generate-code-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
+                            ساخت کد هدیه
+                        </button>
+                        <button id="theme-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
+                            تغییر تم بازی
+                        </button>
+                        <button id="manage-users-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
+                            مدیریت کاربران
+                        </button>
+                        <button id="analytics-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
+                            آمار بازی
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="pt-4 border-t border-gray-700">
+                    <button id="logout-btn" class="w-full py-2 px-4 rounded-lg bg-red-900 text-white hover:bg-red-800 transition">
+                        خروج از حساب
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Creators Modal -->
+    <div id="creators-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold gold-text">سازندگان</h2>
+                <button id="close-creators" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="p-3 bg-gray-900 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold gold-text">کدنویس ارشد</span>
+                        <span>Ali.k</span>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-gray-900 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold gold-text">کدنویس دوم</span>
+                        <span>abolfazl1401</span>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-gray-900 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold gold-text">طراح</span>
+                        <span>ivar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coming Soon Modal -->
+    <div id="coming-soon-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in">
+            <h2 class="text-2xl font-bold gold-text text-center mb-4">به زودی</h2>
+            <p class="text-center mb-6">این بخش به زودی اضافه خواهد شد!</p>
+            <button id="close-modal" class="w-full btn py-2 px-4 rounded-lg">بازگشت</button>
+        </div>
+    </div>
+
+    <!-- Creator Privileges Modal -->
+    <div id="creator-privileges-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in creator-bg">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold creator-glow" style="color: #FF5722;">دسترسی سازنده</h2>
+                <button id="close-creator-privileges" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <p class="text-center mb-4">تبریک! شما به عنوان سازنده بازی شناخته شدید!</p>
+                
+                <div class="p-3 bg-gray-900 bg-opacity-70 rounded-lg">
+                    <h3 class="font-bold mb-2" style="color: #FF5722;">دسترسی‌های ویژه:</h3>
+                    <ul class="list-disc list-inside space-y-2 text-sm">
+                        <li>سکه و جایزه نامحدود</li>
+                        <li>دسترسی به تمام مراحل بازی</li>
+                        <li>امکان رد کردن مراحل</li>
+                        <li>افکت‌های ویژه طلایی</li>
+                        <li>انیمیشن‌های مخصوص سازنده</li>
+                        <li>امکان ویرایش معماها</li>
+                        <li>دسترسی به بخش‌های در حال توسعه</li>
+                        <li>امکان اضافه کردن معماهای جدید</li>
+                        <li>تغییر ظاهر بازی</li>
+                        <li>امکان ایجاد کد هدیه</li>
+                        <li>آواتار مخصوص سازنده</li>
+                        <li>امکان تغییر سختی معماها</li>
+                        <li>دسترسی به تمام آواتارها</li>
+                        <li>امکان ساخت تم اختصاصی</li>
+                        <li>امکان ساخت چالش‌های ویژه</li>
+                        <li>مدیریت کاربران</li>
+                        <li>مشاهده آمار بازی</li>
+                        <li>امکان ساخت رویدادهای ویژه</li>
+                        <li>دسترسی به API بازی</li>
+                        <li>امکان تغییر پارامترهای بازی</li>
+                    </ul>
+                </div>
+                
+                <button id="activate-creator" class="w-full py-2 px-4 rounded-lg text-white font-bold" style="background: linear-gradient(145deg, #FF5722, #FF9800);">
+                    فعال‌سازی دسترسی‌ها
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIP Privileges Modal -->
+    <div id="vip-privileges-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in vip-bg">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold vip-glow" style="color: #9C27B0;">دسترسی VIP</h2>
+                <button id="close-vip-privileges" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <p class="text-center mb-4">تبریک! شما به عنوان کاربر ویژه شناخته شدید!</p>
+                
+                <div class="p-3 bg-gray-900 bg-opacity-70 rounded-lg">
+                    <h3 class="font-bold mb-2" style="color: #9C27B0;">دسترسی‌های ویژه:</h3>
+                    <ul class="list-disc list-inside space-y-2 text-sm">
+                        <li>پاداش دو برابر برای حل معماها</li>
+                        <li>دسترسی به راهنمایی‌های ویژه</li>
+                        <li>انیمیشن‌های مخصوص VIP</li>
+                        <li>رنگ‌بندی اختصاصی VIP</li>
+                        <li>دسترسی به معماهای ویژه</li>
+                        <li>امکان ذخیره پیشرفت در چند دستگاه</li>
+                        <li>دسترسی زودتر به بخش‌های جدید</li>
+                        <li>آواتار مخصوص VIP</li>
+                        <li>زمان بیشتر برای حل معماها</li>
+                    </ul>
+                </div>
+                
+                <button id="activate-vip" class="w-full py-2 px-4 rounded-lg text-white font-bold" style="background: linear-gradient(145deg, #9C27B0, #673AB7);">
+                    فعال‌سازی دسترسی‌ها
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div id="shop-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold gold-text">فروشگاه</h2>
+                <button id="close-shop" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-4 flex justify-between items-center">
+                <span class="font-bold">موجودی:</span>
+                <div class="flex items-center">
+                    <span class="coin-icon mr-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <div id="timer" class="text-gold-300 font-bold">30</div>
-                    </div>
-                    <div id="timer-bar" class="h-1 mt-1 gold-gradient rounded-full" style="width: 100%"></div>
+                    </span>
+                    <span id="shop-coins" class="text-sm font-bold text-yellow-400">100</span>
                 </div>
-                
-                <!-- Puzzle container -->
-                <div class="bg-gray-900 rounded-xl p-6 mb-6 shadow-lg puzzle-container gold-border hover:shadow-xl transition-all">
-                    <h2 id="puzzle-question" class="text-xl font-bold text-gold-300 mb-4 text-center typing-effect">معمای مرحله</h2>
-                    <div id="puzzle-content" class="flex justify-center items-center min-h-[100px]">
-                        <!-- Puzzle content will be inserted here -->
+            </div>
+            
+            <div class="mb-4">
+                <h3 class="font-bold gold-text mb-2">آواتارها</h3>
+                <div class="grid grid-cols-2 gap-3" id="avatar-items">
+                    <div class="shop-item" data-avatar="avatar-black-gold" data-price="0">
+                        <div class="avatar-preview avatar-black-gold"></div>
+                        <div class="text-center mt-2">
+                            <div class="font-bold text-sm">مشکی-طلایی</div>
+                            <div class="flex items-center justify-center mt-1">
+                                <span class="coin-icon mr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span class="text-xs font-bold text-yellow-400">0</span>
+                            </div>
+                            <div class="mt-2">
+                                <span class="text-xs text-green-500">فعال</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="shop-item" data-avatar="avatar-black-red" data-price="100">
+                        <div class="avatar-preview avatar-black-red"></div>
+                        <div class="text-center mt-2">
+                            <div class="font-bold text-sm">مشکی-قرمز</div>
+                            <div class="flex items-center justify-center mt-1">
+                                <span class="coin-icon mr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span class="text-xs font-bold text-yellow-400">100</span>
+                            </div>
+                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
+                        </div>
+                    </div>
+                    
+                    <div class="shop-item" data-avatar="avatar-red-gold" data-price="150">
+                        <div class="avatar-preview avatar-red-gold"></div>
+                        <div class="text-center mt-2">
+                            <div class="font-bold text-sm">قرمز-طلایی</div>
+                            <div class="flex items-center justify-center mt-1">
+                                <span class="coin-icon mr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span class="text-xs font-bold text-yellow-400">150</span>
+                            </div>
+                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
+                        </div>
+                    </div>
+                    
+                    <div class="shop-item" data-avatar="avatar-purple-gold" data-price="200">
+                        <div class="avatar-preview avatar-purple-gold"></div>
+                        <div class="text-center mt-2">
+                            <div class="font-bold text-sm">بنفش-طلایی</div>
+                            <div class="flex items-center justify-center mt-1">
+                                <span class="coin-icon mr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span class="text-xs font-bold text-yellow-400">200</span>
+                            </div>
+                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
+                        </div>
+                    </div>
+                    
+                    <div class="shop-item" data-avatar="avatar-blue-gold" data-price="200">
+                        <div class="avatar-preview avatar-blue-gold"></div>
+                        <div class="text-center mt-2">
+                            <div class="font-bold text-sm">آبی-طلایی</div>
+                            <div class="flex items-center justify-center mt-1">
+                                <span class="coin-icon mr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span class="text-xs font-bold text-yellow-400">200</span>
+                            </div>
+                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
+                        </div>
+                    </div>
+                    
+                    <div class="shop-item" data-avatar="avatar-green-gold" data-price="200">
+                        <div class="avatar-preview avatar-green-gold"></div>
+                        <div class="text-center mt-2">
+                            <div class="font-bold text-sm">سبز-طلایی</div>
+                            <div class="flex items-center justify-center mt-1">
+                                <span class="coin-icon mr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span class="text-xs font-bold text-yellow-400">200</span>
+                            </div>
+                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
+                        </div>
+                    </div>
+                    
+                    <div class="shop-item" data-avatar="avatar-rainbow" data-price="500">
+                        <div class="avatar-preview avatar-rainbow"></div>
+                        <div class="text-center mt-2">
+                            <div class="font-bold text-sm">رنگین‌کمان</div>
+                            <div class="flex items-center justify-center mt-1">
+                                <span class="coin-icon mr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <span class="text-xs font-bold text-yellow-400">500</span>
+                            </div>
+                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Answer container -->
-                <div id="answer-container" class="bg-gray-900 rounded-xl p-6 shadow-lg gold-border hover:shadow-xl transition-all">
-                    <h3 class="text-lg font-medium text-gold-300 mb-4">پاسخ خود را انتخاب کنید:</h3>
-                    <div id="answer-options" class="grid grid-cols-2 gap-4">
-                        <!-- Answer options will be inserted here -->
-                    </div>
-                </div>
-                
-                <!-- Word puzzle container (initially hidden) -->
-                <div id="word-puzzle-container" class="bg-gray-900 rounded-xl p-6 shadow-lg mt-6 hidden gold-border hover:shadow-xl transition-all">
-                    <h3 class="text-lg font-medium text-gold-300 mb-4">کلمات را کنار هم بچینید:</h3>
-                    <div id="word-answer-slot" class="bg-gray-800 rounded-lg p-3 mb-4 flex flex-wrap gap-2 min-h-[50px] gold-border">
-                        <!-- Selected words will appear here -->
-                    </div>
-                    <div id="word-options" class="flex flex-wrap gap-2 mt-4">
-                        <!-- Word options will be inserted here -->
-                    </div>
-                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button id="close-shop-btn" class="btn py-2 px-6 rounded-lg">بازگشت</button>
             </div>
         </div>
     </div>
-
-    <!-- Result Modal -->
-    <div id="result-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-900 rounded-xl p-6 max-w-sm w-full text-center gold-border scale-in">
-            <div id="result-icon" class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                <!-- Icon will be inserted here -->
-            </div>
-            <h3 id="result-title" class="text-2xl font-bold mb-2 gold-text">عنوان نتیجه</h3>
-            <p id="result-message" class="text-gray-300 mb-6">پیام نتیجه</p>
-            <div id="result-reward" class="flex justify-center gap-4 mb-4 hidden">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
-                    </svg>
-                    <span id="reward-coins" class="text-gold-300">+10</span>
-                </div>
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 text-gold-300 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
-                    </svg>
-                    <span id="reward-cups" class="text-gold-300">+1</span>
-                </div>
-            </div>
-            <button id="result-button" class="w-full py-3 px-4 rounded-lg text-white font-medium shine-effect">
-                ادامه
-            </button>
-        </div>
-    </div>
-
-    <!-- Creator Mode Activated Modal -->
-    <div id="creator-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-900 rounded-xl p-6 max-w-sm w-full text-center gold-border scale-in">
-            <div class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 gold-gradient">
-                <svg class="w-8 h-8 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-            </div>
-            <h3 class="text-2xl font-bold mb-2 gold-text">حالت سازنده فعال شد!</h3>
-            <p class="text-gray-300 mb-6">شما اکنون به امکانات ویژه سازندگان دسترسی دارید.</p>
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition-colors">
-                    <svg class="w-6 h-6 mx-auto text-gold-300 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                    <p class="text-sm text-gold-300">راهنمای نامحدود</p>
-                </div>
-                <div class="bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition-colors">
-                    <svg class="w-6 h-6 mx-auto text-gold-300 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    <p class="text-sm text-gold-300">دسترسی به تمام مراحل</p>
-                </div>
-                <div class="bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition-colors">
-                    <svg class="w-6 h-6 mx-auto text-gold-300 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                    </svg>
-                    <p class="text-sm text-gold-300">جایزه های ویژه</p>
-                </div>
-                <div class="bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition-colors">
-                    <svg class="w-6 h-6 mx-auto text-gold-300 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                    </svg>
-                    <p class="text-sm text-gold-300">افکت های ویژه</p>
-                </div>
-            </div>
-            <button id="creator-ok-button" class="w-full py-3 px-4 rounded-lg text-black font-medium btn-gold shine-effect hover:scale-105 transition-transform">
-                متوجه شدم
-            </button>
-        </div>
-    </div>
-
-    <!-- Audio Elements -->
-    <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="correct-sound">
-        <source src="https://www.soundjay.com/buttons/sounds/button-09.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="wrong-sound">
-        <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="click-sound">
-        <source src="https://www.soundjay.com/buttons/sounds/button-21.mp3" type="audio/mpeg">
-    </audio>
 
     <script>
-        // Game data
-        const puzzles = [
-            {
-                type: 'multiple-choice',
-                question: 'کدام حیوان بلندترین حیوان روی زمین است؟',
-                options: ['زرافه', 'فیل', 'نهنگ', 'دایناسور'],
-                correctAnswer: 'زرافه',
-                hint: 'این حیوان گردن بسیار بلندی دارد.',
-                timeLimit: 30
+        // Store game data
+        const gameData = {
+            player: {
+                name: '',
+                level: 1,
+                score: 0,
+                coins: 100,
+                trophies: 0,
+                xp: 20,
+                badges: [],
+                isCreator: false,
+                isVIP: false,
+                avatars: ['avatar-black-gold'],
+                currentAvatar: 'avatar-black-gold'
             },
-            {
-                type: 'multiple-choice',
-                question: 'اگر ساعت 3:15 باشد، زاویه بین عقربه‌های ساعت چند درجه است؟',
-                options: ['7.5 درجه', '45 درجه', '90 درجه', '180 درجه'],
-                correctAnswer: '7.5 درجه',
-                hint: 'عقربه ساعت‌شمار هر ساعت 30 درجه و عقربه دقیقه‌شمار هر دقیقه 6 درجه حرکت می‌کند.',
-                timeLimit: 45
-            },
-            {
-                type: 'word-puzzle',
-                question: 'با کنار هم قرار دادن کلمات، نام یک شهر ایران را بسازید.',
-                words: ['اص', 'فه', 'ان'],
-                correctAnswer: 'اصفهان',
-                hint: 'این شهر به نصف جهان معروف است.',
-                timeLimit: 60
-            },
-            {
-                type: 'multiple-choice',
-                question: 'کدام گزینه ادامه منطقی این دنباله است؟ 2، 4، 8، 16، ...',
-                options: ['24', '32', '64', '128'],
-                correctAnswer: '32',
-                hint: 'هر عدد دو برابر عدد قبلی است.',
-                timeLimit: 30
-            },
-            {
-                type: 'multiple-choice',
-                question: 'کدام گزینه با بقیه متفاوت است؟',
-                options: ['سیب', 'پرتقال', 'گوجه', 'موز'],
-                correctAnswer: 'گوجه',
-                hint: 'به دسته‌بندی این موارد فکر کنید. کدام یک میوه نیست؟',
-                timeLimit: 25
-            },
-            {
-                type: 'word-puzzle',
-                question: 'با کنار هم قرار دادن کلمات، ضرب المثل معروف را بسازید.',
-                words: ['عجله', 'کار', 'شیطان', 'است'],
-                correctAnswer: 'عجلهکارشیطاناست',
-                hint: 'این ضرب المثل درباره عواقب شتاب‌زدگی است.',
-                timeLimit: 75
-            },
-            {
-                type: 'multiple-choice',
-                question: 'اگر امروز سه‌شنبه باشد، 100 روز بعد چه روزی خواهد بود؟',
-                options: ['سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'],
-                correctAnswer: 'چهارشنبه',
-                hint: '100 را بر 7 تقسیم کنید و به باقیمانده توجه کنید.',
-                timeLimit: 60
-            },
-            {
-                type: 'multiple-choice',
-                question: 'در یک خانواده، هر پسر تعداد خواهرهایی برابر با تعداد برادرهایش دارد و هر دختر دو برابر تعداد برادرهایش، خواهر دارد. این خانواده چند فرزند دارد؟',
-                options: ['5 فرزند', '6 فرزند', '7 فرزند', '8 فرزند'],
-                correctAnswer: '7 فرزند',
-                hint: 'معادلات را برای پسران و دختران جداگانه بنویسید.',
-                timeLimit: 90
-            },
-            {
-                type: 'word-puzzle',
-                question: 'با کنار هم قرار دادن کلمات، نام یک کشور آسیایی را بسازید.',
-                words: ['جر', 'مان', 'یا'],
-                correctAnswer: 'جرمانیا',
-                hint: 'این کشور در اروپا قرار دارد.',
-                timeLimit: 50
-            },
-            {
-                type: 'multiple-choice',
-                question: 'اگر 5 گربه بتوانند 5 موش را در 5 دقیقه شکار کنند، 100 گربه برای شکار 100 موش چقدر زمان نیاز دارند؟',
-                options: ['5 دقیقه', '100 دقیقه', '20 دقیقه', '1 دقیقه'],
-                correctAnswer: '5 دقیقه',
-                hint: 'به نسبت گربه‌ها و موش‌ها دقت کنید.',
-                timeLimit: 45
-            }
-        ];
-
-        // Game state
-        let currentLevel = 0;
-        let playerData = {
-            username: '',
-            level: 0,
-            coins: 0,
-            cups: 0,
-            score: 0,
-            isCreator: false,
-            settings: {
-                sound: true,
-                music: true,
-                vibration: true
-            }
+            puzzles: [
+                {
+                    type: 'multipleChoice',
+                    question: 'کدام عدد در دنباله زیر می‌آید؟<br>2, 4, 8, 16, ...',
+                    options: ['24', '32', '30', '20'],
+                    correctAnswer: 1,
+                    hint: 'هر عدد دو برابر عدد قبلی است.',
+                    difficulty: 'easy',
+                    timeLimit: 30
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'اگر امروز دوشنبه باشد، 15 روز بعد چه روزی است؟',
+                    options: ['دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه'],
+                    correctAnswer: 2,
+                    hint: '15 را تقسیم بر 7 کنید و باقیمانده را در نظر بگیرید.',
+                    difficulty: 'easy',
+                    timeLimit: 30
+                },
+                {
+                    type: 'wordPuzzle',
+                    question: 'با کلمات زیر یک ضرب‌المثل معروف بسازید:',
+                    words: ['نابرده', 'گنج', 'میسر', 'رنج', 'نمی‌شود'],
+                    correctOrder: [0, 2, 1, 3, 4],
+                    hint: 'این ضرب‌المثل درباره تلاش و پاداش است.',
+                    difficulty: 'medium',
+                    timeLimit: 45
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'کدام گزینه با بقیه متفاوت است؟',
+                    options: ['سیب', 'پرتقال', 'خیار', 'انار'],
+                    correctAnswer: 2,
+                    hint: 'به دسته‌بندی میوه‌ها و سبزیجات توجه کنید.',
+                    difficulty: 'easy',
+                    timeLimit: 20
+                },
+                {
+                    type: 'wordPuzzle',
+                    question: 'با حروف زیر یک کلمه پنج حرفی بسازید:',
+                    words: ['ب', 'ا', 'ت', 'ک', 'ی'],
+                    correctOrder: [2, 0, 4, 1, 3],
+                    hint: 'این کلمه نام یک وسیله نقلیه است.',
+                    difficulty: 'medium',
+                    timeLimit: 40
+                },
+                // New harder puzzles
+                {
+                    type: 'multipleChoice',
+                    question: 'اگر 2 + 3 = 10, 4 + 5 = 18, 7 + 2 = 18, پس 8 + 4 = ?',
+                    options: ['24', '32', '48', '36'],
+                    correctAnswer: 0,
+                    hint: 'به جای جمع، از ضرب و جمع استفاده کنید: (a × b) + (a + b)',
+                    difficulty: 'hard',
+                    timeLimit: 60
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'در یک مسابقه، علی از رضا جلوتر است و محمد از علی عقب‌تر است. حسن از رضا عقب‌تر است. چه کسی در رتبه دوم است؟',
+                    options: ['علی', 'رضا', 'محمد', 'حسن'],
+                    correctAnswer: 1,
+                    hint: 'ترتیب را از اول تا آخر بنویسید.',
+                    difficulty: 'hard',
+                    timeLimit: 90
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'عدد بعدی در این دنباله چیست؟<br>1, 4, 9, 16, 25, ...',
+                    options: ['30', '36', '42', '49'],
+                    correctAnswer: 1,
+                    hint: 'به مجذور اعداد طبیعی توجه کنید.',
+                    difficulty: 'medium',
+                    timeLimit: 45
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'مقدار X را در معادله زیر پیدا کنید:<br>2X + 5 = 3X - 7',
+                    options: ['12', '10', '8', '-12'],
+                    correctAnswer: 0,
+                    hint: 'معادله را به شکل استاندارد بنویسید و X را محاسبه کنید.',
+                    difficulty: 'hard',
+                    timeLimit: 60
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'یک مکعب با ابعاد 3×3×3 از 27 مکعب کوچک 1×1×1 ساخته شده است. اگر تمام وجوه خارجی را رنگ کنیم، چند مکعب کوچک دقیقاً دو وجه رنگی خواهند داشت؟',
+                    options: ['8', '12', '24', '6'],
+                    correctAnswer: 1,
+                    hint: 'به لبه‌های مکعب بزرگ توجه کنید.',
+                    difficulty: 'expert',
+                    timeLimit: 120
+                },
+                // Even harder puzzles
+                {
+                    type: 'multipleChoice',
+                    question: 'در یک دنباله، هر عدد برابر است با مجموع دو عدد قبلی. اگر دو عدد اول 3 و 5 باشند، عدد هشتم چیست؟',
+                    options: ['89', '144', '233', '377'],
+                    correctAnswer: 2,
+                    hint: 'دنباله فیبوناچی را با شروع از 3 و 5 بسازید.',
+                    difficulty: 'expert',
+                    timeLimit: 90
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'اگر log₂(x) = 5، مقدار x چیست؟',
+                    options: ['10', '25', '32', '64'],
+                    correctAnswer: 2,
+                    hint: 'از تعریف لگاریتم استفاده کنید: اگر log₂(x) = 5، پس 2^5 = x',
+                    difficulty: 'hard',
+                    timeLimit: 60
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'در یک کیسه 5 توپ قرمز، 3 توپ آبی و 2 توپ سبز وجود دارد. اگر 2 توپ به تصادف از کیسه خارج کنیم، احتمال اینکه هر دو توپ همرنگ باشند چقدر است؟',
+                    options: ['7/15', '2/5', '1/3', '11/30'],
+                    correctAnswer: 0,
+                    hint: 'احتمال انتخاب دو توپ قرمز + احتمال انتخاب دو توپ آبی + احتمال انتخاب دو توپ سبز',
+                    difficulty: 'expert',
+                    timeLimit: 120
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'عدد بعدی در این دنباله چیست؟<br>3, 6, 12, 24, 48, ...',
+                    options: ['72', '96', '108', '120'],
+                    correctAnswer: 1,
+                    hint: 'به الگوی ضرب در هر مرحله توجه کنید.',
+                    difficulty: 'hard',
+                    timeLimit: 45
+                },
+                {
+                    type: 'multipleChoice',
+                    question: 'اگر 5 نفر به 5 طریق مختلف می‌توانند در یک صف بایستند، به چند طریق مختلف می‌توانند دور یک میز گرد بنشینند؟',
+                    options: ['120', '60', '24', '20'],
+                    correctAnswer: 2,
+                    hint: 'در چینش دایره‌ای، چرخش‌های مختلف یک چینش، معادل هم هستند.',
+                    difficulty: 'expert',
+                    timeLimit: 90
+                }
+            ],
+            currentPuzzleIndex: 0,
+            creatorCode: 'a.av1401.d1401a.av.li.vd.ab.',
+            vipCode: 'VIP.asp./(VIP)./pvi)/aal.',
+            giftCodes: [],
+            timer: null,
+            timeLeft: 0
         };
-        let selectedWords = [];
-        let availableWords = [];
-        let timerInterval;
-        let timeLeft = 0;
 
         // DOM Elements
         const splashScreen = document.getElementById('splash-screen');
         const loadingScreen = document.getElementById('loading-screen');
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingText = document.getElementById('loading-text');
         const registrationScreen = document.getElementById('registration-screen');
+        const registrationForm = document.getElementById('registration-form');
+        const usernameInput = document.getElementById('username');
         const mainMenu = document.getElementById('main-menu');
+        const gameTitle = document.getElementById('game-title');
+        const playerName = document.getElementById('player-name');
+        const playerCoins = document.getElementById('player-coins');
+        const playerTrophies = document.getElementById('player-trophies');
+        const playerLevel = document.getElementById('player-level');
+        const playerXpBar = document.getElementById('player-xp-bar');
+        const playerBadges = document.getElementById('player-badges');
+        const playerAvatar = document.getElementById('player-avatar');
+        const startGameBtn = document.getElementById('start-game');
+        const onlineGameBtn = document.getElementById('online-game');
         const gameScreen = document.getElementById('game-screen');
-        const resultModal = document.getElementById('result-modal');
+        const backToMenuBtn = document.getElementById('back-to-menu');
+        const levelNumber = document.getElementById('level-number');
+        const difficultyBadge = document.getElementById('difficulty-badge');
+        const puzzleContainer = document.getElementById('puzzle-container');
+        const specialButtons = document.getElementById('special-buttons');
+        const timerBar = document.getElementById('timer-bar');
+        const comingSoonModal = document.getElementById('coming-soon-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const settingsButton = document.getElementById('settings-button');
         const settingsModal = document.getElementById('settings-modal');
-        const creatorModal = document.getElementById('creator-modal');
-        
-        // Audio Elements
-        const bgMusic = document.getElementById('bg-music');
-        const correctSound = document.getElementById('correct-sound');
-        const wrongSound = document.getElementById('wrong-sound');
-        const clickSound = document.getElementById('click-sound');
+        const closeSettingsBtn = document.getElementById('close-settings');
+        const creatorsBtn = document.getElementById('creators-btn');
+        const creatorsModal = document.getElementById('creators-modal');
+        const closeCreatorsBtn = document.getElementById('close-creators');
+        const giftCodeInput = document.getElementById('gift-code');
+        const submitCodeBtn = document.getElementById('submit-code');
+        const logoutBtn = document.getElementById('logout-btn');
+        const accountStatus = document.getElementById('account-status');
+        const accountDetails = document.getElementById('account-details');
+        const creatorTools = document.getElementById('creator-tools');
+        const creatorPrivilegesModal = document.getElementById('creator-privileges-modal');
+        const closeCreatorPrivilegesBtn = document.getElementById('close-creator-privileges');
+        const activateCreatorBtn = document.getElementById('activate-creator');
+        const vipPrivilegesModal = document.getElementById('vip-privileges-modal');
+        const closeVipPrivilegesBtn = document.getElementById('close-vip-privileges');
+        const activateVipBtn = document.getElementById('activate-vip');
+        const shopBtn = document.getElementById('shop-btn');
+        const shopModal = document.getElementById('shop-modal');
+        const closeShopBtn = document.getElementById('close-shop');
+        const closeShopBtn2 = document.getElementById('close-shop-btn');
+        const shopCoins = document.getElementById('shop-coins');
+        const avatarItems = document.getElementById('avatar-items');
+        const challengesBtn = document.getElementById('challenges-btn');
+        const chatBtn = document.getElementById('chat-btn');
 
         // Initialize game
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check if player data exists in local storage
-            const savedPlayerData = localStorage.getItem('brainShowPlayerData');
-            
+        document.addEventListener('DOMContentLoaded', function() {
             // Show splash screen for 2 seconds
-            setTimeout(() => {
-                splashScreen.classList.add('hidden');
-                
-                if (savedPlayerData) {
-                    playerData = JSON.parse(savedPlayerData);
-                    showLoadingScreen();
-                } else {
-                    showRegistrationScreen();
-                }
+            setTimeout(function() {
+                splashScreen.style.display = 'none';
+                loadingScreen.style.display = 'flex';
+                startLoading();
             }, 2000);
             
-            // Set up event listeners
-            setupEventListeners();
+            // Event listeners
+            registrationForm.addEventListener('submit', handleRegistration);
+            startGameBtn.addEventListener('click', startGame);
+            onlineGameBtn.addEventListener('click', showComingSoon);
+            backToMenuBtn.addEventListener('click', backToMenu);
+            closeModalBtn.addEventListener('click', closeModal);
+            settingsButton.addEventListener('click', showSettings);
+            closeSettingsBtn.addEventListener('click', closeSettings);
+            creatorsBtn.addEventListener('click', showCreators);
+            closeCreatorsBtn.addEventListener('click', closeCreators);
+            submitCodeBtn.addEventListener('click', submitCode);
+            logoutBtn.addEventListener('click', logout);
+            closeCreatorPrivilegesBtn.addEventListener('click', closeCreatorPrivileges);
+            activateCreatorBtn.addEventListener('click', activateCreator);
+            closeVipPrivilegesBtn.addEventListener('click', closeVipPrivileges);
+            activateVipBtn.addEventListener('click', activateVip);
+            shopBtn.addEventListener('click', showShop);
+            closeShopBtn.addEventListener('click', closeShop);
+            closeShopBtn2.addEventListener('click', closeShop);
+            challengesBtn.addEventListener('click', showComingSoon);
+            chatBtn.addEventListener('click', showComingSoon);
+            
+            // Setup shop items
+            setupShopItems();
         });
 
-        function setupEventListeners() {
-            // Registration form
-            document.getElementById('registration-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const username = document.getElementById('username').value.trim();
-                
-                if (username.length >= 3 && username.length <= 15) {
-                    playSound('click');
-                    playerData.username = username;
-                    playerData.level = 0;
-                    playerData.coins = 0;
-                    playerData.cups = 0;
-                    playerData.score = 0;
-                    playerData.isCreator = false;
-                    playerData.settings = {
-                        sound: true,
-                        music: true,
-                        vibration: true
-                    };
-                    
-                    // Save to local storage
-                    localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
-                    
-                    showLoadingScreen();
-                } else {
-                    alert('نام کاربری باید بین 3 تا 15 کاراکتر باشد.');
-                }
-            });
-            
-            // Start game button
-            document.getElementById('start-game').addEventListener('click', () => {
-                playSound('click');
-                mainMenu.classList.add('hidden');
-                gameScreen.classList.remove('hidden');
-                loadLevel(playerData.level);
-            });
-            
-            // Back to menu button
-            document.getElementById('back-to-menu').addEventListener('click', () => {
-                playSound('click');
-                gameScreen.classList.add('hidden');
-                mainMenu.classList.remove('hidden');
-                stopTimer();
-            });
-            
-            // Result button
-            document.getElementById('result-button').addEventListener('click', () => {
-                playSound('click');
-                resultModal.classList.add('hidden');
-                if (document.getElementById('result-title').textContent === 'آفرین!') {
-                    loadNextLevel();
-                } else {
-                    loadLevel(currentLevel); // Reload current level for retry
-                }
-            });
-            
-            // Settings button
-            document.getElementById('settings-button').addEventListener('click', () => {
-                playSound('click');
-                settingsModal.classList.remove('hidden');
-                // Update toggle states
-                document.getElementById('sound-toggle').checked = playerData.settings.sound;
-                document.getElementById('music-toggle').checked = playerData.settings.music;
-                document.getElementById('vibration-toggle').checked = playerData.settings.vibration;
-            });
-            
-            // Close settings button
-            document.getElementById('close-settings').addEventListener('click', () => {
-                playSound('click');
-                settingsModal.classList.add('hidden');
-            });
-            
-            // Redeem code button
-            document.getElementById('redeem-code').addEventListener('click', () => {
-                playSound('click');
-                const code = document.getElementById('gift-code').value.trim();
-                if (code === 'a.av1401.d1401a.av.li.vd.ab.') {
-                    activateCreatorMode();
-                } else {
-                    alert('کد وارد شده معتبر نیست.');
-                }
-            });
-            
-            // Creator modal OK button
-            document.getElementById('creator-ok-button').addEventListener('click', () => {
-                playSound('click');
-                creatorModal.classList.add('hidden');
-            });
-            
-            // Hint button
-            document.getElementById('hint-button').addEventListener('click', () => {
-                playSound('click');
-                if (playerData.isCreator) {
-                    showHint();
-                }
-            });
-            
-            // Reset progress button
-            document.getElementById('reset-progress').addEventListener('click', () => {
-                playSound('click');
-                if (confirm('آیا مطمئن هستید که می‌خواهید تمام پیشرفت خود را بازنشانی کنید؟ این عمل غیرقابل بازگشت است.')) {
-                    localStorage.removeItem('brainShowPlayerData');
-                    location.reload();
-                }
-            });
-            
-            // Settings toggles
-            document.getElementById('sound-toggle').addEventListener('change', (e) => {
-                playerData.settings.sound = e.target.checked;
-                localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
-            });
-            
-            document.getElementById('music-toggle').addEventListener('change', (e) => {
-                playerData.settings.music = e.target.checked;
-                localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
-                if (playerData.settings.music) {
-                    bgMusic.play().catch(e => console.log('Auto-play prevented'));
-                } else {
-                    bgMusic.pause();
-                }
-            });
-            
-            document.getElementById('vibration-toggle').addEventListener('change', (e) => {
-                playerData.settings.vibration = e.target.checked;
-                localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
-            });
-            
-            // Play background music when user interacts
-            document.addEventListener('click', () => {
-                if (playerData.settings.music && bgMusic.paused) {
-                    bgMusic.play().catch(e => console.log('Auto-play prevented'));
-                }
-            }, { once: true });
-        }
-
-        function activateCreatorMode() {
-            playerData.isCreator = true;
-            playerData.coins = 9999;
-            playerData.cups = 99;
-            playerData.level = puzzles.length - 1;
-            
-            // Save to local storage
-            localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
-            
-            // Update UI
-            document.getElementById('player-coins').textContent = playerData.coins;
-            document.getElementById('player-cups').textContent = playerData.cups;
-            document.getElementById('player-level').textContent = playerData.level + 1;
-            document.getElementById('creator-badge').classList.remove('hidden');
-            document.getElementById('hint-button').classList.remove('hidden');
-            
-            // Close settings modal and show creator modal
-            settingsModal.classList.add('hidden');
-            creatorModal.classList.remove('hidden');
-            
-            // Update profile name with creator badge
-            document.getElementById('profile-name').innerHTML = `${playerData.username} <span class="text-xs bg-gradient-to-r from-red-500 to-yellow-500 text-white px-1 rounded">سازنده</span>`;
-            
-            // Play celebration sound
-            playSound('correct');
-        }
-
-        function showHint() {
-            const puzzle = puzzles[currentLevel];
-            if (puzzle && puzzle.hint) {
-                alert(`راهنمایی: ${puzzle.hint}`);
-            }
-        }
-
-        function showLoadingScreen() {
-            registrationScreen.classList.add('hidden');
-            loadingScreen.classList.remove('hidden');
-            
-            const loadingBar = document.getElementById('loading-bar');
-            const loadingText = document.getElementById('loading-text');
-            const loadingPercent = document.getElementById('loading-percent');
+        // Start loading animation
+        function startLoading() {
             let progress = 0;
-            
-            const loadingInterval = setInterval(() => {
-                progress += Math.floor(Math.random() * 5) + 1;
-                if (progress > 100) progress = 100;
-                
+            const interval = setInterval(function() {
+                progress += 5;
                 loadingBar.style.width = `${progress}%`;
-                loadingPercent.textContent = progress;
+                loadingText.textContent = `در حال بارگذاری... ${progress}%`;
                 
                 if (progress >= 100) {
-                    clearInterval(loadingInterval);
-                    setTimeout(() => {
-                        loadingScreen.classList.add('hidden');
-                        showMainMenu();
+                    clearInterval(interval);
+                    setTimeout(function() {
+                        loadingScreen.style.display = 'none';
+                        
+                        // Check if user is already registered
+                        if (localStorage.getItem('brainGameData')) {
+                            loadSavedData();
+                            mainMenu.style.display = 'block';
+                        } else {
+                            registrationScreen.style.display = 'flex';
+                        }
                     }, 500);
                 }
             }, 100);
         }
 
-        function showRegistrationScreen() {
-            registrationScreen.classList.remove('hidden');
-        }
-
-        function showMainMenu() {
-            mainMenu.classList.remove('hidden');
+        // Handle registration
+        function handleRegistration(e) {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
             
-            // Update player info
-            document.getElementById('profile-name').textContent = playerData.username;
-            document.getElementById('player-level').textContent = playerData.level + 1;
-            document.getElementById('player-coins').textContent = playerData.coins;
-            document.getElementById('player-cups').textContent = playerData.cups;
-            
-            // Show creator badge if player is creator
-            if (playerData.isCreator) {
-                document.getElementById('creator-badge').classList.remove('hidden');
-                document.getElementById('profile-name').innerHTML = `${playerData.username} <span class="text-xs bg-gradient-to-r from-red-500 to-yellow-500 text-white px-1 rounded">سازنده</span>`;
-            }
-            
-            // Play background music if enabled
-            if (playerData.settings.music) {
-                bgMusic.volume = 0.3;
-                bgMusic.play().catch(e => console.log('Auto-play prevented'));
+            if (username) {
+                gameData.player.name = username;
+                saveGameData();
+                registrationScreen.style.display = 'none';
+                mainMenu.style.display = 'block';
+                updatePlayerUI();
             }
         }
 
-        function loadLevel(level) {
-            // Reset previous level
-            stopTimer();
+        // Start game
+        function startGame() {
+            mainMenu.style.display = 'none';
+            gameScreen.style.display = 'block';
+            levelNumber.textContent = gameData.currentPuzzleIndex + 1;
+            showCurrentPuzzle();
+        }
+
+        // Show current puzzle
+        function showCurrentPuzzle() {
+            const currentPuzzle = gameData.puzzles[gameData.currentPuzzleIndex];
             
-            currentLevel = level;
-            document.getElementById('current-level').textContent = level + 1;
-            document.getElementById('current-score').textContent = playerData.score;
+            // Update difficulty badge
+            difficultyBadge.className = `difficulty-badge difficulty-${currentPuzzle.difficulty}`;
+            difficultyBadge.textContent = getDifficultyText(currentPuzzle.difficulty);
             
-            if (level >= puzzles.length) {
-                // Game completed
-                showResult('تبریک!', 'شما تمام مراحل بازی را با موفقیت به پایان رساندید!', 'success');
+            // Clear previous puzzle
+            puzzleContainer.innerHTML = '';
+            
+            // Create puzzle based on type
+            if (currentPuzzle.type === 'multipleChoice') {
+                createMultipleChoicePuzzle(currentPuzzle);
+            } else if (currentPuzzle.type === 'wordPuzzle') {
+                createWordPuzzle(currentPuzzle);
+            }
+            
+            // Start timer
+            startTimer(currentPuzzle.timeLimit);
+            
+            // Update special buttons
+            updateSpecialButtons();
+        }
+
+        // Create multiple choice puzzle
+        function createMultipleChoicePuzzle(puzzle) {
+            const puzzleCard = document.createElement('div');
+            puzzleCard.className = 'puzzle-card p-6 rounded-lg slide-in';
+            
+            // Question
+            const question = document.createElement('div');
+            question.className = 'text-xl font-bold mb-6 text-center';
+            question.innerHTML = puzzle.question;
+            puzzleCard.appendChild(question);
+            
+            // Options
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'space-y-4';
+            
+            puzzle.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option p-4 rounded-lg cursor-pointer text-center';
+                optionDiv.textContent = option;
+                optionDiv.dataset.index = index;
+                
+                optionDiv.addEventListener('click', function() {
+                    selectOption(this, puzzle.correctAnswer);
+                });
+                
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            puzzleCard.appendChild(optionsContainer);
+            puzzleContainer.appendChild(puzzleCard);
+        }
+
+        // Create word puzzle
+        function createWordPuzzle(puzzle) {
+            const puzzleCard = document.createElement('div');
+            puzzleCard.className = 'puzzle-card p-6 rounded-lg slide-in';
+            
+            // Question
+            const question = document.createElement('div');
+            question.className = 'text-xl font-bold mb-6 text-center';
+            question.innerHTML = puzzle.question;
+            puzzleCard.appendChild(question);
+            
+            // Word pieces container
+            const wordPiecesContainer = document.createElement('div');
+            wordPiecesContainer.className = 'flex flex-wrap justify-center mb-6';
+            
+            // Shuffle words
+            const shuffledWords = [...puzzle.words];
+            for (let i = shuffledWords.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledWords[i], shuffledWords[j]] = [shuffledWords[j], shuffledWords[i]];
+            }
+            
+            // Create word pieces
+            shuffledWords.forEach((word, index) => {
+                const wordPiece = document.createElement('div');
+                wordPiece.className = 'word-piece';
+                wordPiece.textContent = word;
+                wordPiece.dataset.word = word;
+                wordPiece.dataset.originalIndex = puzzle.words.indexOf(word);
+                
+                wordPiece.addEventListener('click', function() {
+                    selectWordPiece(this);
+                });
+                
+                wordPiecesContainer.appendChild(wordPiece);
+            });
+            
+            puzzleCard.appendChild(wordPiecesContainer);
+            
+            // Answer container
+            const answerContainer = document.createElement('div');
+            answerContainer.className = 'word-container p-4 flex flex-wrap justify-center';
+            puzzleCard.appendChild(answerContainer);
+            
+            // Check button
+            const checkButton = document.createElement('button');
+            checkButton.className = 'btn py-2 px-4 rounded-lg mt-6 mx-auto block';
+            checkButton.textContent = 'بررسی پاسخ';
+            checkButton.addEventListener('click', function() {
+                checkWordPuzzle(puzzle.correctOrder);
+            });
+            puzzleCard.appendChild(checkButton);
+            
+            puzzleContainer.appendChild(puzzleCard);
+        }
+
+        // Select option in multiple choice puzzle
+        function selectOption(option, correctAnswer) {
+            // Remove selected class from all options
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected', 'correct', 'wrong'));
+            
+            // Add selected class to clicked option
+            option.classList.add('selected');
+            
+            // Check answer
+            const selectedIndex = parseInt(option.dataset.index);
+            
+            setTimeout(() => {
+                if (selectedIndex === correctAnswer) {
+                    option.classList.add('correct');
+                    puzzleSolved();
+                } else {
+                    option.classList.add('wrong');
+                    options[correctAnswer].classList.add('correct');
+                    puzzleFailed();
+                }
+                
+                // Disable all options
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                
+                // Stop timer
+                clearInterval(gameData.timer);
+            }, 500);
+        }
+
+        // Select word piece in word puzzle
+        function selectWordPiece(piece) {
+            const answerContainer = document.querySelector('.word-container');
+            
+            if (piece.parentNode.classList.contains('word-container')) {
+                // Move back to word pieces container
+                const wordPiecesContainer = document.querySelector('.puzzle-card > div:nth-child(2)');
+                piece.classList.remove('selected');
+                wordPiecesContainer.appendChild(piece);
+            } else {
+                // Move to answer container
+                piece.classList.add('selected');
+                answerContainer.appendChild(piece);
+            }
+        }
+
+        // Check word puzzle answer
+        function checkWordPuzzle(correctOrder) {
+            const answerContainer = document.querySelector('.word-container');
+            const selectedPieces = answerContainer.querySelectorAll('.word-piece');
+            
+            // Check if all words are selected
+            if (selectedPieces.length !== correctOrder.length) {
+                alert('لطفاً تمام کلمات را مرتب کنید!');
                 return;
             }
             
-            const puzzle = puzzles[level];
-            document.getElementById('puzzle-question').textContent = puzzle.question;
+            // Check order
+            let isCorrect = true;
+            selectedPieces.forEach((piece, index) => {
+                const originalIndex = parseInt(piece.dataset.originalIndex);
+                if (originalIndex !== correctOrder[index]) {
+                    isCorrect = false;
+                }
+            });
             
-            // Reset containers
-            document.getElementById('puzzle-content').innerHTML = '';
-            document.getElementById('answer-options').innerHTML = '';
-            document.getElementById('answer-container').classList.remove('hidden');
-            document.getElementById('word-puzzle-container').classList.add('hidden');
-            
-            // Show timer if puzzle has time limit
-            const timerContainer = document.getElementById('timer-container');
-            if (puzzle.timeLimit) {
-                timeLeft = puzzle.timeLimit;
-                document.getElementById('timer').textContent = timeLeft;
-                timerContainer.classList.remove('hidden');
-                startTimer();
+            // Show result
+            if (isCorrect) {
+                selectedPieces.forEach(piece => {
+                    piece.style.borderColor = '#4CAF50';
+                    piece.style.backgroundColor = '#2a6a2a';
+                });
+                puzzleSolved();
             } else {
-                timerContainer.classList.add('hidden');
+                selectedPieces.forEach(piece => {
+                    piece.style.borderColor = '#F44336';
+                    piece.style.backgroundColor = '#6a2a2a';
+                });
+                puzzleFailed();
             }
             
-            // Show hint button if player is creator
-            if (playerData.isCreator) {
-                document.getElementById('hint-button').classList.remove('hidden');
-            } else {
-                document.getElementById('hint-button').classList.add('hidden');
-            }
+            // Disable all pieces
+            const allPieces = document.querySelectorAll('.word-piece');
+            allPieces.forEach(piece => {
+                piece.style.pointerEvents = 'none';
+            });
             
-            if (puzzle.type === 'multiple-choice') {
-                loadMultipleChoicePuzzle(puzzle);
-            } else if (puzzle.type === 'word-puzzle') {
-                loadWordPuzzle(puzzle);
-            }
+            // Disable check button
+            document.querySelector('.puzzle-card button').disabled = true;
+            
+            // Stop timer
+            clearInterval(gameData.timer);
         }
 
-        function startTimer() {
-            stopTimer(); // Clear any existing timer
+        // Puzzle solved
+        function puzzleSolved() {
+            // Calculate reward based on difficulty and time left
+            const currentPuzzle = gameData.puzzles[gameData.currentPuzzleIndex];
+            let coinsReward = 10;
+            let xpReward = 5;
             
-            const timerElement = document.getElementById('timer');
-            const timerBar = document.getElementById('timer-bar');
+            switch (currentPuzzle.difficulty) {
+                case 'medium':
+                    coinsReward = 20;
+                    xpReward = 10;
+                    break;
+                case 'hard':
+                    coinsReward = 30;
+                    xpReward = 15;
+                    break;
+                case 'expert':
+                    coinsReward = 50;
+                    xpReward = 25;
+                    break;
+            }
             
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = timeLeft;
-                timerBar.style.width = `${(timeLeft / puzzles[currentLevel].timeLimit) * 100}%`;
+            // Double reward for VIP
+            if (gameData.player.isVIP) {
+                coinsReward *= 2;
+                xpReward *= 2;
+            }
+            
+            // Add time bonus
+            const timeBonus = Math.floor(gameData.timeLeft / 5);
+            coinsReward += timeBonus;
+            
+            // Update player data
+            gameData.player.coins += coinsReward;
+            gameData.player.xp += xpReward;
+            
+            // Check if level up
+            if (gameData.player.xp >= 100) {
+                gameData.player.level++;
+                gameData.player.xp -= 100;
+                gameData.player.trophies++;
                 
-                // Change color when time is running out
-                if (timeLeft <= 10) {
-                    timerElement.classList.add('text-red-500');
-                    timerBar.classList.remove('gold-gradient');
-                    timerBar.classList.add('bg-red-500');
+                // Show level up message
+                setTimeout(() => {
+                    alert(`تبریک! شما به سطح ${gameData.player.level} رسیدید!`);
+                }, 1000);
+            }
+            
+            // Show success message
+            setTimeout(() => {
+                alert(`آفرین! شما ${coinsReward} سکه و ${xpReward} امتیاز تجربه دریافت کردید!`);
+                
+                // Move to next puzzle
+                gameData.currentPuzzleIndex++;
+                if (gameData.currentPuzzleIndex >= gameData.puzzles.length) {
+                    gameData.currentPuzzleIndex = 0;
                 }
                 
-                if (timeLeft <= 0) {
-                    stopTimer();
-                    showResult('زمان تمام شد!', 'متاسفانه زمان شما به پایان رسید.', 'error');
+                // Update UI
+                updatePlayerUI();
+                levelNumber.textContent = gameData.currentPuzzleIndex + 1;
+                showCurrentPuzzle();
+                
+                // Save game data
+                saveGameData();
+                
+                // Create confetti effect
+                createConfetti();
+            }, 1500);
+        }
+
+        // Puzzle failed
+        function puzzleFailed() {
+            // Show failure message
+            setTimeout(() => {
+                alert('متأسفانه پاسخ شما اشتباه بود! دوباره تلاش کنید.');
+                
+                // Move to next puzzle
+                gameData.currentPuzzleIndex++;
+                if (gameData.currentPuzzleIndex >= gameData.puzzles.length) {
+                    gameData.currentPuzzleIndex = 0;
+                }
+                
+                // Update UI
+                levelNumber.textContent = gameData.currentPuzzleIndex + 1;
+                showCurrentPuzzle();
+                
+                // Save game data
+                saveGameData();
+            }, 1500);
+        }
+
+        // Start timer
+        function startTimer(seconds) {
+            // Clear previous timer
+            if (gameData.timer) {
+                clearInterval(gameData.timer);
+            }
+            
+            // Set initial time
+            gameData.timeLeft = seconds;
+            timerBar.style.width = '100%';
+            
+            // Start countdown
+            gameData.timer = setInterval(() => {
+                gameData.timeLeft--;
+                
+                // Update timer bar
+                const percentage = (gameData.timeLeft / seconds) * 100;
+                timerBar.style.width = `${percentage}%`;
+                
+                // Check if time is up
+                if (gameData.timeLeft <= 0) {
+                    clearInterval(gameData.timer);
+                    
+                    // Show time up message
+                    alert('زمان تمام شد!');
+                    
+                    // Move to next puzzle
+                    gameData.currentPuzzleIndex++;
+                    if (gameData.currentPuzzleIndex >= gameData.puzzles.length) {
+                        gameData.currentPuzzleIndex = 0;
+                    }
+                    
+                    // Update UI
+                    levelNumber.textContent = gameData.currentPuzzleIndex + 1;
+                    showCurrentPuzzle();
+                    
+                    // Save game data
+                    saveGameData();
                 }
             }, 1000);
         }
 
-        function stopTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
+        // Back to menu
+        function backToMenu() {
+            // Clear timer
+            if (gameData.timer) {
+                clearInterval(gameData.timer);
+            }
+            
+            gameScreen.style.display = 'none';
+            mainMenu.style.display = 'block';
+        }
+
+        // Show coming soon modal
+        function showComingSoon() {
+            comingSoonModal.style.display = 'flex';
+        }
+
+        // Close modal
+        function closeModal() {
+            comingSoonModal.style.display = 'none';
+        }
+
+        // Show settings
+        function showSettings() {
+            settingsModal.style.display = 'flex';
+        }
+
+        // Close settings
+        function closeSettings() {
+            settingsModal.style.display = 'none';
+        }
+
+        // Show creators
+        function showCreators() {
+            creatorsModal.style.display = 'flex';
+            settingsModal.style.display = 'none';
+        }
+
+        // Close creators
+        function closeCreators() {
+            creatorsModal.style.display = 'none';
+            settingsModal.style.display = 'flex';
+        }
+
+        // Submit gift code
+        function submitCode() {
+            const code = giftCodeInput.value.trim();
+            
+            if (!code) {
+                alert('لطفاً کد هدیه را وارد کنید!');
+                return;
+            }
+            
+            // Check for creator code - FIXED: Exact string comparison
+            if (code === gameData.creatorCode) {
+                if (!gameData.player.isCreator) {
+                    // Show creator privileges modal
+                    creatorPrivilegesModal.style.display = 'flex';
+                    settingsModal.style.display = 'none';
+                } else {
+                    alert('شما قبلاً دسترسی سازنده را فعال کرده‌اید!');
+                }
+                giftCodeInput.value = '';
+                return;
+            }
+            
+            // Check for VIP code - FIXED: Exact string comparison
+            if (code === gameData.vipCode) {
+                if (!gameData.player.isVIP && !gameData.player.isCreator) {
+                    vipPrivilegesModal.style.display = 'flex';
+                    settingsModal.style.display = 'none';
+                } else if (gameData.player.isCreator) {
+                    alert('شما دسترسی سازنده دارید که شامل تمام امکانات VIP نیز می‌شود!');
+                } else {
+                    alert('شما قبلاً دسترسی VIP را فعال کرده‌اید!');
+                }
+                giftCodeInput.value = '';
+                return;
+            }
+            
+            // Check for custom gift codes
+            const giftCode = gameData.giftCodes.find(gc => gc.code === code && !gc.used);
+            
+            if (giftCode) {
+                // Check if code is expired
+                const now = new Date().getTime();
+                if (giftCode.expiry < now) {
+                    alert('این کد هدیه منقضی شده است!');
+                    giftCodeInput.value = '';
+                    return;
+                }
+                
+                // Apply gift code
+                switch (giftCode.type) {
+                    case 'coins':
+                        gameData.player.coins += giftCode.value;
+                        alert(`تبریک! ${giftCode.value} سکه به حساب شما اضافه شد!`);
+                        break;
+                    case 'vip':
+                        if (!gameData.player.isVIP && !gameData.player.isCreator) {
+                            vipPrivilegesModal.style.display = 'flex';
+                            settingsModal.style.display = 'none';
+                        } else if (gameData.player.isCreator) {
+                            alert('شما دسترسی سازنده دارید که شامل تمام امکانات VIP نیز می‌شود!');
+                        } else {
+                            alert('شما قبلاً دسترسی VIP را فعال کرده‌اید!');
+                        }
+                        break;
+                    case 'avatar':
+                        // Add all avatars
+                        const allAvatars = [
+                            'avatar-black-gold', 'avatar-black-red', 'avatar-red-gold',
+                            'avatar-purple-gold', 'avatar-blue-gold', 'avatar-green-gold',
+                            'avatar-rainbow'
+                        ];
+                        
+                        allAvatars.forEach(avatar => {
+                            if (!gameData.player.avatars.includes(avatar)) {
+                                gameData.player.avatars.push(avatar);
+                            }
+                        });
+                        
+                        alert('تبریک! تمام آواتارها برای شما فعال شدند!');
+                        break;
+                }
+                
+                // Mark code as used
+                giftCode.used = true;
+                
+                // Update UI
+                updatePlayerUI();
+                updateShopUI();
+                
+                // Save game data
+                saveGameData();
+                
+                giftCodeInput.value = '';
+            } else {
+                alert('کد هدیه نامعتبر است!');
             }
         }
 
-        function loadMultipleChoicePuzzle(puzzle) {
-            const answerOptions = document.getElementById('answer-options');
-            answerOptions.innerHTML = '';
+        // Logout
+        function logout() {
+            if (confirm('آیا مطمئن هستید که می‌خواهید از حساب خود خارج شوید؟')) {
+                localStorage.removeItem('brainGameData');
+                location.reload();
+            }
+        }
+
+        // Close creator privileges modal
+        function closeCreatorPrivileges() {
+            creatorPrivilegesModal.style.display = 'none';
+            settingsModal.style.display = 'flex';
+        }
+
+        // Activate creator privileges
+        function activateCreator() {
+            gameData.player.isCreator = true;
             
-            // Shuffle options
-            const shuffledOptions = [...puzzle.options].sort(() => Math.random() - 0.5);
-            
-            shuffledOptions.forEach(option => {
-                const button = document.createElement('button');
-                button.className = 'answer-btn btn-dark py-3 px-4 rounded-lg transition-all hover:bg-gray-800';
-                button.textContent = option;
-                button.addEventListener('click', () => {
-                    checkAnswer(option, puzzle.correctAnswer);
+            // Add creator badge
+            if (!gameData.player.badges.some(badge => badge.name === 'سازنده')) {
+                gameData.player.badges.push({
+                    name: 'سازنده',
+                    class: 'creator-badge'
                 });
-                answerOptions.appendChild(button);
-            });
-        }
-
-        function loadWordPuzzle(puzzle) {
-            document.getElementById('answer-container').classList.add('hidden');
-            document.getElementById('word-puzzle-container').classList.remove('hidden');
-            
-            // Reset word puzzle
-            document.getElementById('word-answer-slot').innerHTML = '';
-            document.getElementById('word-options').innerHTML = '';
-            selectedWords = [];
-            
-            // Shuffle words
-            availableWords = [...puzzle.words].sort(() => Math.random() - 0.5);
-            
-            // Create word pieces
-            availableWords.forEach((word, index) => {
-                const wordPiece = document.createElement('div');
-                wordPiece.className = 'word-piece bg-gray-800 text-gold-300 py-2 px-4 rounded-lg gold-border';
-                wordPiece.textContent = word;
-                wordPiece.dataset.index = index;
-                wordPiece.dataset.word = word;
-                wordPiece.addEventListener('click', () => {
-                    playSound('click');
-                    toggleWordSelection(wordPiece);
-                });
-                document.getElementById('word-options').appendChild(wordPiece);
-            });
-            
-            // Auto-check answer when all words are selected
-            const observer = new MutationObserver(() => {
-                const selectedCount = document.querySelectorAll('.word-piece.selected').length;
-                if (selectedCount === availableWords.length) {
-                    checkWordPuzzleAnswer();
-                }
-            });
-            
-            observer.observe(document.getElementById('word-answer-slot'), { 
-                childList: true 
-            });
-        }
-
-        function toggleWordSelection(element) {
-            const word = element.dataset.word;
-            const index = element.dataset.index;
-            
-            if (element.classList.contains('selected')) {
-                // Remove from selection
-                element.classList.remove('selected');
-                selectedWords = selectedWords.filter(w => w.index !== index);
-            } else {
-                // Add to selection
-                element.classList.add('selected');
-                selectedWords.push({ word, index });
             }
             
-            updateWordAnswerSlot();
-        }
-
-        function updateWordAnswerSlot() {
-            const answerSlot = document.getElementById('word-answer-slot');
-            answerSlot.innerHTML = '';
-            
-            // Sort by selection order
-            selectedWords.sort((a, b) => a.index - b.index).forEach(item => {
-                const wordElement = document.createElement('div');
-                wordElement.className = 'bg-gray-700 text-gold-300 py-1 px-3 rounded gold-border';
-                wordElement.textContent = item.word;
-                answerSlot.appendChild(wordElement);
-            });
-        }
-
-        function checkWordPuzzleAnswer() {
-            const puzzle = puzzles[currentLevel];
-            const userAnswer = selectedWords.map(item => item.word).join('');
-            
-            if (userAnswer === puzzle.correctAnswer) {
-                showResult('آفرین!', 'پاسخ شما صحیح است!', 'success');
-                updatePlayerProgress(true);
-            } else {
-                showResult('اشتباه!', 'پاسخ صحیح نیست. دوباره تلاش کنید.', 'error');
-                updatePlayerProgress(false);
+            // Add creator avatar
+            if (!gameData.player.avatars.includes('avatar-creator')) {
+                gameData.player.avatars.push('avatar-creator');
+                gameData.player.currentAvatar = 'avatar-creator';
             }
-        }
-
-        function checkAnswer(selectedAnswer, correctAnswer) {
-            const answerButtons = document.querySelectorAll('#answer-options button');
             
-            // Disable all buttons to prevent multiple clicks
-            answerButtons.forEach(btn => {
-                btn.disabled = true;
-                if (btn.textContent === correctAnswer) {
-                    btn.classList.add('correct-answer');
+            // Give access to all avatars
+            const allAvatars = [
+                'avatar-black-gold', 'avatar-black-red', 'avatar-red-gold',
+                'avatar-purple-gold', 'avatar-blue-gold', 'avatar-green-gold',
+                'avatar-rainbow'
+            ];
+            
+            allAvatars.forEach(avatar => {
+                if (!gameData.player.avatars.includes(avatar)) {
+                    gameData.player.avatars.push(avatar);
                 }
             });
-            
-            // Highlight selected button
-            const selectedButton = Array.from(answerButtons).find(
-                btn => btn.textContent === selectedAnswer
-            );
-            
-            if (selectedAnswer === correctAnswer) {
-                selectedButton.classList.add('correct-answer');
-                setTimeout(() => {
-                    showResult('آفرین!', 'پاسخ شما صحیح است!', 'success');
-                    updatePlayerProgress(true);
-                }, 1000);
-            } else {
-                selectedButton.classList.add('wrong-answer');
-                setTimeout(() => {
-                    showResult('اشتباه!', `پاسخ صحیح: ${correctAnswer}`, 'error');
-                    updatePlayerProgress(false);
-                }, 1000);
-            }
-        }
-        
-        function updatePlayerProgress(isCorrect) {
-            if (isCorrect) {
-                // Update level
-                if (currentLevel >= playerData.level) {
-                    playerData.level = currentLevel + 1;
-                }
-                
-                // Add coins and score
-                playerData.coins += 10;
-                playerData.score += 50;
-                
-                // Add cup every 3 levels
-                if ((currentLevel + 1) % 3 === 0) {
-                    playerData.cups += 1;
-                }
-                
-                // Play correct sound
-                playSound('correct');
-                
-                // Vibrate if enabled
-                if (playerData.settings.vibration && navigator.vibrate) {
-                    navigator.vibrate(200);
-                }
-            } else {
-                // Deduct score for wrong answers
-                playerData.score = Math.max(0, playerData.score - 10);
-                
-                // Play wrong sound
-                playSound('wrong');
-                
-                // Vibrate if enabled
-                if (playerData.settings.vibration && navigator.vibrate) {
-                    navigator.vibrate([100, 50, 100]);
-                }
-            }
-            
-            // Save to local storage
-            localStorage.setItem('brainShowPlayerData', JSON.stringify(playerData));
             
             // Update UI
-            document.getElementById('player-level').textContent = playerData.level + 1;
-            document.getElementById('player-coins').textContent = playerData.coins;
-            document.getElementById('player-cups').textContent = playerData.cups;
+            updatePlayerUI();
+            updateAccountStatus();
+            applyUserPrivileges();
+            updateShopUI();
+            
+            // Save game data
+            saveGameData();
+            
+            // Close modal
+            creatorPrivilegesModal.style.display = 'none';
+            settingsModal.style.display = 'flex';
+            
+            // Show success message
+            alert('تبریک! دسترسی‌های سازنده با موفقیت فعال شدند!');
+            
+            // Create special effect
+            createCreatorConfetti();
         }
 
-        function showResult(title, message, type) {
-            const resultModal = document.getElementById('result-modal');
-            const resultIcon = document.getElementById('result-icon');
-            const resultTitle = document.getElementById('result-title');
-            const resultMessage = document.getElementById('result-message');
-            const resultButton = document.getElementById('result-button');
-            const resultReward = document.getElementById('result-reward');
+        // Close VIP privileges modal
+        function closeVipPrivileges() {
+            vipPrivilegesModal.style.display = 'none';
+            settingsModal.style.display = 'flex';
+        }
+
+        // Activate VIP privileges
+        function activateVip() {
+            gameData.player.isVIP = true;
             
-            resultTitle.textContent = title;
-            resultMessage.textContent = message;
+            // Add VIP badge
+            if (!gameData.player.badges.some(badge => badge.name === 'VIP')) {
+                gameData.player.badges.push({
+                    name: 'VIP',
+                    class: 'vip-badge'
+                });
+            }
             
-            if (type === 'success') {
-                resultIcon.className = 'mx-auto w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-4 gold-border';
-                resultIcon.innerHTML = `
-                    <svg class="w-8 h-8 text-gold-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                `;
-                resultButton.className = 'w-full py-3 px-4 rounded-lg font-medium btn-gold shine-effect hover:scale-105 transition-transform';
-                resultButton.textContent = 'ادامه';
+            // Add VIP avatar
+            if (!gameData.player.avatars.includes('avatar-vip')) {
+                gameData.player.avatars.push('avatar-vip');
+                gameData.player.currentAvatar = 'avatar-vip';
+            }
+            
+            // Update UI
+            updatePlayerUI();
+            updateAccountStatus();
+            applyUserPrivileges();
+            updateShopUI();
+            
+            // Save game data
+            saveGameData();
+            
+            // Close modal
+            vipPrivilegesModal.style.display = 'none';
+            settingsModal.style.display = 'flex';
+            
+            // Show success message
+            alert('تبریک! دسترسی‌های VIP با موفقیت فعال شدند!');
+            
+            // Create special effect
+            createVipConfetti();
+        }
+
+        // Show shop
+        function showShop() {
+            shopCoins.textContent = gameData.player.coins;
+            shopModal.style.display = 'flex';
+            updateShopUI();
+        }
+
+        // Close shop
+        function closeShop() {
+            shopModal.style.display = 'none';
+        }
+
+        // Setup shop items
+        function setupShopItems() {
+            const avatarItemElements = avatarItems.querySelectorAll('.shop-item');
+            
+            avatarItemElements.forEach(item => {
+                const avatarClass = item.dataset.avatar;
+                const price = parseInt(item.dataset.price);
+                const button = item.querySelector('button');
                 
-                // Show rewards if level completed
-                if (title === 'آفرین!') {
-                    resultReward.classList.remove('hidden');
-                    document.getElementById('reward-coins').textContent = '+10';
-                    
-                    // Show cup reward if level is multiple of 3
-                    if ((currentLevel + 1) % 3 === 0) {
-                        document.getElementById('reward-cups').textContent = '+1';
-                    } else {
-                        document.getElementById('reward-cups').textContent = '+0';
+                if (button) {
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        buyAvatar(avatarClass, price);
+                    });
+                }
+                
+                item.addEventListener('click', function() {
+                    if (gameData.player.avatars.includes(avatarClass)) {
+                        selectAvatar(avatarClass);
                     }
-                } else {
-                    resultReward.classList.add('hidden');
-                }
+                });
+            });
+        }
+
+        // Buy avatar
+        function buyAvatar(avatarClass, price) {
+            if (gameData.player.coins >= price) {
+                gameData.player.coins -= price;
+                gameData.player.avatars.push(avatarClass);
+                gameData.player.currentAvatar = avatarClass;
+                
+                updatePlayerUI();
+                updateShopUI();
+                saveGameData();
+                
+                alert(`آواتار جدید با موفقیت خریداری شد!`);
             } else {
-                resultIcon.className = 'mx-auto w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-4 gold-border';
-                resultIcon.innerHTML = `
-                    <svg class="w-8 h-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                `;
-                resultButton.className = 'w-full py-3 px-4 rounded-lg font-medium bg-gray-800 text-white border border-red-500 hover:bg-gray-700';
-                resultButton.textContent = 'تلاش مجدد';
-                resultReward.classList.add('hidden');
+                alert('سکه کافی ندارید!');
             }
-            
-            resultModal.classList.remove('hidden');
         }
 
-        function playSound(type) {
-            if (!playerData.settings.sound) return;
+        // Select avatar
+        function selectAvatar(avatarClass) {
+            if (gameData.player.avatars.includes(avatarClass)) {
+                gameData.player.currentAvatar = avatarClass;
+                
+                updatePlayerUI();
+                updateShopUI();
+                saveGameData();
+            }
+        }
+
+        // Update shop UI
+        function updateShopUI() {
+            shopCoins.textContent = gameData.player.coins;
             
-            try {
-                switch(type) {
-                    case 'correct':
-                        correctSound.currentTime = 0;
-                        correctSound.play();
-                        break;
-                    case 'wrong':
-                        wrongSound.currentTime = 0;
-                        wrongSound.play();
-                        break;
-                    case 'click':
-                        clickSound.currentTime = 0;
-                        clickSound.play();
-                        break;
+            const avatarItemElements = avatarItems.querySelectorAll('.shop-item');
+            
+            avatarItemElements.forEach(item => {
+                const avatarClass = item.dataset.avatar;
+                const button = item.querySelector('button');
+                const statusSpan = item.querySelector('.text-xs');
+                
+                if (gameData.player.avatars.includes(avatarClass)) {
+                    // Player owns this avatar
+                    if (button) {
+                        button.remove();
+                    }
+                    
+                    if (!statusSpan || !statusSpan.classList.contains('text-green-500')) {
+                        const newStatus = document.createElement('span');
+                        newStatus.className = 'text-xs text-green-500';
+                        newStatus.textContent = gameData.player.currentAvatar === avatarClass ? 'فعال' : 'خریداری شده';
+                        item.querySelector('.mt-2').appendChild(newStatus);
+                    } else {
+                        statusSpan.textContent = gameData.player.currentAvatar === avatarClass ? 'فعال' : 'خریداری شده';
+                    }
+                    
+                    // Add selected class if this is the current avatar
+                    if (gameData.player.currentAvatar === avatarClass) {
+                        item.classList.add('selected');
+                    } else {
+                        item.classList.remove('selected');
+                    }
                 }
-            } catch (e) {
-                console.log('Error playing sound:', e);
+            });
+        }
+
+        // Load saved data if exists
+        function loadSavedData() {
+            const savedData = localStorage.getItem('brainGameData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                gameData.player = parsedData.player;
+                gameData.currentPuzzleIndex = parsedData.currentPuzzleIndex;
+                
+                // If user has custom puzzles saved
+                if (parsedData.puzzles) {
+                    gameData.puzzles = parsedData.puzzles;
+                }
+                
+                // If user has gift codes saved
+                if (parsedData.giftCodes) {
+                    gameData.giftCodes = parsedData.giftCodes;
+                }
+                
+                updatePlayerUI();
+                updateAccountStatus();
+                applyUserPrivileges();
             }
         }
 
-        function loadNextLevel() {
-            loadLevel(currentLevel + 1);
+        // Save game data
+        function saveGameData() {
+            localStorage.setItem('brainGameData', JSON.stringify({
+                player: gameData.player,
+                currentPuzzleIndex: gameData.currentPuzzleIndex,
+                puzzles: gameData.puzzles,
+                giftCodes: gameData.giftCodes
+            }));
+        }
+
+        // Update player UI elements
+        function updatePlayerUI() {
+            playerName.textContent = gameData.player.name;
+            playerCoins.textContent = gameData.player.coins;
+            playerTrophies.textContent = gameData.player.trophies;
+            playerLevel.textContent = `سطح ${gameData.player.level}`;
+            playerXpBar.style.width = `${gameData.player.xp}%`;
+            
+            // Update avatar
+            playerAvatar.className = `profile-avatar w-16 h-16 rounded-lg mb-1 ${gameData.player.currentAvatar}`;
+            
+            // Update badges
+            playerBadges.innerHTML = '';
+            if (gameData.player.badges.length > 0) {
+                gameData.player.badges.forEach(badge => {
+                    const badgeElement = document.createElement('span');
+                    badgeElement.className = `badge ${badge.class}`;
+                    badgeElement.textContent = badge.name;
+                    playerBadges.appendChild(badgeElement);
+                });
+            }
+        }
+
+        // Update account status in settings
+        function updateAccountStatus() {
+            if (gameData.player.isCreator || gameData.player.isVIP) {
+                accountStatus.classList.remove('hidden');
+                
+                let statusHTML = '';
+                if (gameData.player.isCreator) {
+                    statusHTML += `<div class="flex justify-between items-center mb-2">
+                        <span>وضعیت:</span>
+                        <span class="badge creator-badge">سازنده</span>
+                    </div>`;
+                    
+                    // Show creator tools
+                    creatorTools.classList.remove('hidden');
+                } else if (gameData.player.isVIP) {
+                    statusHTML += `<div class="flex justify-between items-center mb-2">
+                        <span>وضعیت:</span>
+                        <span class="badge vip-badge">VIP</span>
+                    </div>`;
+                    
+                    // Hide creator tools
+                    creatorTools.classList.add('hidden');
+                }
+                
+                accountDetails.innerHTML = statusHTML;
+            } else {
+                accountStatus.classList.add('hidden');
+                creatorTools.classList.add('hidden');
+            }
+        }
+
+        // Apply user privileges based on status
+        function applyUserPrivileges() {
+            if (gameData.player.isCreator) {
+                // Apply creator privileges
+                gameTitle.classList.remove('glow');
+                gameTitle.classList.add('creator-glow');
+                document.body.classList.add('creator-bg');
+                
+                // Set creator avatar if not already set
+                if (!gameData.player.avatars.includes('avatar-creator')) {
+                    gameData.player.avatars.push('avatar-creator');
+                    gameData.player.currentAvatar = 'avatar-creator';
+                    updatePlayerUI();
+                }
+                
+                // Add creator badge if not already added
+                if (!gameData.player.badges.some(badge => badge.name === 'سازنده')) {
+                    gameData.player.badges.push({
+                        name: 'سازنده',
+                        class: 'creator-badge'
+                    });
+                    updatePlayerUI();
+                }
+                
+                // Give access to all avatars
+                const allAvatars = [
+                    'avatar-black-gold', 'avatar-black-red', 'avatar-red-gold',
+                    'avatar-purple-gold', 'avatar-blue-gold', 'avatar-green-gold',
+                    'avatar-rainbow', 'avatar-creator'
+                ];
+                
+                allAvatars.forEach(avatar => {
+                    if (!gameData.player.avatars.includes(avatar)) {
+                        gameData.player.avatars.push(avatar);
+                    }
+                });
+                
+                updateShopUI();
+            } else if (gameData.player.isVIP) {
+                // Apply VIP privileges
+                gameTitle.classList.remove('glow');
+                gameTitle.classList.add('vip-glow');
+                document.body.classList.add('vip-bg');
+                
+                // Set VIP avatar if not already set
+                if (!gameData.player.avatars.includes('avatar-vip')) {
+                    gameData.player.avatars.push('avatar-vip');
+                    gameData.player.currentAvatar = 'avatar-vip';
+                    updatePlayerUI();
+                }
+                
+                // Add VIP badge if not already added
+                if (!gameData.player.badges.some(badge => badge.name === 'VIP')) {
+                    gameData.player.badges.push({
+                        name: 'VIP',
+                        class: 'vip-badge'
+                    });
+                    updatePlayerUI();
+                }
+            }
+            
+            // Update special buttons in game screen
+            updateSpecialButtons();
+        }
+
+        // Update special buttons in game screen
+        function updateSpecialButtons() {
+            specialButtons.innerHTML = '';
+            
+            if (gameData.player.isCreator) {
+                // Add skip button
+                const skipButton = document.createElement('button');
+                skipButton.className = 'skip-button';
+                skipButton.innerHTML = 'رد کردن';
+                skipButton.addEventListener('click', skipPuzzle);
+                specialButtons.appendChild(skipButton);
+                
+                // Add edit button
+                const editButton = document.createElement('button');
+                editButton.className = 'edit-button';
+                editButton.innerHTML = 'ویرایش';
+                editButton.addEventListener('click', showEditPuzzleModal);
+                specialButtons.appendChild(editButton);
+            } else if (gameData.player.isVIP) {
+                // Add hint button
+                const hintButton = document.createElement('button');
+                hintButton.className = 'hint-button';
+                hintButton.innerHTML = 'راهنمایی';
+                hintButton.addEventListener('click', showHint);
+                specialButtons.appendChild(hintButton);
+            }
+        }
+
+        // Skip current puzzle (creator only)
+        function skipPuzzle() {
+            if (!gameData.player.isCreator) return;
+            
+            clearInterval(gameData.timer);
+            
+            gameData.currentPuzzleIndex++;
+            if (gameData.currentPuzzleIndex >= gameData.puzzles.length) {
+                gameData.currentPuzzleIndex = 0;
+            }
+            
+            levelNumber.textContent = gameData.currentPuzzleIndex + 1;
+            showCurrentPuzzle();
+            saveGameData();
+            
+            // Show special effect
+            createCreatorConfetti();
+        }
+
+        // Show hint for current puzzle (VIP only)
+        function showHint() {
+            if (!gameData.player.isVIP) return;
+            
+            const currentPuzzle = gameData.puzzles[gameData.currentPuzzleIndex];
+            if (currentPuzzle.hint) {
+                alert(`راهنمایی: ${currentPuzzle.hint}`);
+                createVipConfetti();
+            }
+        }
+
+        // Show edit puzzle modal (creator only)
+        function showEditPuzzleModal() {
+            if (!gameData.player.isCreator) return;
+            
+            alert('این قابلیت به زودی اضافه خواهد شد!');
+            createCreatorConfetti();
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+                
+                // Animate confetti
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                    confetti.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`;
+                    confetti.style.transition = 'all 1s ease-out';
+                    
+                    setTimeout(() => {
+                        confetti.style.opacity = '0';
+                        setTimeout(() => {
+                            confetti.remove();
+                        }, 1000);
+                    }, 1000);
+                }, Math.random() * 500);
+            }
+        }
+
+        // Create creator confetti effect
+        function createCreatorConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'creator-confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `${Math.random() * 100}%`;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+                
+                // Animate confetti
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                    confetti.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`;
+                    confetti.style.transition = 'all 1s ease-out';
+                    
+                    setTimeout(() => {
+                        confetti.style.opacity = '0';
+                        setTimeout(() => {
+                            confetti.remove();
+                        }, 1000);
+                    }, 1000);
+                }, Math.random() * 500);
+            }
+        }
+
+        // Create VIP confetti effect
+        function createVipConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'vip-confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `${Math.random() * 100}%`;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+                
+                // Animate confetti
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                    confetti.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`;
+                    confetti.style.transition = 'all 1s ease-out';
+                    
+                    setTimeout(() => {
+                        confetti.style.opacity = '0';
+                        setTimeout(() => {
+                            confetti.remove();
+                        }, 1000);
+                    }, 1000);
+                }, Math.random() * 500);
+            }
+        }
+
+        // Get random color
+        function getRandomColor() {
+            const colors = ['#FFD700', '#FF5722', '#4CAF50', '#2196F3', '#9C27B0', '#F44336'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Get difficulty text
+        function getDifficultyText(difficulty) {
+            switch (difficulty) {
+                case 'easy':
+                    return 'آسان';
+                case 'medium':
+                    return 'متوسط';
+                case 'hard':
+                    return 'سخت';
+                case 'expert':
+                    return 'خبره';
+                default:
+                    return 'آسان';
+            }
         }
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'965477395629ea60',t:'MTc1MzUzODg3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
