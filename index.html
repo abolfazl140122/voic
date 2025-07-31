@@ -814,7 +814,7 @@
     <div class="mafia-animated-bg"></div>
 
     <div id="user-profile-area" class="hidden">
-        <div id="avatar-container" class="hidden" title="تغییر آواتار">
+        <div id="avatar-container" title="تغییر آواتار">
             <img id="avatar-image" src="https://placehold.co/80x80/333333/777777?text=?" alt="آواتار کاربر" onerror="this.src='https://placehold.co/80x80/333333/777777?text=?'">
         </div>
         <div id="user-info-box" class="hidden">
@@ -1044,8 +1044,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, onSnapshot, query, orderBy, addDoc, getDocs, writeBatch, limit, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, query, orderBy, getDocs, writeBatch, limit, where, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = typeof __firebase_config !== 'undefined'
             ? JSON.parse(__firebase_config)
@@ -1124,7 +1124,12 @@
         function showPanel(panelContainer) {
             if (!panelContainer) return;
             panelContainer.classList.remove('panel-hidden');
-            panelContainer.classList.add('panel-visible');
+            // panelContainer.classList.add('panel-visible'); // This class is not needed for the container
+            const panel = panelContainer.querySelector('.generic-panel');
+            if (panel) {
+                panel.style.opacity = '1';
+                panel.style.transform = 'scale(1)';
+            }
             if(userProfileArea && mainScreen && mainScreen.classList.contains('active')) {
                 userProfileArea.classList.add('profile-area-hidden');
             }
@@ -1133,9 +1138,13 @@
         function hidePanel(panelContainer) {
             if (!panelContainer) return;
             panelContainer.classList.add('panel-hidden');
-            panelContainer.classList.remove('panel-visible');
-            const isAnyPanelVisible = document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
-                                    (modalContainer && modalContainer.classList.contains('panel-visible'));
+            const panel = panelContainer.querySelector('.generic-panel');
+            if (panel) {
+                panel.style.opacity = '0';
+                panel.style.transform = 'scale(0.95)';
+            }
+            const isAnyPanelVisible = !!document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
+                                    (modalContainer && !modalContainer.classList.contains('panel-hidden'));
 
             if(userProfileArea && mainScreen && mainScreen.classList.contains('active') && !isAnyPanelVisible) {
                 userProfileArea.classList.remove('profile-area-hidden');
@@ -1192,20 +1201,18 @@
                 modalCancelBtn.classList.add('hidden');
             }
             modalContainer.classList.remove('panel-hidden');
-            modalContainer.classList.add('panel-visible');
         }
 
         function hideModal() {
             if (!modalContainer) return;
             modalContainer.classList.add('panel-hidden');
-            modalContainer.classList.remove('panel-visible');
             modalConfirmCallback = null;
             modalCancelCallback = null;
             if (changeNameInputContainer) changeNameInputContainer.classList.add('hidden');
             if (avatarGenerationContainer) avatarGenerationContainer.classList.add('hidden');
             if (modalMessage) modalMessage.classList.add('hidden');
 
-            const isAnyPanelVisible = document.querySelector('.generic-panel-container:not(.panel-hidden)');
+            const isAnyPanelVisible = !!document.querySelector('.generic-panel-container:not(.panel-hidden)');
             if(userProfileArea && mainScreen && mainScreen.classList.contains('active') && !isAnyPanelVisible) {
                 userProfileArea.classList.remove('profile-area-hidden');
             }
@@ -1284,23 +1291,22 @@
             }
 
             if(userProfileArea){
-                const isAnyPanelVisible = document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
-                                        (modalContainer && modalContainer.classList.contains('panel-visible'));
+                 const isAnyPanelVisible = !!document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
+                                        (modalContainer && !modalContainer.classList.contains('panel-hidden'));
 
-                if (showUserInfoAndAvatar && !isAnyPanelVisible) {
-                    userProfileArea.classList.remove('profile-area-hidden');
+                if (showUserInfoAndAvatar) {
                     userProfileArea.classList.remove('hidden');
-                    if(avatarContainer){
-                        avatarContainer.classList.toggle('hidden', window.innerWidth < 768);
-                    }
-                    if(userInfoBox) userInfoBox.classList.remove('hidden');
+                    if (avatarContainer) avatarContainer.classList.remove('hidden');
+                    if (userInfoBox) userInfoBox.classList.remove('hidden');
 
-                } else if (!showUserInfoAndAvatar) {
+                    if(isAnyPanelVisible) {
+                         userProfileArea.classList.add('profile-area-hidden');
+                    } else {
+                        userProfileArea.classList.remove('profile-area-hidden');
+                    }
+
+                } else {
                     userProfileArea.classList.add('hidden');
-                    if(avatarContainer) avatarContainer.classList.add('hidden');
-                    if(userInfoBox) userInfoBox.classList.add('hidden');
-                } else if (isAnyPanelVisible) {
-                    userProfileArea.classList.add('profile-area-hidden');
                 }
             }
         }
@@ -1321,7 +1327,10 @@
                         await loadUserData();
                     } else {
                         console.log("User is signed out. Attempting to sign in.");
-                        await signInAnonymously(auth).catch(err => console.error("Anonymous sign-in failed:", err));
+                        await signInAnonymously(auth).catch(err => {
+                             console.error("Anonymous sign-in failed:", err);
+                             if(loadingMessage) loadingMessage.textContent = "خطا در ورود به سیستم. لطفا صفحه را رفرش کنید.";
+                        });
                         Object.assign(gameState, { displayName: '', publicUserId: '', avatarUrl: '', clanId: null, clanName: null });
                     }
                     isAuthReady = true;
@@ -1359,16 +1368,19 @@
                         gameState.clanName = null;
                     }
                 } else {
-                    Object.assign(gameState, { displayName: '', publicUserId: '', avatarUrl: '', clanId: null, clanName: null });
+                    console.log("No user profile found, user needs to register.");
+                    Object.assign(gameState, { displayName: '', publicUserId: '', currentStage: 1, avatarUrl: '', clanId: null, clanName: null });
                 }
             } catch (error) {
                 console.error("Error loading user data:", error);
                 showModal("خطا", "مشکلی در بارگذاری اطلاعات شما پیش آمد.", "باشه");
                 Object.assign(gameState, { displayName: '', publicUserId: '', avatarUrl: '', clanId: null, clanName: null });
+            } finally {
+                updateUI();
             }
         }
 
-        async function saveUserData() {
+        async function saveUserData(isNewUser = false) {
             if (!currentUserId || !db) return;
             const userDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
             try {
@@ -1377,14 +1389,19 @@
                     publicUserId: gameState.publicUserId,
                     currentStage: gameState.currentStage,
                     avatarUrl: gameState.avatarUrl,
-                    clanId: gameState.clanId || null,
+                    clanId: gameState.clanId, // can be null
                     lastUpdated: serverTimestamp()
                 };
-                await setDoc(userDocRef, dataToSave, { merge: true });
+                 if (isNewUser) {
+                    await setDoc(userDocRef, dataToSave);
+                 } else {
+                    await setDoc(userDocRef, dataToSave, { merge: true });
+                 }
                  console.log("User data saved successfully.");
-            } catch (error) {
+            } catch (error)
+            {
                 console.error("Error saving user data:", error);
-                showModal("خطا", "مشکلی در ذخیره اطلاعات شما پیش آمد.", "باشه");
+                showModal("خطا", `مشکلی در ذخیره اطلاعات شما پیش آمد. ${error.message}`, "باشه");
             }
         }
 
@@ -1559,6 +1576,7 @@
             if (fact) {
                 showModal("دانستنی مافیا ✨", fact.replace(/\n/g, '<br>'), "جالب بود!");
             } else {
+                // Modal is already showing "loading", so we just update it.
                 showModal("خطا", "متاسفانه در حال حاضر نکته‌ای برای گفتن نیست.", "باشه");
             }
         }
@@ -1568,7 +1586,12 @@
         async function handleChangeDisplayName() {
             if(!newDisplayNameInput || !changeNameErrorMessage) return;
             const newName = validateAndSanitizeName(newDisplayNameInput.value, changeNameErrorMessage, newDisplayNameInput);
-            if (!newName || newName === gameState.displayName) return;
+            if (!newName || newName === gameState.displayName) {
+                if (newName === gameState.displayName) {
+                    changeNameErrorMessage.textContent = "نام جدید باید متفاوت از نام فعلی باشد."
+                }
+                return
+            };
             gameState.displayName = newName;
             await saveUserData();
             updateUI();
@@ -1588,6 +1611,7 @@
                     imgWrapper.className = 'avatar-suggestion-item';
                     const img = document.createElement('img');
                     img.src = base64Url;
+                    img.alt = "Avatar suggestion";
                     imgWrapper.appendChild(img);
                     imgWrapper.addEventListener('click', () => {
                         avatarSuggestionsContainer.querySelector('.selected')?.classList.remove('selected');
@@ -1622,8 +1646,18 @@
             showPanel(leaderboardPanelContainer);
             leaderboardList.innerHTML = "<div class='loader mx-auto my-4'></div>";
             try {
-                const usersRef = collection(db, `artifacts/${appId}/users`);
-                const q = query(usersRef, orderBy("mafiaGameData.profile.currentStage", "desc"), limit(50));
+                // IMPORTANT: This query requires a composite index in Firestore.
+                // Firestore will automatically generate an error in the browser console with a link to create it.
+                // The index will be on:
+                // Collection: users
+                // Fields: mafiaGameData.profile.currentStage (Descending), mafiaGameData.profile.displayName (Ascending)
+                const usersProfileCollectionGroup = collection(db, `artifacts/${appId}/users`);
+                const q = query(usersProfileCollectionGroup,
+                    orderBy("mafiaGameData.profile.currentStage", "desc"),
+                    orderBy("mafiaGameData.profile.displayName"),
+                    limit(50)
+                );
+                
                 const querySnapshot = await getDocs(q);
                 
                 let rank = 1;
@@ -1633,6 +1667,7 @@
                     return;
                 }
                 querySnapshot.forEach(docSnap => {
+                    // Data is nested inside mafiaGameData.profile
                     const data = docSnap.data().mafiaGameData.profile;
                     if (!data || !data.displayName) return;
                     
@@ -1650,7 +1685,7 @@
                 });
             } catch (error) {
                 console.error("Error loading leaderboard:", error);
-                leaderboardList.innerHTML = "<p class='text-center text-red-400'>خطا در بارگذاری جدول امتیازات.</p>";
+                leaderboardList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری جدول امتیازات. <br><small>ممکن است نیاز به ساخت Index در کنسول Firebase داشته باشید. (خطا را در کنسول مرورگر بررسی کنید)</small></p>`;
             }
         }
 
@@ -1678,9 +1713,18 @@
             clansList.innerHTML = "<div class='loader mx-auto my-4'></div>";
             try {
                 const clansRef = collection(db, `artifacts/${appId}/clans`);
-                const q = searchTerm 
-                    ? query(clansRef, where('nameLower', '>=', searchTerm.toLowerCase()), where('nameLower', '<=', searchTerm.toLowerCase() + '\uf8ff'))
-                    : query(clansRef, orderBy('memberCount', 'desc'), limit(30));
+                let q;
+
+                if (searchTerm) {
+                    // IMPORTANT: This query requires an index in Firestore on the 'nameLower' field.
+                    // You can create this in the Firebase Console under Firestore -> Indexes.
+                    // Collection: clans, Field: nameLower (Ascending)
+                    q = query(clansRef, where('nameLower', '>=', searchTerm.toLowerCase()), where('nameLower', '<=', searchTerm.toLowerCase() + '\uf8ff'), limit(20));
+                } else {
+                     // IMPORTANT: This query requires an index in Firestore on the 'memberCount' field.
+                    // Collection: clans, Field: memberCount (Descending)
+                    q = query(clansRef, orderBy('memberCount', 'desc'), limit(30));
+                }
                 
                 const querySnapshot = await getDocs(q);
                 clansList.innerHTML = '';
@@ -1695,7 +1739,7 @@
                     item.innerHTML = `
                         <div class="clan-info">
                             <div class="clan-name">${clan.name}</div>
-                            <div class="clan-members">${clan.memberCount || 1} عضو</div>
+                            <div class="clan-members">${clan.memberCount || 0} عضو</div>
                         </div>
                         <button class="btn-mafia-secondary join-clan-btn" data-clan-id="${docSnap.id}" data-clan-name="${clan.name}">پیوستن</button>
                     `;
@@ -1703,20 +1747,24 @@
                 });
             } catch (error) {
                 console.error("Error loading all clans:", error);
-                clansList.innerHTML = "<p class='text-center text-red-400'>خطا در بارگذاری لیست قبایل.</p>";
+                clansList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری لیست قبایل. <br><small>ممکن است نیاز به ساخت Index در کنسول Firebase داشته باشید. (خطا را در کنسول مرورگر بررسی کنید)</small></p>`;
             }
         }
 
         async function loadClanData(clanId) {
             const clanDocRef = doc(db, `artifacts/${appId}/clans/${clanId}`);
-            const docSnap = await getDoc(clanDocRef);
-            if (docSnap.exists()) {
-                gameState.clanName = docSnap.data().name;
-            } else {
-                console.warn("User's clan not found, resetting.");
-                gameState.clanId = null;
-                gameState.clanName = null;
-                await saveUserData();
+            try {
+                const docSnap = await getDoc(clanDocRef);
+                if (docSnap.exists()) {
+                    gameState.clanName = docSnap.data().name;
+                } else {
+                    console.warn("User's clan not found, resetting.");
+                    gameState.clanId = null;
+                    gameState.clanName = null;
+                    await saveUserData();
+                }
+            } catch (error) {
+                 console.error("Error loading clan data:", error);
             }
         }
 
@@ -1724,10 +1772,15 @@
             if (!gameState.clanId) return;
             userClanMembersList.innerHTML = "<div class='loader mx-auto my-4'></div>";
             try {
+                // This query requires a composite index:
+                // Collection: users, Fields: mafiaGameData.profile.clanId (Ascending), mafiaGameData.profile.displayName (Ascending)
                 const usersRef = collection(db, `artifacts/${appId}/users`);
                 const q = query(usersRef, where("mafiaGameData.profile.clanId", "==", gameState.clanId), orderBy("mafiaGameData.profile.displayName"));
                 const querySnapshot = await getDocs(q);
                 userClanMembersList.innerHTML = '';
+                if(querySnapshot.empty) {
+                    userClanMembersList.innerHTML = "<p class='text-center text-gray-400'>شما تنها عضو این قبیله هستید.</p>";
+                }
                 querySnapshot.forEach(docSnap => {
                     const user = docSnap.data().mafiaGameData.profile;
                     const item = document.createElement('div');
@@ -1737,7 +1790,7 @@
                 });
             } catch (error) {
                 console.error("Error loading clan members:", error);
-                userClanMembersList.innerHTML = "<p class='text-center text-red-400'>خطا در بارگذاری اعضا.</p>";
+                userClanMembersList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری اعضا. <br><small>ممکن است نیاز به ساخت Index در کنسول Firebase داشته باشید.</small></p>`;
             }
         }
 
@@ -1795,11 +1848,9 @@
                 try {
                     const batch = writeBatch(db);
                     const clanRef = doc(db, `artifacts/${appId}/clans/${clanId}`);
-                    const clanDoc = await getDoc(clanRef);
-                    if (!clanDoc.exists()) throw new Error("این قبیله دیگر وجود ندارد.");
 
-                    const newMemberCount = (clanDoc.data().memberCount || 0) + 1;
-                    batch.update(clanRef, { memberCount: newMemberCount });
+                    // Use Firestore's atomic increment operation for safety
+                    batch.update(clanRef, { memberCount: increment(1) });
 
                     const userProfileRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
                     batch.update(userProfileRef, { clanId: clanId });
@@ -1822,18 +1873,21 @@
         async function handleLeaveClan() {
              showModal("خروج از قبیله", `آیا مطمئن هستید که میخواهید قبیله "${gameState.clanName}" را ترک کنید؟`, "بله، خارج شو", "لغو", async () => {
                 hideModal();
+                if (!gameState.clanId) return;
+
                 try {
                     const batch = writeBatch(db);
                     const clanRef = doc(db, `artifacts/${appId}/clans/${gameState.clanId}`);
                     const clanDoc = await getDoc(clanRef);
                     
                     if (clanDoc.exists()) {
-                        const newMemberCount = Math.max(0, (clanDoc.data().memberCount || 1) - 1);
-                        if (newMemberCount === 0) {
+                        const currentMemberCount = clanDoc.data().memberCount || 1;
+                        if (currentMemberCount <= 1) {
                             // Delete clan if last member leaves
                             batch.delete(clanRef);
                         } else {
-                            batch.update(clanRef, { memberCount: newMemberCount });
+                            // Use Firestore's atomic decrement operation
+                            batch.update(clanRef, { memberCount: increment(-1) });
                         }
                     }
 
@@ -1843,6 +1897,7 @@
                     await batch.commit();
 
                     showModal("موفقیت", `شما قبیله "${gameState.clanName}" را ترک کردید.`, "باشه");
+                    const oldClanName = gameState.clanName; // Save for modal
                     gameState.clanId = null;
                     gameState.clanName = null;
                     updateUI();
@@ -1855,7 +1910,6 @@
                 }
             });
         }
-
 
         // --- Event Listeners & Initialization ---
 
@@ -1870,21 +1924,23 @@
             // Registration
             if (displayNameInput) displayNameInput.addEventListener('input', () => validateAndSanitizeName(displayNameInput.value, inputErrorMessage, displayNameInput));
             if (generateUserIdBtn) generateUserIdBtn.addEventListener('click', () => {
-                userIdDisplayInput.value = generateAlphanumericPublicUserId();
-                userIdErrorMessage.textContent = '';
+                if(userIdDisplayInput) userIdDisplayInput.value = generateAlphanumericPublicUserId();
+                if(userIdErrorMessage) userIdErrorMessage.textContent = '';
             });
             if (registerBtn) registerBtn.addEventListener('click', async () => {
                 const validatedName = validateAndSanitizeName(displayNameInput.value, inputErrorMessage, displayNameInput);
                 const publicId = userIdDisplayInput.value;
                 if (!publicId) {
-                    userIdErrorMessage.textContent = "لطفاً ابتدا یک شناسه کاربری بسازید.";
+                    if (userIdErrorMessage) userIdErrorMessage.textContent = "لطفاً ابتدا یک شناسه کاربری بسازید.";
                     return;
                 }
                 if (!validatedName) return;
 
                 gameState.displayName = validatedName;
                 gameState.publicUserId = publicId;
-                await saveUserData();
+                gameState.currentStage = 1;
+                gameState.clanId = null;
+                await saveUserData(true); // isNewUser = true
                 updateUI();
             });
 
@@ -1929,12 +1985,21 @@
             if (createClanBtn) createClanBtn.addEventListener('click', handleCreateClan);
             if (leaveClanBtn) leaveClanBtn.addEventListener('click', handleLeaveClan);
             if (clansList) clansList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('join-clan-btn')) {
-                    const { clanId, clanName } = e.target.dataset;
+                const joinBtn = e.target.closest('.join-clan-btn');
+                if (joinBtn) {
+                    const { clanId, clanName } = joinBtn.dataset;
                     handleJoinClan(clanId, clanName);
                 }
             });
-            if (searchClanInput) searchClanInput.addEventListener('input', (e) => loadAllClans(e.target.value.trim()));
+             if (searchClanInput) {
+                let debounceTimer;
+                searchClanInput.addEventListener('input', (e) => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        loadAllClans(e.target.value.trim());
+                    }, 300); // Debounce search to avoid too many queries
+                });
+            }
         }
 
         function cacheDOMElements() {
