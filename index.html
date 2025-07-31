@@ -3,2297 +3,2001 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مغز شو</title>
+    <title>بازی مافیا</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            font-family: 'Vazirmatn', sans-serif;
-        }
-        
         body {
-            background-color: #121212;
+            font-family: 'Vazirmatn', sans-serif;
             color: #e0e0e0;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 30%),
-                radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.08) 0%, transparent 30%);
         }
-        
-        .gold-text {
-            color: #FFD700;
+
+        .mafia-animated-bg {
+            background: linear-gradient(280deg, #0a0a0a, #181818, #101010, #202020, #0a0a0a);
+            background-size: 400% 400%;
+            animation: gradientAnimation 30s ease infinite;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
         }
-        
-        .gold-border {
-            border-color: #FFD700;
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        
-        .gold-bg {
-            background-color: #FFD700;
+
+        .panel {
+            background-color: rgba(30, 30, 30, 0.95);
+            border: 1px solid #c49730;
+            box-shadow: 0 0 20px rgba(200, 150, 50, 0.5);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
         }
-        
-        .btn {
-            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-            border: 2px solid #FFD700;
-            color: #FFD700;
-            transition: all 0.3s ease;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
-        .btn:hover {
-            background: linear-gradient(145deg, #FFD700, #FFC000);
-            color: #121212;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-        }
-        
-        .btn-small {
-            font-size: 0.85rem;
-            padding: 0.5rem 0.75rem;
-        }
-        
-        .puzzle-card {
-            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-            border: 2px solid #FFD700;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        }
-        
-        .option {
-            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-            border: 2px solid #555;
-            transition: all 0.3s ease;
-        }
-        
-        .option:hover {
-            border-color: #FFD700;
-            transform: translateY(-2px);
-        }
-        
-        .option.selected {
-            border-color: #FFD700;
-            background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
-        }
-        
-        .option.correct {
-            border-color: #4CAF50;
-            background: linear-gradient(145deg, #1a1a1a, #2a6a2a);
-        }
-        
-        .option.wrong {
-            border-color: #F44336;
-            background: linear-gradient(145deg, #1a1a1a, #6a2a2a);
-        }
-        
-        .logo-animation {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        
-        .fade-in {
-            animation: fadeIn 1s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .slide-in {
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .glow {
-            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
-        }
-        
-        .creator-glow {
-            animation: creatorGlow 2s infinite;
-        }
-        
-        @keyframes creatorGlow {
-            0% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; }
-            50% { text-shadow: 0 0 15px #FF5722, 0 0 30px #FF5722; }
-            100% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; }
-        }
-        
-        .vip-glow {
-            animation: vipGlow 2s infinite;
-        }
-        
-        @keyframes vipGlow {
-            0% { text-shadow: 0 0 10px #9C27B0, 0 0 20px #9C27B0; }
-            50% { text-shadow: 0 0 15px #673AB7, 0 0 30px #673AB7; }
-            100% { text-shadow: 0 0 10px #9C27B0, 0 0 20px #9C27B0; }
-        }
-        
-        .word-piece {
-            display: inline-block;
-            padding: 8px 12px;
-            margin: 5px;
-            background: #2a2a2a;
-            border: 2px solid #555;
-            border-radius: 8px;
-            cursor: grab;
-            transition: all 0.2s;
-        }
-        
-        .word-piece:hover {
-            border-color: #FFD700;
-        }
-        
-        .word-piece.selected {
-            border-color: #FFD700;
-            background: #3a3a3a;
-        }
-        
-        .word-container {
-            min-height: 60px;
-            background: rgba(255,255,255,0.05);
-            border: 2px dashed #555;
-            border-radius: 8px;
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #FFD700;
+
+        .panel-hidden {
             opacity: 0;
+            transform: scale(0.9) translateY(-20px);
+            pointer-events: none;
+            visibility: hidden; /* Ensure it's not interactive when hidden */
         }
-        
-        .profile-box {
-            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-            border: 2px solid #FFD700;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+        .panel-visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            visibility: visible;
         }
-        
-        .profile-avatar {
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .settings-icon {
-            transition: transform 0.3s ease;
-        }
-        
-        .settings-icon:hover {
-            transform: rotate(90deg);
-        }
-        
-        .badge {
-            background: linear-gradient(145deg, #FFD700, #FFC000);
-            color: #121212;
-            font-size: 0.7rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 1rem;
+
+        .btn-mafia {
+            background-color: #c49730;
+            color: #1a1a1a;
+            border: 2px solid #a57c1a;
+            padding: 8px 16px; /* Base padding */
+            font-size: 0.9rem; /* Base font size */
+            border-radius: 8px;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .menu-buttons {
-            display: flex;
-            gap: 0.5rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            white-space: nowrap; /* Prevent text wrapping inside buttons */
+            display: inline-flex; /* For aligning icon and text if any */
+            align-items: center;
             justify-content: center;
         }
-        
-        .trophy-icon {
-            color: #FFD700;
-            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
+        @media (min-width: 640px) {
+            .btn-mafia {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
         }
-        
-        .coin-icon {
-            color: #FFC107;
-            filter: drop-shadow(0 0 3px rgba(255, 193, 7, 0.5));
-        }
-        
-        .creator-badge {
-            background: linear-gradient(145deg, #FF5722, #FF9800);
-            animation: badgePulse 2s infinite;
-        }
-        
-        .vip-badge {
-            background: linear-gradient(145deg, #9C27B0, #673AB7);
-            animation: badgePulse 2s infinite;
-        }
-        
-        @keyframes badgePulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        .creator-bg {
-            background: linear-gradient(to bottom right, #1a1a1a, #2a2a2a), 
-                        radial-gradient(circle at top left, rgba(255, 87, 34, 0.2), transparent 70%),
-                        radial-gradient(circle at bottom right, rgba(255, 152, 0, 0.2), transparent 70%);
-        }
-        
-        .vip-bg {
-            background: linear-gradient(to bottom right, #1a1a1a, #2a2a2a),
-                        radial-gradient(circle at top left, rgba(156, 39, 176, 0.2), transparent 70%),
-                        radial-gradient(circle at bottom right, rgba(103, 58, 183, 0.2), transparent 70%);
-        }
-        
-        .hint-button {
-            background: linear-gradient(145deg, #9C27B0, #673AB7);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .hint-button:hover {
+
+        .btn-mafia:hover {
+            background-color: #d4a840;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
-        
-        .skip-button {
-            background: linear-gradient(145deg, #FF5722, #FF9800);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+         .btn-mafia:disabled {
+            background-color: #7e6a3b;
+            color: #524425;
+            border-color: #6a531f;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+
+        .btn-mafia-secondary {
+            background-color: #4a4a4a;
+            color: #e0e0e0;
+            border: 2px solid #333333;
+            padding: 6px 12px;
             font-size: 0.8rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        
-        .skip-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+         @media (min-width: 640px) {
+            .btn-mafia-secondary {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
         }
-        
-        .edit-button {
-            background: linear-gradient(145deg, #FF5722, #FF9800);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+        .btn-mafia-secondary:hover {
+            background-color: #5a5a5a;
+            color: #c49730;
+            transform: scale(1.05) translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
-        
-        .edit-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+
+        .input-mafia {
+            background-color: #333;
+            border: 1px solid #c49730;
+            color: #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
         }
-        
-        .creator-confetti {
+        @media (max-width: 639px) {
+            .input-mafia {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+        }
+
+        .input-mafia:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(200, 150, 50, 0.7);
+        }
+        .input-mafia.invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.7);
+        }
+        .input-mafia:read-only {
+            background-color: #444;
+            cursor: default;
+        }
+
+
+        .option-btn {
+            background-color: rgba(50, 50, 50, 0.8);
+            border: 1px solid #c49730;
+            color: #e0e0e0;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+        @media (min-width: 768px) {
+            .option-btn {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+
+        .option-btn:hover {
+            background-color: rgba(70, 70, 70, 0.9);
+            transform: scale(1.02);
+        }
+        .option-btn.correct { background-color: #28a745 !important; border-color: #1e7e34 !important; color: white !important; }
+        .option-btn.incorrect { background-color: #dc3545 !important; border-color: #b02a37 !important; color: white !important; }
+        .option-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .loader {
+            border: 8px solid #444;
+            border-top: 8px solid #c49730;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @media (min-width: 640px) {
+            .loader {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #c49730; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a57c1a; }
+
+        .screen {
             position: absolute;
-            width: 15px;
-            height: 15px;
-            background-image: linear-gradient(145deg, #FF5722, #FF9800);
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 100vh;
+            padding: 10px; /* Base padding */
+            box-sizing: border-box;
             opacity: 0;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            visibility: hidden;
+            transition: opacity 0.7s ease-in-out, visibility 0.7s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
         }
-        
-        .vip-confetti {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background-image: linear-gradient(145deg, #9C27B0, #673AB7);
+        @media (min-width: 640px) { /* sm */
+            .screen {
+                padding: 20px; /* Increased padding for larger screens */
+            }
+        }
+
+        #main-screen {
+            justify-content: flex-start;
+        }
+        #loading-screen {
+             justify-content: center;
+        }
+
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+        }
+        .screen-content-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        @media (min-width: 640px) {
+            .screen-content-wrapper {
+                 padding-bottom: 20px;
+            }
+        }
+        #main-screen .screen-content-wrapper {
+            justify-content: space-between;
+            min-height: calc(100vh - 20px); /* Base min-height */
+            padding-top: 60px; /* Initial padding for mobile to avoid user profile */
+        }
+        @media (min-width: 640px) { /* sm */
+            #main-screen .screen-content-wrapper {
+                min-height: calc(100vh - 40px); /* Adjusted min-height for sm screens */
+                padding-top: 80px; /* Increased padding for sm screens */
+            }
+        }
+         @media (min-width: 768px) { /* md, user profile moves to top-right */
+            #main-screen .screen-content-wrapper {
+                padding-top: 20px; /* Reset padding-top as user profile is no longer in the way */
+            }
+        }
+
+        /* User Profile Area Styling */
+        #user-profile-area {
+            position: fixed;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        @media (max-width: 767px) { /* Mobile: Centered at top */
+            #user-profile-area {
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%) translateY(0);
+            }
+            #user-profile-area.profile-area-hidden {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-150%);
+            }
+        }
+        @media (min-width: 768px) { /* Desktop: Top right */
+            #user-profile-area {
+                top: 20px;
+                right: 20px; /* Changed from left: auto to ensure it's on the right */
+                left: auto;
+                transform: translateY(0);
+                align-items: center;
+            }
+            #user-profile-area.profile-area-hidden {
+                opacity: 0;
+                transform: translateY(-150%);
+            }
+        }
+
+        #user-info-box {
+            background-color: rgba(15, 15, 15, 0.85);
+            border: 1px solid #c49730;
+            border-radius: 10px;
+            padding: 8px 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            width: max-content;
+            min-width: 0;
+        }
+        @media (min-width: 768px) {
+            #user-info-box {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                border-width: 2px;
+                border-radius: 12px;
+                padding: 12px 15px;
+                min-width: 180px;
+                max-width: 200px;
+                width: auto;
+            }
+        }
+
+
+        #user-info-box.hidden, #avatar-container.hidden {
             opacity: 0;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            transform: translateY(-20px);
+            pointer-events: none;
         }
-        
-        .shop-item {
-            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-            border: 2px solid #555;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            transition: all 0.3s ease;
+        @media (max-width: 767px) {
+            #user-info-box.hidden {
+                transform: translateX(-50%) translateY(-20px);
+            }
         }
-        
-        .shop-item:hover {
-            border-color: #FFD700;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+
+        .user-info-item {
+            background-color: rgba(40, 40, 40, 0.7);
+            padding: 4px 7px;
+            border-radius: 6px;
+            border-left: 0px solid #c49730;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        
-        .shop-item.selected {
-            border-color: #FFD700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        @media (min-width: 768px) {
+            .user-info-item {
+                padding: 6px 10px;
+                border-radius: 8px;
+                border-left-width: 3px;
+                display: block;
+            }
         }
-        
-        .avatar-preview {
+
+        .user-info-item .label {
+            font-size: 0.7em;
+            color: #a0a0a0;
+            margin-bottom: 0;
+        }
+        @media (min-width: 768px) {
+            .user-info-item .label {
+                font-size: 0.85em;
+                margin-bottom: 1px;
+            }
+        }
+
+        .user-info-item .value {
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        @media (min-width: 768px) {
+            .user-info-item .value {
+                font-size: 1em;
+            }
+        }
+
+        #display-name-output-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        @media (max-width: 767px) {
+             #display-name-output-container {
+                flex-direction: row-reverse;
+            }
+        }
+
+        #edit-name-btn {
+            cursor: pointer;
+            font-size: 0.85em;
+            color: #c49730;
+            transition: color 0.3s ease;
+        }
+        #edit-name-btn:hover {
+            color: #d4a840;
+        }
+        @media (min-width: 768px) {
+            #edit-name-btn {
+                font-size: 0.95em;
+            }
+        }
+
+        #display-name-output-box .value {
+            color: #e0e0e0;
+            text-shadow: 0 0 5px rgba(200, 150, 50, 0.5);
+        }
+        @media (min-width: 768px) {
+            #display-name-output-box .value {
+                text-shadow: 0 0 7px rgba(200, 150, 50, 0.6);
+            }
+        }
+        #public-user-id-output-box .value {
+            color: #a0a0a0;
+            font-family: monospace;
+            font-size: 0.95em;
+        }
+        @media (min-width: 768px) {
+            #public-user-id-output-box .value {
+                font-size: 1em;
+            }
+        }
+        #clan-output-box .value {
+            color: #c49730;
+            font-weight: bold;
+        }
+
+
+        #avatar-container {
             width: 60px;
             height: 60px;
-            border-radius: 0.5rem;
-            margin: 0 auto;
-            margin-bottom: 0.5rem;
-        }
-        
-        .avatar-black-gold {
-            background: linear-gradient(135deg, #000000 50%, #FFD700 50%);
-        }
-        
-        .avatar-black-red {
-            background: linear-gradient(135deg, #000000 50%, #F44336 50%);
-        }
-        
-        .avatar-red-gold {
-            background: linear-gradient(135deg, #F44336 50%, #FFD700 50%);
-        }
-        
-        .avatar-purple-gold {
-            background: linear-gradient(135deg, #9C27B0 50%, #FFD700 50%);
-        }
-        
-        .avatar-blue-gold {
-            background: linear-gradient(135deg, #2196F3 50%, #FFD700 50%);
-        }
-        
-        .avatar-green-gold {
-            background: linear-gradient(135deg, #4CAF50 50%, #FFD700 50%);
-        }
-        
-        .avatar-rainbow {
-            background: linear-gradient(to right, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #9400D3);
-        }
-        
-        .avatar-creator {
-            background: linear-gradient(135deg, #FF5722 50%, #FFD700 50%);
-            box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
-            animation: creatorAvatarGlow 2s infinite;
-        }
-        
-        @keyframes creatorAvatarGlow {
-            0% { box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
-            100% { box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
-        }
-        
-        .avatar-vip {
-            background: linear-gradient(135deg, #9C27B0 50%, #673AB7 50%);
-            box-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
-            animation: vipAvatarGlow 2s infinite;
-        }
-        
-        @keyframes vipAvatarGlow {
-            0% { box-shadow: 0 0 10px rgba(156, 39, 176, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(103, 58, 183, 0.7); }
-            100% { box-shadow: 0 0 10px rgba(156, 39, 176, 0.5); }
-        }
-        
-        .timer-bar {
-            height: 6px;
-            background: linear-gradient(to right, #FFD700, #FF5722);
-            border-radius: 3px;
-            transition: width 1s linear;
-        }
-        
-        .math-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .math-cell {
-            background: #2a2a2a;
-            border: 1px solid #555;
-            border-radius: 0.25rem;
-            padding: 0.5rem;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .sequence-container {
+            border-radius: 50%;
+            border: 2px solid #c49730;
+            background-color: #333;
+            cursor: pointer;
+            overflow: hidden;
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
+            align-items: center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        @media (min-width: 768px) {
+            #avatar-container {
+                width: 70px;
+                height: 70px;
+                margin-right: 10px;
+            }
+        }
+
+        #avatar-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #avatar-placeholder-icon {
+            font-size: 1.8rem;
+            color: #777;
+        }
+        @media (min-width: 768px) {
+            #avatar-placeholder-icon {
+                font-size: 2.2rem;
+            }
+        }
+
+        #avatar-suggestions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .avatar-suggestion-item {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            overflow: hidden;
+            transition: border-color 0.3s ease, transform 0.2s ease;
+        }
+        .avatar-suggestion-item:hover {
+            border-color: #c49730;
+            transform: scale(1.05);
+        }
+        .avatar-suggestion-item.selected {
+            border-color: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
+        }
+
+        /* Main Screen Header Styling */
+        #main-screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding-top: 0.5rem; /* Reduced top padding for header itself */
+            padding-bottom: 1rem;
             margin-bottom: 1rem;
         }
-        
-        .sequence-box {
+         @media (min-width: 768px) { /* md */
+             #main-screen-header {
+                padding-top: 1rem; /* Adjust for desktop if needed */
+             }
+        }
+
+
+        #main-title {
+            text-align: center;
+            flex-grow: 1;
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: bold;
+            color: #c49730;
+            text-shadow: 0 2px 2px rgba(0,0,0,0.8);
+            margin-right: auto; /* Pushes title towards center if icon is on left */
+            margin-left: auto; /* Pushes title towards center if icon is on right */
+        }
+        @media (min-width: 640px) { /* sm */
+            #main-title {
+                font-size: 3rem; /* text-5xl */
+            }
+        }
+        @media (min-width: 768px) { /* md */
+            #main-title {
+                font-size: 3.75rem; /* text-6xl */
+            }
+        }
+
+        /* Developer Intro Icon Button - Header Position */
+        #dev-intro-icon-btn-header {
+            background-color: transparent;
+            color: #c49730;
+            border: 2px solid #c49730;
+            padding: 0.5rem;
+            border-radius: 50%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             width: 40px;
             height: 40px;
-            background: #2a2a2a;
-            border: 1px solid #555;
-            border-radius: 0.25rem;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        #dev-intro-icon-btn-header:hover {
+            background-color: rgba(196, 151, 48, 0.2);
+            color: #d4a840;
+            border-color: #d4a840;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            transform: scale(1.1);
+        }
+        #dev-intro-icon-btn-header svg {
+            width: 20px;
+            height: 20px;
+        }
+         @media (min-width: 640px) {
+            #dev-intro-icon-btn-header {
+                width: 44px;
+                height: 44px;
+                padding: 0.6rem;
+            }
+            #dev-intro-icon-btn-header svg {
+                width: 22px;
+                height: 22px;
+            }
+        }
+
+        /* Bottom Action Buttons Layout */
+        #main-screen-buttons-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: auto;
+            padding-top: 1rem;
+        }
+
+        #top-action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding-bottom: 5px;
+        }
+        @media (min-width: 640px) {
+            #top-action-buttons {
+                gap: 0.75rem;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+        }
+        @media (min-width: 768px) {
+            #top-action-buttons {
+                gap: 1rem;
+            }
+        }
+
+        #top-action-buttons .btn-mafia:not(#start-game-btn) {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+        @media (min-width: 640px) {
+            #top-action-buttons .btn-mafia:not(#start-game-btn) {
+                font-size: 0.85rem;
+                padding: 0.5rem 1rem;
+            }
+        }
+        @media (min-width: 768px) {
+            #top-action-buttons .btn-mafia:not(#start-game-btn) {
+                font-size: 0.9rem;
+                padding: 0.6rem 1.2rem;
+            }
+        }
+
+        #start-game-btn {
+             padding: 0.6rem 1.2rem !important;
+             font-size: 0.95rem !important;
+             order: 0;
+        }
+        @media (min-width: 640px) {
+            #start-game-btn {
+                padding: 0.7rem 1.5rem !important;
+                font-size: 1.05rem !important;
+            }
+        }
+        @media (min-width: 768px) {
+            #start-game-btn {
+                padding: 0.8rem 1.8rem !important;
+                font-size: 1.15rem !important;
+            }
+        }
+
+
+        #input-error-message, #user-id-error-message, #change-name-error-message, #create-clan-error-message, #chat-message-error {
+            color: #dc3545;
+            font-size: 0.8rem;
+            text-align: right;
+            min-height: 1.2rem;
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+        @media (min-width: 640px) {
+            #input-error-message, #user-id-error-message, #change-name-error-message, #create-clan-error-message, #chat-message-error {
+                font-size: 0.875rem;
+            }
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* Styles for Generic Panels */
+        .generic-panel-container {
+            background-color: rgba(10, 10, 10, 0.92);
+        }
+        .generic-panel {
+            background: radial-gradient(circle at top center, rgba(45, 45, 55, 0.98), rgba(15, 15, 20, 0.99));
+            border: 2px solid #c49730;
+            box-shadow: 0 0 35px rgba(200, 150, 50, 0.65), 0 0 10px rgba(200, 150, 50, 0.4) inset;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-radius: 15px;
+        }
+        .close-generic-panel-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 34px;
+            height: 34px;
+            background-color: rgba(196, 151, 48, 0.85);
+            color: #101010;
+            border-radius: 50%;
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 22px;
             font-weight: bold;
+            line-height: 1;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.5);
+            z-index: 10;
         }
-        
-        .sequence-box.empty {
-            border: 1px dashed #555;
-            background: rgba(255,255,255,0.05);
+        .close-generic-panel-btn:hover {
+            background-color: #d4a840;
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
         }
-        
-        .difficulty-badge {
-            font-size: 0.7rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 1rem;
+        .panel-content-list {
+             space-y-4 text-right max-h-[calc(85vh-120px)] sm:max-h-[calc(85vh-150px)] overflow-y-auto pr-2 sm:pr-3 pl-1
+        }
+
+        .list-item {
+            background-color: rgba(28, 28, 35, 0.92);
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(196, 151, 48, 0.25);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+        .list-item:last-child {
+            margin-bottom: 0;
+        }
+        .list-item:hover {
+            transform: translateY(-5px) scale(1.015);
+            box-shadow: 0 10px 28px rgba(196, 151, 48, 0.45);
+            border-color: rgba(196, 151, 48, 0.6);
+        }
+        .list-item-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            border-bottom: 1px solid rgba(196, 151, 48, 0.2);
+            padding-bottom: 0.6rem;
+        }
+        .list-item-icon {
+            font-size: 1.7em;
+            color: #c49730;
+            margin-left: 10px;
+            width: 28px;
+            text-align: center;
+            line-height: 1;
+        }
+        .list-item-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #e8e8e8;
+        }
+        .list-item-main-text {
+            color: #efbe5a;
+            font-family: 'Vazirmatn', 'Courier New', Courier, monospace;
             font-weight: bold;
-            margin-right: 0.5rem;
+            font-size: 1.25rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            margin-top: 0.2rem;
         }
-        
-        .difficulty-easy {
-            background: linear-gradient(145deg, #4CAF50, #8BC34A);
-            color: white;
+        .list-item-description {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+            line-height: 1.65;
         }
-        
-        .difficulty-medium {
-            background: linear-gradient(145deg, #FF9800, #FFC107);
-            color: #121212;
+
+        /* Leaderboard Specific Styles */
+        #leaderboard-list .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
         }
-        
-        .difficulty-hard {
-            background: linear-gradient(145deg, #F44336, #FF5722);
-            color: white;
+        .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #c49730;
+            width: 40px;
+            text-align: center;
+            flex-shrink: 0;
         }
-        
-        .difficulty-expert {
-            background: linear-gradient(145deg, #9C27B0, #673AB7);
-            color: white;
+        .leaderboard-player-info {
+            flex-grow: 1;
+            text-align: right;
+            margin-right: 1rem;
         }
+        .leaderboard-player-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+        .leaderboard-player-id {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+            font-family: monospace;
+        }
+        .leaderboard-stage {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #efbe5a;
+            background-color: rgba(0,0,0,0.2);
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        /* Clan Specific Styles */
+        #clans-panel .list-item {
+             display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .clan-info {
+            flex-grow: 1;
+        }
+        .clan-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #efbe5a;
+        }
+        .clan-members {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+        }
+        #create-clan-section {
+            border: 1px dashed #c49730;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+
     </style>
 </head>
-<body class="min-h-screen">
-    <!-- Splash Screen -->
-    <div id="splash-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-50">
-        <div class="text-center">
-            <h1 class="text-4xl font-bold gold-text mb-4 glow">استدیو اسکورت گیم</h1>
-            <p class="text-xl text-gray-300">تقدیم می‌کند</p>
-        </div>
-    </div>
+<body>
+    <div class="mafia-animated-bg"></div>
 
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-40 hidden">
-        <div class="logo-animation mb-8">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#FFD700" stroke-width="5" />
-                <path d="M30,50 Q50,20 70,50 T30,50" fill="none" stroke="#FFD700" stroke-width="5" />
-                <circle cx="40" cy="40" r="5" fill="#FFD700">
-                    <animate attributeName="cx" values="40;60;40" dur="3s" repeatCount="indefinite" />
-                </circle>
-            </svg>
+    <div id="user-profile-area" class="hidden">
+        <div id="avatar-container" class="hidden" title="تغییر آواتار">
+            <img id="avatar-image" src="https://placehold.co/80x80/333333/777777?text=?" alt="آواتار کاربر" onerror="this.src='https://placehold.co/80x80/333333/777777?text=?'">
         </div>
-        <h1 class="text-4xl font-bold gold-text mb-4 glow">مغز شو</h1>
-        <div class="w-64 h-2 bg-gray-800 rounded-full overflow-hidden">
-            <div id="loading-bar" class="h-full gold-bg" style="width: 0%"></div>
-        </div>
-        <p id="loading-text" class="mt-2 text-gray-400">در حال بارگذاری... 0%</p>
-    </div>
-
-    <!-- Registration Screen -->
-    <div id="registration-screen" class="fixed inset-0 flex items-center justify-center bg-black z-30 hidden">
-        <div class="puzzle-card p-8 rounded-lg w-11/12 max-w-md slide-in">
-            <h2 class="text-3xl font-bold gold-text text-center mb-6">ثبت نام</h2>
-            <form id="registration-form" class="space-y-6">
-                <div>
-                    <label for="username" class="block text-sm font-medium mb-1">نام کاربری</label>
-                    <input type="text" id="username" class="w-full px-4 py-3 bg-gray-900 border gold-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
-                </div>
-                <button type="submit" class="w-full btn py-3 px-4 rounded-lg text-lg font-bold">ورود به بازی</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Main Menu -->
-    <div id="main-menu" class="fixed inset-0 bg-black z-20 hidden">
-        <div class="container mx-auto px-4 py-6 h-full flex flex-col">
-            <!-- Header with settings -->
-            <div class="flex items-center justify-between mb-4">
-                <div></div> <!-- Empty div for flex spacing -->
-                <button id="settings-button" class="settings-icon p-2 rounded-full bg-gray-900 gold-border">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Profile Box -->
-            <div class="flex justify-center mb-8">
-                <div class="profile-box p-4 rounded-lg flex items-center space-x-4 rtl:space-x-reverse">
-                    <div class="flex flex-col items-end">
-                        <div class="flex items-center mb-1">
-                            <span class="trophy-icon mr-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
-                            </span>
-                            <span id="player-trophies" class="text-sm font-bold gold-text">0</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="coin-icon mr-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </span>
-                            <span id="player-coins" class="text-sm font-bold text-yellow-400">100</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex flex-col items-center">
-                        <div id="player-avatar" class="profile-avatar w-16 h-16 rounded-lg mb-1 avatar-black-gold"></div>
-                        <span id="player-name" class="gold-text font-bold text-sm">بازیکن</span>
-                        <div id="player-badges" class="flex mt-1 space-x-1 rtl:space-x-reverse">
-                            <!-- Badges will be added here dynamically -->
-                        </div>
-                    </div>
-                    
-                    <div class="flex flex-col items-start">
-                        <div class="flex items-center mb-1">
-                            <span id="player-level" class="text-sm font-bold gold-text">سطح 1</span>
-                        </div>
-                        <div class="w-16 h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div id="player-xp-bar" class="h-full gold-bg" style="width: 20%"></div>
-                        </div>
-                    </div>
+        <div id="user-info-box" class="hidden">
+            <div id="display-name-output-box" class="user-info-item">
+                <div class="label">بازیکن:</div>
+                <div id="display-name-output-container">
+                    <span id="edit-name-btn" title="تغییر نام">✏️</span>
+                    <div id="display-name-output" class="value"></div>
                 </div>
             </div>
-            
-            <!-- Game Logo -->
-            <div class="flex-grow flex flex-col items-center justify-center">
-                <div class="logo-animation mb-8">
-                    <svg width="100" height="100" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="#FFD700" stroke-width="5" />
-                        <path d="M30,50 Q50,20 70,50 T30,50" fill="none" stroke="#FFD700" stroke-width="5" />
-                        <circle cx="40" cy="40" r="5" fill="#FFD700">
-                            <animate attributeName="cx" values="40;60;40" dur="3s" repeatCount="indefinite" />
-                        </circle>
-                    </svg>
-                </div>
-                <h1 id="game-title" class="text-5xl font-bold gold-text mb-10 glow">مغز شو</h1>
-                
-                <!-- Game buttons -->
-                <div class="flex flex-col items-center space-y-4 mb-12">
-                    <button id="start-game" class="btn py-3 px-8 rounded-lg text-xl font-bold w-48">شروع بازی</button>
-                    <button id="online-game" class="btn py-2 px-6 rounded-lg text-lg font-bold w-40">بازی آنلاین</button>
-                </div>
-                
-                <!-- Bottom buttons -->
-                <div class="menu-buttons mb-6">
-                    <button id="challenges-btn" class="btn btn-small rounded-lg">چالش‌ها</button>
-                    <button id="chat-btn" class="btn btn-small rounded-lg">چت</button>
-                    <button id="shop-btn" class="btn btn-small rounded-lg">فروشگاه</button>
-                </div>
+            <div id="public-user-id-output-box" class="user-info-item">
+                <div class="label">شناسه کاربری:</div>
+                <div id="public-user-id-output" class="value"></div>
+            </div>
+            <div id="clan-output-box" class="user-info-item hidden">
+                <div class="label">قبیله:</div>
+                <div id="clan-output" class="value"></div>
             </div>
         </div>
     </div>
 
-    <!-- Game Screen -->
-    <div id="game-screen" class="fixed inset-0 bg-black z-10 hidden">
-        <div class="container mx-auto px-4 py-6 h-full flex flex-col">
-            <!-- Header with level info -->
-            <div class="flex items-center justify-between mb-4">
-                <button id="back-to-menu" class="btn py-2 px-4 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                </button>
-                <div class="flex items-center">
-                    <span id="difficulty-badge" class="difficulty-badge difficulty-easy">آسان</span>
-                    <span class="gold-text font-bold">مرحله: </span>
-                    <span id="level-number" class="gold-text font-bold mr-1">1</span>
-                </div>
-                <div id="special-buttons" class="flex space-x-2 rtl:space-x-reverse">
-                    <!-- Special buttons will be added here dynamically -->
-                </div>
-            </div>
-            
-            <!-- Timer Bar -->
-            <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden mb-4">
-                <div id="timer-bar" class="timer-bar" style="width: 100%"></div>
-            </div>
-            
-            <!-- Puzzle Container -->
-            <div class="flex-grow flex flex-col items-center justify-center">
-                <div id="puzzle-container" class="w-full max-w-lg">
-                    <!-- Puzzle content will be dynamically inserted here -->
-                </div>
-            </div>
+    <div id="loading-screen" class="screen active flex flex-col items-center justify-center text-center">
+        <div class="screen-content-wrapper justify-center">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-6 text-[#c49730]">بارگذاری بازی مافیا...</h1>
+            <div class="loader mb-4"></div>
+            <p id="loading-message" class="text-lg sm:text-xl">در حال بررسی اتصال...</p>
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold gold-text">تنظیمات</h2>
-                <button id="close-settings" class="text-gray-400 hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <button id="creators-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
-                    سازندگان
-                </button>
-                
-                <div>
-                    <label for="gift-code" class="block text-sm font-medium mb-1">کد هدیه</label>
-                    <div class="flex space-x-2 rtl:space-x-reverse">
-                        <input type="text" id="gift-code" class="flex-grow px-4 py-2 bg-gray-900 border gold-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                        <button id="submit-code" class="btn py-2 px-4 rounded-lg">ثبت</button>
-                    </div>
-                </div>
-                
-                <div id="account-status" class="p-3 bg-gray-900 rounded-lg hidden">
-                    <h3 class="font-bold gold-text mb-2">وضعیت حساب</h3>
-                    <div id="account-details" class="text-sm">
-                        <!-- Account details will be added here dynamically -->
-                    </div>
-                </div>
-                
-                <div id="creator-tools" class="p-3 bg-gray-900 rounded-lg hidden">
-                    <h3 class="font-bold mb-2" style="color: #FF5722;">ابزارهای سازنده</h3>
-                    <div class="space-y-2">
-                        <button id="create-puzzle-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
-                            ساخت معمای جدید
-                        </button>
-                        <button id="generate-code-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
-                            ساخت کد هدیه
-                        </button>
-                        <button id="theme-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
-                            تغییر تم بازی
-                        </button>
-                        <button id="manage-users-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
-                            مدیریت کاربران
-                        </button>
-                        <button id="analytics-btn" class="w-full btn py-2 px-4 rounded-lg text-right">
-                            آمار بازی
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="pt-4 border-t border-gray-700">
-                    <button id="logout-btn" class="w-full py-2 px-4 rounded-lg bg-red-900 text-white hover:bg-red-800 transition">
-                        خروج از حساب
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Creators Modal -->
-    <div id="creators-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold gold-text">سازندگان</h2>
-                <button id="close-creators" class="text-gray-400 hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="p-3 bg-gray-900 rounded-lg">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold gold-text">کدنویس ارشد</span>
-                        <span>Ali.k</span>
-                    </div>
-                </div>
-                
-                <div class="p-3 bg-gray-900 rounded-lg">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold gold-text">کدنویس دوم</span>
-                        <span>abolfazl1401</span>
-                    </div>
-                </div>
-                
-                <div class="p-3 bg-gray-900 rounded-lg">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold gold-text">طراح</span>
-                        <span>ivar</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Coming Soon Modal -->
-    <div id="coming-soon-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in">
-            <h2 class="text-2xl font-bold gold-text text-center mb-4">به زودی</h2>
-            <p class="text-center mb-6">این بخش به زودی اضافه خواهد شد!</p>
-            <button id="close-modal" class="w-full btn py-2 px-4 rounded-lg">بازگشت</button>
-        </div>
-    </div>
-
-    <!-- Creator Privileges Modal -->
-    <div id="creator-privileges-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in creator-bg">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold creator-glow" style="color: #FF5722;">دسترسی سازنده</h2>
-                <button id="close-creator-privileges" class="text-gray-400 hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <p class="text-center mb-4">تبریک! شما به عنوان سازنده بازی شناخته شدید!</p>
-                
-                <div class="p-3 bg-gray-900 bg-opacity-70 rounded-lg">
-                    <h3 class="font-bold mb-2" style="color: #FF5722;">دسترسی‌های ویژه:</h3>
-                    <ul class="list-disc list-inside space-y-2 text-sm">
-                        <li>سکه و جایزه نامحدود</li>
-                        <li>دسترسی به تمام مراحل بازی</li>
-                        <li>امکان رد کردن مراحل</li>
-                        <li>افکت‌های ویژه طلایی</li>
-                        <li>انیمیشن‌های مخصوص سازنده</li>
-                        <li>امکان ویرایش معماها</li>
-                        <li>دسترسی به بخش‌های در حال توسعه</li>
-                        <li>امکان اضافه کردن معماهای جدید</li>
-                        <li>تغییر ظاهر بازی</li>
-                        <li>امکان ایجاد کد هدیه</li>
-                        <li>آواتار مخصوص سازنده</li>
-                        <li>امکان تغییر سختی معماها</li>
-                        <li>دسترسی به تمام آواتارها</li>
-                        <li>امکان ساخت تم اختصاصی</li>
-                        <li>امکان ساخت چالش‌های ویژه</li>
-                        <li>مدیریت کاربران</li>
-                        <li>مشاهده آمار بازی</li>
-                        <li>امکان ساخت رویدادهای ویژه</li>
-                        <li>دسترسی به API بازی</li>
-                        <li>امکان تغییر پارامترهای بازی</li>
-                    </ul>
-                </div>
-                
-                <button id="activate-creator" class="w-full py-2 px-4 rounded-lg text-white font-bold" style="background: linear-gradient(145deg, #FF5722, #FF9800);">
-                    فعال‌سازی دسترسی‌ها
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- VIP Privileges Modal -->
-    <div id="vip-privileges-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in vip-bg">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold vip-glow" style="color: #9C27B0;">دسترسی VIP</h2>
-                <button id="close-vip-privileges" class="text-gray-400 hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <p class="text-center mb-4">تبریک! شما به عنوان کاربر ویژه شناخته شدید!</p>
-                
-                <div class="p-3 bg-gray-900 bg-opacity-70 rounded-lg">
-                    <h3 class="font-bold mb-2" style="color: #9C27B0;">دسترسی‌های ویژه:</h3>
-                    <ul class="list-disc list-inside space-y-2 text-sm">
-                        <li>پاداش دو برابر برای حل معماها</li>
-                        <li>دسترسی به راهنمایی‌های ویژه</li>
-                        <li>انیمیشن‌های مخصوص VIP</li>
-                        <li>رنگ‌بندی اختصاصی VIP</li>
-                        <li>دسترسی به معماهای ویژه</li>
-                        <li>امکان ذخیره پیشرفت در چند دستگاه</li>
-                        <li>دسترسی زودتر به بخش‌های جدید</li>
-                        <li>آواتار مخصوص VIP</li>
-                        <li>زمان بیشتر برای حل معماها</li>
-                    </ul>
-                </div>
-                
-                <button id="activate-vip" class="w-full py-2 px-4 rounded-lg text-white font-bold" style="background: linear-gradient(145deg, #9C27B0, #673AB7);">
-                    فعال‌سازی دسترسی‌ها
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Shop Modal -->
-    <div id="shop-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-        <div class="puzzle-card p-6 rounded-lg w-11/12 max-w-md slide-in">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold gold-text">فروشگاه</h2>
-                <button id="close-shop" class="text-gray-400 hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="mb-4 flex justify-between items-center">
-                <span class="font-bold">موجودی:</span>
-                <div class="flex items-center">
-                    <span class="coin-icon mr-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <div id="main-screen" class="screen">
+        <div class="screen-content-wrapper"> <!-- Increased padding-top here -->
+            <div>
+                <div id="main-screen-header">
+                    <!-- Developer Intro Icon Button - Moved to the left (visual right in RTL) -->
+                    <button id="dev-intro-icon-btn-header" title="معرفی توسعه دهندگان">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M17 3.13a4 4 0 0 1 0 7.75"></path>
                         </svg>
-                    </span>
-                    <span id="shop-coins" class="text-sm font-bold text-yellow-400">100</span>
+                    </button>
+                    <h1 id="main-title">شهر مافیا</h1>
+                     <!-- Spacer on the right (visual left in RTL) to balance the icon button -->
+                    <div style="width: 40px; flex-shrink: 0;"></div>
+                </div>
+
+                <div id="registration-form" class="mb-4 panel panel-visible p-4 sm:p-6 rounded-lg max-w-md mx-auto">
+                    <h2 class="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-center text-[#c49730]">ثبت نام / ورود</h2>
+                    <input type="text" id="display-name-input" placeholder="نام نمایشی (فقط انگلیسی)" class="input-mafia w-full mb-1 p-2 sm:p-3 text-base sm:text-lg" maxlength="20">
+                    <p id="input-error-message" class=""></p>
+
+                    <div class="mt-3 mb-2">
+                        <label for="user-id-display" class="block text-sm font-medium text-gray-300 mb-1">شناسه کاربری (5 رقمی):</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="user-id-display" class="input-mafia w-full p-2 sm:p-3 text-base sm:text-lg text-center" readonly placeholder="ابتدا بسازید">
+                            <button id="generate-user-id-btn" class="btn-mafia-secondary whitespace-nowrap px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm">ساخت شناسه</button>
+                        </div>
+                        <p id="user-id-error-message" class=""></p>
+                    </div>
+
+                    <button id="register-btn" class="btn-mafia w-full p-2 sm:p-3 text-base sm:text-lg mt-3">ورود به شهر</button>
                 </div>
             </div>
-            
-            <div class="mb-4">
-                <h3 class="font-bold gold-text mb-2">آواتارها</h3>
-                <div class="grid grid-cols-2 gap-3" id="avatar-items">
-                    <div class="shop-item" data-avatar="avatar-black-gold" data-price="0">
-                        <div class="avatar-preview avatar-black-gold"></div>
-                        <div class="text-center mt-2">
-                            <div class="font-bold text-sm">مشکی-طلایی</div>
-                            <div class="flex items-center justify-center mt-1">
-                                <span class="coin-icon mr-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </span>
-                                <span class="text-xs font-bold text-yellow-400">0</span>
-                            </div>
-                            <div class="mt-2">
-                                <span class="text-xs text-green-500">فعال</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="shop-item" data-avatar="avatar-black-red" data-price="100">
-                        <div class="avatar-preview avatar-black-red"></div>
-                        <div class="text-center mt-2">
-                            <div class="font-bold text-sm">مشکی-قرمز</div>
-                            <div class="flex items-center justify-center mt-1">
-                                <span class="coin-icon mr-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </span>
-                                <span class="text-xs font-bold text-yellow-400">100</span>
-                            </div>
-                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
-                        </div>
-                    </div>
-                    
-                    <div class="shop-item" data-avatar="avatar-red-gold" data-price="150">
-                        <div class="avatar-preview avatar-red-gold"></div>
-                        <div class="text-center mt-2">
-                            <div class="font-bold text-sm">قرمز-طلایی</div>
-                            <div class="flex items-center justify-center mt-1">
-                                <span class="coin-icon mr-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </span>
-                                <span class="text-xs font-bold text-yellow-400">150</span>
-                            </div>
-                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
-                        </div>
-                    </div>
-                    
-                    <div class="shop-item" data-avatar="avatar-purple-gold" data-price="200">
-                        <div class="avatar-preview avatar-purple-gold"></div>
-                        <div class="text-center mt-2">
-                            <div class="font-bold text-sm">بنفش-طلایی</div>
-                            <div class="flex items-center justify-center mt-1">
-                                <span class="coin-icon mr-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </span>
-                                <span class="text-xs font-bold text-yellow-400">200</span>
-                            </div>
-                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
-                        </div>
-                    </div>
-                    
-                    <div class="shop-item" data-avatar="avatar-blue-gold" data-price="200">
-                        <div class="avatar-preview avatar-blue-gold"></div>
-                        <div class="text-center mt-2">
-                            <div class="font-bold text-sm">آبی-طلایی</div>
-                            <div class="flex items-center justify-center mt-1">
-                                <span class="coin-icon mr-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </span>
-                                <span class="text-xs font-bold text-yellow-400">200</span>
-                            </div>
-                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
-                        </div>
-                    </div>
-                    
-                    <div class="shop-item" data-avatar="avatar-green-gold" data-price="200">
-                        <div class="avatar-preview avatar-green-gold"></div>
-                        <div class="text-center mt-2">
-                            <div class="font-bold text-sm">سبز-طلایی</div>
-                            <div class="flex items-center justify-center mt-1">
-                                <span class="coin-icon mr-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </span>
-                                <span class="text-xs font-bold text-yellow-400">200</span>
-                            </div>
-                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
-                        </div>
-                    </div>
-                    
-                    <div class="shop-item" data-avatar="avatar-rainbow" data-price="500">
-                        <div class="avatar-preview avatar-rainbow"></div>
-                        <div class="text-center mt-2">
-                            <div class="font-bold text-sm">رنگین‌کمان</div>
-                            <div class="flex items-center justify-center mt-1">
-                                <span class="coin-icon mr-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </span>
-                                <span class="text-xs font-bold text-yellow-400">500</span>
-                            </div>
-                            <button class="mt-2 px-2 py-1 bg-yellow-600 text-white text-xs rounded-md hover:bg-yellow-500 transition">خرید</button>
-                        </div>
-                    </div>
+
+            <div id="main-screen-buttons-layout" class="pb-2 sm:pb-4 hidden">
+                <div id="top-action-buttons" class="">
+                    <button id="start-game-btn" class="btn-mafia">شروع بازی آنلاین</button>
+                    <button id="leaderboard-btn" class="btn-mafia" style="order: 2;">جدول امتیازات 🏆</button>
+                    <button id="clans-btn" class="btn-mafia" style="order: 3;">قبیله 🛡️</button>
+                    <button id="mafia-fact-btn" class="btn-mafia" style="order: 1;">دانستنی‌های مافیا ✨</button>
                 </div>
-            </div>
-            
-            <div class="text-center mt-4">
-                <button id="close-shop-btn" class="btn py-2 px-6 rounded-lg">بازگشت</button>
             </div>
         </div>
     </div>
 
-    <script>
-        // Store game data
-        const gameData = {
-            player: {
-                name: '',
-                level: 1,
-                score: 0,
-                coins: 100,
-                trophies: 0,
-                xp: 20,
-                badges: [],
-                isCreator: false,
-                isVIP: false,
-                avatars: ['avatar-black-gold'],
-                currentAvatar: 'avatar-black-gold'
-            },
-            puzzles: [
-                {
-                    type: 'multipleChoice',
-                    question: 'کدام عدد در دنباله زیر می‌آید؟<br>2, 4, 8, 16, ...',
-                    options: ['24', '32', '30', '20'],
-                    correctAnswer: 1,
-                    hint: 'هر عدد دو برابر عدد قبلی است.',
-                    difficulty: 'easy',
-                    timeLimit: 30
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'اگر امروز دوشنبه باشد، 15 روز بعد چه روزی است؟',
-                    options: ['دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه'],
-                    correctAnswer: 2,
-                    hint: '15 را تقسیم بر 7 کنید و باقیمانده را در نظر بگیرید.',
-                    difficulty: 'easy',
-                    timeLimit: 30
-                },
-                {
-                    type: 'wordPuzzle',
-                    question: 'با کلمات زیر یک ضرب‌المثل معروف بسازید:',
-                    words: ['نابرده', 'گنج', 'میسر', 'رنج', 'نمی‌شود'],
-                    correctOrder: [0, 2, 1, 3, 4],
-                    hint: 'این ضرب‌المثل درباره تلاش و پاداش است.',
-                    difficulty: 'medium',
-                    timeLimit: 45
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'کدام گزینه با بقیه متفاوت است؟',
-                    options: ['سیب', 'پرتقال', 'خیار', 'انار'],
-                    correctAnswer: 2,
-                    hint: 'به دسته‌بندی میوه‌ها و سبزیجات توجه کنید.',
-                    difficulty: 'easy',
-                    timeLimit: 20
-                },
-                {
-                    type: 'wordPuzzle',
-                    question: 'با حروف زیر یک کلمه پنج حرفی بسازید:',
-                    words: ['ب', 'ا', 'ت', 'ک', 'ی'],
-                    correctOrder: [2, 0, 4, 1, 3],
-                    hint: 'این کلمه نام یک وسیله نقلیه است.',
-                    difficulty: 'medium',
-                    timeLimit: 40
-                },
-                // New harder puzzles
-                {
-                    type: 'multipleChoice',
-                    question: 'اگر 2 + 3 = 10, 4 + 5 = 18, 7 + 2 = 18, پس 8 + 4 = ?',
-                    options: ['24', '32', '48', '36'],
-                    correctAnswer: 0,
-                    hint: 'به جای جمع، از ضرب و جمع استفاده کنید: (a × b) + (a + b)',
-                    difficulty: 'hard',
-                    timeLimit: 60
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'در یک مسابقه، علی از رضا جلوتر است و محمد از علی عقب‌تر است. حسن از رضا عقب‌تر است. چه کسی در رتبه دوم است؟',
-                    options: ['علی', 'رضا', 'محمد', 'حسن'],
-                    correctAnswer: 1,
-                    hint: 'ترتیب را از اول تا آخر بنویسید.',
-                    difficulty: 'hard',
-                    timeLimit: 90
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'عدد بعدی در این دنباله چیست؟<br>1, 4, 9, 16, 25, ...',
-                    options: ['30', '36', '42', '49'],
-                    correctAnswer: 1,
-                    hint: 'به مجذور اعداد طبیعی توجه کنید.',
-                    difficulty: 'medium',
-                    timeLimit: 45
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'مقدار X را در معادله زیر پیدا کنید:<br>2X + 5 = 3X - 7',
-                    options: ['12', '10', '8', '-12'],
-                    correctAnswer: 0,
-                    hint: 'معادله را به شکل استاندارد بنویسید و X را محاسبه کنید.',
-                    difficulty: 'hard',
-                    timeLimit: 60
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'یک مکعب با ابعاد 3×3×3 از 27 مکعب کوچک 1×1×1 ساخته شده است. اگر تمام وجوه خارجی را رنگ کنیم، چند مکعب کوچک دقیقاً دو وجه رنگی خواهند داشت؟',
-                    options: ['8', '12', '24', '6'],
-                    correctAnswer: 1,
-                    hint: 'به لبه‌های مکعب بزرگ توجه کنید.',
-                    difficulty: 'expert',
-                    timeLimit: 120
-                },
-                // Even harder puzzles
-                {
-                    type: 'multipleChoice',
-                    question: 'در یک دنباله، هر عدد برابر است با مجموع دو عدد قبلی. اگر دو عدد اول 3 و 5 باشند، عدد هشتم چیست؟',
-                    options: ['89', '144', '233', '377'],
-                    correctAnswer: 2,
-                    hint: 'دنباله فیبوناچی را با شروع از 3 و 5 بسازید.',
-                    difficulty: 'expert',
-                    timeLimit: 90
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'اگر log₂(x) = 5، مقدار x چیست؟',
-                    options: ['10', '25', '32', '64'],
-                    correctAnswer: 2,
-                    hint: 'از تعریف لگاریتم استفاده کنید: اگر log₂(x) = 5، پس 2^5 = x',
-                    difficulty: 'hard',
-                    timeLimit: 60
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'در یک کیسه 5 توپ قرمز، 3 توپ آبی و 2 توپ سبز وجود دارد. اگر 2 توپ به تصادف از کیسه خارج کنیم، احتمال اینکه هر دو توپ همرنگ باشند چقدر است؟',
-                    options: ['7/15', '2/5', '1/3', '11/30'],
-                    correctAnswer: 0,
-                    hint: 'احتمال انتخاب دو توپ قرمز + احتمال انتخاب دو توپ آبی + احتمال انتخاب دو توپ سبز',
-                    difficulty: 'expert',
-                    timeLimit: 120
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'عدد بعدی در این دنباله چیست؟<br>3, 6, 12, 24, 48, ...',
-                    options: ['72', '96', '108', '120'],
-                    correctAnswer: 1,
-                    hint: 'به الگوی ضرب در هر مرحله توجه کنید.',
-                    difficulty: 'hard',
-                    timeLimit: 45
-                },
-                {
-                    type: 'multipleChoice',
-                    question: 'اگر 5 نفر به 5 طریق مختلف می‌توانند در یک صف بایستند، به چند طریق مختلف می‌توانند دور یک میز گرد بنشینند؟',
-                    options: ['120', '60', '24', '20'],
-                    correctAnswer: 2,
-                    hint: 'در چینش دایره‌ای، چرخش‌های مختلف یک چینش، معادل هم هستند.',
-                    difficulty: 'expert',
-                    timeLimit: 90
-                }
-            ],
-            currentPuzzleIndex: 0,
-            creatorCode: 'a.av1401.d1401a.av.li.vd.ab.',
-            vipCode: 'VIP.asp./(VIP)./pvi)/aal.',
-            giftCodes: [],
-            timer: null,
-            timeLeft: 0
+    <div id="game-screen" class="screen">
+        <div class="screen-content-wrapper justify-start"> <!-- Default padding-top for game screen -->
+            <div class="flex justify-between items-center mb-4 sm:mb-6 p-2 sm:p-3 bg-[rgba(0,0,0,0.3)] rounded-lg text-sm sm:text-base md:text-xl">
+                <button id="back-to-main-btn" class="btn-mafia-secondary">بازگشت ⟵</button>
+                <div>مرحله: <span id="stage-display" class="font-bold text-[#c49730]">1</span></div>
+            </div>
+
+            <div id="question-container" class="panel panel-visible p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 min-h-[150px] sm:min-h-[200px] flex flex-col justify-center">
+                <p id="question-text" class="text-xl md:text-2xl mb-6 text-center leading-relaxed">سوال بارگذاری می‌شود...</p>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4"></div>
+                <p id="question-explanation" class="text-xs sm:text-sm mt-3 sm:mt-4 text-gray-400 text-center hidden"></p>
+            </div>
+
+            <div id="game-feedback" class="text-center text-base sm:text-lg font-semibold my-3 sm:my-4 h-8"></div>
+            
+            <div id="ai-thinking-indicator" class="text-center mt-3 sm:mt-4 hidden">
+                <div class="loader inline-block"></div>
+                <p class="text-sm sm:text-base">دستیار هوش مصنوعی در حال فکر کردن است...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-3 sm:p-4 panel-hidden z-50">
+        <div class="panel panel-visible p-6 sm:p-8 rounded-lg max-w-md md:max-w-lg w-full text-center">
+            <h3 id="modal-title" class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-[#c49730]">توجه</h3>
+            <div id="modal-content-dynamic">
+                <p id="modal-message" class="mb-2 sm:mb-3 text-sm sm:text-base"></p>
+                <div id="change-name-input-container" class="hidden mb-2">
+                    <input type="text" id="new-display-name-input" placeholder="نام نمایشی جدید (فقط انگلیسی)" class="input-mafia w-full mb-1 p-2 sm:p-3 text-base sm:text-lg" maxlength="20">
+                    <p id="change-name-error-message" class=""></p>
+                </div>
+                <div id="avatar-generation-container" class="hidden">
+                    <button id="generate-avatar-btn" class="btn-mafia my-4">ساخت آواتار جدید با AI</button>
+                    <div id="avatar-ai-loading" class="my-4 hidden">
+                        <div class="loader mx-auto"></div>
+                        <p class="mt-2 text-sm text-gray-400">در حال ساخت آواتارهای پیشنهادی... (ممکن است کمی طول بکشد)</p>
+                    </div>
+                    <div id="avatar-suggestions-container">
+                        </div>
+                    <p id="avatar-error-message" class="text-red-400 text-sm mt-2"></p>
+                </div>
+            </div>
+            <div id="modal-actions" class="flex justify-center gap-3 sm:gap-4 mt-4">
+                <button id="modal-confirm-btn" class="btn-mafia">تایید</button>
+                <button id="modal-cancel-btn" class="btn-mafia-secondary">لغو</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Developers Panel -->
+    <div id="developers-panel-container" class="fixed inset-0 flex items-center justify-center p-3 sm:p-4 panel-hidden z-[51] generic-panel-container">
+        <div id="developers-panel" class="generic-panel p-5 sm:p-7 rounded-xl max-w-lg md:max-w-xl w-full relative transform transition-all duration-500 ease-out">
+            <button id="close-developers-panel-btn" class="close-generic-panel-btn">×</button>
+            <h3 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-[#c49730] drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">سازندگان شهر مافیا</h3>
+            <div id="developers-list" class="space-y-4 text-right max-h-[calc(85vh-120px)] sm:max-h-[calc(85vh-150px)] overflow-y-auto pr-2 sm:pr-3 pl-1">
+                <div class="list-item">
+                    <div class="list-item-header">
+                        <span class="list-item-icon">💻</span>
+                        <h4 class="list-item-title">برنامه نویس ارشد</h4>
+                    </div>
+                    <p class="list-item-main-text">abolfazl1401</p>
+                    <p class="list-item-description">معمار و توسعه‌دهنده اصلی گیم‌پلی، رابط کاربری و منطق بازی شهر مافیا.</p>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-header">
+                        <span class="list-item-icon">🎨</span>
+                        <h4 class="list-item-title">طراح گرافیک</h4>
+                    </div>
+                    <p class="list-item-main-text">Vahid</p>
+                    <p class="list-item-description">طراح رابط کاربری (UI) و تجربه کاربری (UX). مسئولیت خلق هویت بصری جذاب و تم مافیایی بازی بر عهده او بوده است.</p>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-header">
+                        <span class="list-item-icon">💡</span>
+                        <h4 class="list-item-title">ایده پرداز</h4>
+                    </div>
+                    <p class="list-item-main-text">Ali.k</p>
+                    <p class="list-item-description">خالق ایده‌های نوآورانه برای مراحل، چالش‌ها و داستان‌سرایی در دنیای مافیا.</p>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-header">
+                        <span class="list-item-icon">☁️</span>
+                        <h4 class="list-item-title">توسعه دهنده سرور</h4>
+                    </div>
+                    <p class="list-item-main-text">Neda_Tech</p>
+                    <p class="list-item-description">متخصص در پیاده‌سازی و نگهداری زیرساخت‌های سرور، تضمین پایداری و امنیت بازی.</p>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-header">
+                        <span class="list-item-icon">⚙️</span>
+                        <h4 class="list-item-title">توسعه دهنده سرور</h4>
+                    </div>
+                    <p class="list-item-main-text">SinaCloud</p>
+                    <p class="list-item-description">مسئول بهینه‌سازی ارتباطات شبکه و مدیریت پایگاه داده‌های بازی برای تجربه‌ای روان.</p>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-header">
+                        <span class="list-item-icon">🚀</span>
+                        <h4 class="list-item-title">توسعه دهنده سرور (DevOps)</h4>
+                    </div>
+                    <p class="list-item-main-text">ParsaDevOps</p>
+                    <p class="list-item-description">متمرکز بر فرآیندهای DevOps، استقرار خودکار و مانیتورینگ عملکرد سرورهای بازی.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Panel -->
+    <div id="leaderboard-panel-container" class="fixed inset-0 flex items-center justify-center p-3 sm:p-4 panel-hidden z-[51] generic-panel-container">
+        <div id="leaderboard-panel" class="generic-panel p-5 sm:p-7 rounded-xl max-w-lg md:max-w-xl w-full relative transform transition-all duration-500 ease-out">
+            <button id="close-leaderboard-panel-btn" class="close-generic-panel-btn">×</button>
+            <h3 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-[#c49730] drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">🏆 جدول امتیازات 🏆</h3>
+            <div id="leaderboard-list" class="space-y-3 text-right max-h-[calc(85vh-120px)] sm:max-h-[calc(85vh-150px)] overflow-y-auto pr-2 sm:pr-3 pl-1">
+                <!-- Leaderboard items will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Clans Panel -->
+    <div id="clans-panel-container" class="fixed inset-0 flex items-center justify-center p-3 sm:p-4 panel-hidden z-[51] generic-panel-container">
+        <div id="clans-panel" class="generic-panel p-5 sm:p-7 rounded-xl max-w-lg md:max-w-xl w-full relative transform transition-all duration-500 ease-out">
+            <button id="close-clans-panel-btn" class="close-generic-panel-btn">×</button>
+            <h3 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-[#c49730] drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">🛡️ مدیریت قبیله 🛡️</h3>
+
+            <div id="clan-management-content" class="max-h-[calc(85vh-120px)] sm:max-h-[calc(85vh-150px)] overflow-y-auto pr-2 sm:pr-3 pl-1">
+                <div id="user-clan-view" class="hidden">
+                    <h4 class="text-xl font-bold text-center mb-4">قبیله شما: <span id="user-clan-name" class="text-[#efbe5a]"></span></h4>
+                    <p class="text-center text-gray-400 mb-4">اعضای قبیله:</p>
+                    <div id="user-clan-members-list" class="space-y-2 mb-6"></div>
+                    <button id="leave-clan-btn" class="btn-mafia w-full bg-red-700 border-red-900 hover:bg-red-600">خروج از قبیله</button>
+                </div>
+
+                <div id="no-clan-view">
+                    <div id="create-clan-section">
+                        <h4 class="text-lg font-semibold mb-3 text-center">ایجاد قبیله جدید</h4>
+                        <input type="text" id="create-clan-name-input" placeholder="نام قبیله (3 تا 20 کاراکتر انگلیسی)" class="input-mafia w-full mb-1" maxlength="20">
+                        <p id="create-clan-error-message"></p>
+                        <button id="create-clan-btn" class="btn-mafia w-full mt-2">ایجاد قبیله</button>
+                    </div>
+
+                    <h4 class="text-lg font-semibold my-4 text-center border-t border-b border-gray-700 py-2">یا پیوستن به قبیله موجود</h4>
+                    <input type="text" id="search-clan-input" placeholder="جستجوی نام قبیله..." class="input-mafia w-full mb-4">
+                    <div id="clans-list" class="space-y-3">
+                        <!-- Clan list to join will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, onSnapshot, query, orderBy, addDoc, getDocs, writeBatch, limit, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined'
+            ? JSON.parse(__firebase_config)
+            : {
+                apiKey: "AIzaSyBkUfmc3_TvcR8AkepIr1eB7YEvCD-7P3s",
+                authDomain: "city-mafia.firebaseapp.com",
+                projectId: "city-mafia",
+                storageBucket: "city-mafia.appspot.com", 
+                messagingSenderId: "66458127103",
+                appId: "1:66458127103:web:8bcc2ad470f51b5db45aca",
+                measurementId: "G-8M0M6BJ0GG"
+              };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mafia-game-default';
+
+        let app;
+        let auth;
+        let db;
+        let currentUserId = null;
+        let isAuthReady = false;
+
+        const gameState = {
+            displayName: '',
+            publicUserId: '',
+            currentStage: 1,
+            avatarUrl: '',
+            clanId: null,
+            clanName: null,
+            currentQuestionData: null,
+            isQuestionActive: false,
+            isLoadingNextQuestion: false,
         };
 
-        // DOM Elements
-        const splashScreen = document.getElementById('splash-screen');
-        const loadingScreen = document.getElementById('loading-screen');
-        const loadingBar = document.getElementById('loading-bar');
-        const loadingText = document.getElementById('loading-text');
-        const registrationScreen = document.getElementById('registration-screen');
-        const registrationForm = document.getElementById('registration-form');
-        const usernameInput = document.getElementById('username');
-        const mainMenu = document.getElementById('main-menu');
-        const gameTitle = document.getElementById('game-title');
-        const playerName = document.getElementById('player-name');
-        const playerCoins = document.getElementById('player-coins');
-        const playerTrophies = document.getElementById('player-trophies');
-        const playerLevel = document.getElementById('player-level');
-        const playerXpBar = document.getElementById('player-xp-bar');
-        const playerBadges = document.getElementById('player-badges');
-        const playerAvatar = document.getElementById('player-avatar');
-        const startGameBtn = document.getElementById('start-game');
-        const onlineGameBtn = document.getElementById('online-game');
-        const gameScreen = document.getElementById('game-screen');
-        const backToMenuBtn = document.getElementById('back-to-menu');
-        const levelNumber = document.getElementById('level-number');
-        const difficultyBadge = document.getElementById('difficulty-badge');
-        const puzzleContainer = document.getElementById('puzzle-container');
-        const specialButtons = document.getElementById('special-buttons');
-        const timerBar = document.getElementById('timer-bar');
-        const comingSoonModal = document.getElementById('coming-soon-modal');
-        const closeModalBtn = document.getElementById('close-modal');
-        const settingsButton = document.getElementById('settings-button');
-        const settingsModal = document.getElementById('settings-modal');
-        const closeSettingsBtn = document.getElementById('close-settings');
-        const creatorsBtn = document.getElementById('creators-btn');
-        const creatorsModal = document.getElementById('creators-modal');
-        const closeCreatorsBtn = document.getElementById('close-creators');
-        const giftCodeInput = document.getElementById('gift-code');
-        const submitCodeBtn = document.getElementById('submit-code');
-        const logoutBtn = document.getElementById('logout-btn');
-        const accountStatus = document.getElementById('account-status');
-        const accountDetails = document.getElementById('account-details');
-        const creatorTools = document.getElementById('creator-tools');
-        const creatorPrivilegesModal = document.getElementById('creator-privileges-modal');
-        const closeCreatorPrivilegesBtn = document.getElementById('close-creator-privileges');
-        const activateCreatorBtn = document.getElementById('activate-creator');
-        const vipPrivilegesModal = document.getElementById('vip-privileges-modal');
-        const closeVipPrivilegesBtn = document.getElementById('close-vip-privileges');
-        const activateVipBtn = document.getElementById('activate-vip');
-        const shopBtn = document.getElementById('shop-btn');
-        const shopModal = document.getElementById('shop-modal');
-        const closeShopBtn = document.getElementById('close-shop');
-        const closeShopBtn2 = document.getElementById('close-shop-btn');
-        const shopCoins = document.getElementById('shop-coins');
-        const avatarItems = document.getElementById('avatar-items');
-        const challengesBtn = document.getElementById('challenges-btn');
-        const chatBtn = document.getElementById('chat-btn');
+        // UI Element References
+        let loadingScreen, loadingMessage, mainScreen, gameScreen,
+            registrationForm, displayNameInput, registerBtn, inputErrorMessage,
+            userIdDisplayInput, generateUserIdBtn, userIdErrorMessage,
+            userProfileArea, avatarContainer, avatarImage, userInfoBox, displayNameOutput,
+            publicUserIdOutput, clanOutputBox, clanOutput,
+            editNameBtn,
+            mainScreenButtonsLayout,
+            startGameBtn, mafiaFactBtn, devIntroBtnHeader, clansBtn, leaderboardBtn,
+            stageDisplay, questionText,
+            optionsContainer, questionExplanation, backToMainBtn,
+            gameFeedback, aiThinkingIndicator,
+            modalContainer, modalTitle, modalContentDynamic, modalMessage,
+            changeNameInputContainer, newDisplayNameInput, changeNameErrorMessage,
+            avatarGenerationContainer, generateAvatarBtn, avatarAiLoading,
+            avatarSuggestionsContainer, avatarErrorMessage, modalConfirmBtn, modalCancelBtn,
+            developersPanelContainer, closeDevelopersPanelBtn,
+            leaderboardPanelContainer, closeLeaderboardPanelBtn, leaderboardList,
+            clansPanelContainer, closeClansPanelBtn, clanManagementContent,
+            userClanView, userClanName, userClanMembersList, leaveClanBtn,
+            noClanView, createClanSection, createClanNameInput, createClanErrorMessage, createClanBtn,
+            searchClanInput, clansList;
 
-        // Initialize game
-        document.addEventListener('DOMContentLoaded', function() {
-            // Show splash screen for 2 seconds
-            setTimeout(function() {
-                splashScreen.style.display = 'none';
-                loadingScreen.style.display = 'flex';
-                startLoading();
-            }, 2000);
-            
-            // Event listeners
-            registrationForm.addEventListener('submit', handleRegistration);
-            startGameBtn.addEventListener('click', startGame);
-            onlineGameBtn.addEventListener('click', showComingSoon);
-            backToMenuBtn.addEventListener('click', backToMenu);
-            closeModalBtn.addEventListener('click', closeModal);
-            settingsButton.addEventListener('click', showSettings);
-            closeSettingsBtn.addEventListener('click', closeSettings);
-            creatorsBtn.addEventListener('click', showCreators);
-            closeCreatorsBtn.addEventListener('click', closeCreators);
-            submitCodeBtn.addEventListener('click', submitCode);
-            logoutBtn.addEventListener('click', logout);
-            closeCreatorPrivilegesBtn.addEventListener('click', closeCreatorPrivileges);
-            activateCreatorBtn.addEventListener('click', activateCreator);
-            closeVipPrivilegesBtn.addEventListener('click', closeVipPrivileges);
-            activateVipBtn.addEventListener('click', activateVip);
-            shopBtn.addEventListener('click', showShop);
-            closeShopBtn.addEventListener('click', closeShop);
-            closeShopBtn2.addEventListener('click', closeShop);
-            challengesBtn.addEventListener('click', showComingSoon);
-            chatBtn.addEventListener('click', showComingSoon);
-            
-            // Setup shop items
-            setupShopItems();
-        });
+        let modalConfirmCallback = null;
+        let modalCancelCallback = null;
+        let selectedAvatarForConfirmation = null;
 
-        // Start loading animation
-        function startLoading() {
-            let progress = 0;
-            const interval = setInterval(function() {
-                progress += 5;
-                loadingBar.style.width = `${progress}%`;
-                loadingText.textContent = `در حال بارگذاری... ${progress}%`;
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(function() {
-                        loadingScreen.style.display = 'none';
-                        
-                        // Check if user is already registered
-                        if (localStorage.getItem('brainGameData')) {
-                            loadSavedData();
-                            mainMenu.style.display = 'block';
-                        } else {
-                            registrationScreen.style.display = 'flex';
-                        }
-                    }, 500);
-                }
-            }, 100);
+        // --- UI & Screen Management ---
+
+        function showScreen(screenElement) {
+            if (!screenElement) return;
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            screenElement.classList.add('active');
+
+            const isControllingOverflow = screenElement.id === 'main-screen' || screenElement.id === 'loading-screen';
+            document.body.style.overflow = isControllingOverflow ? 'hidden' : 'auto';
+            document.documentElement.style.overflow = isControllingOverflow ? 'hidden' : 'auto';
+
+            screenElement.scrollTop = 0;
+            updateUI();
         }
 
-        // Handle registration
-        function handleRegistration(e) {
-            e.preventDefault();
-            const username = usernameInput.value.trim();
-            
-            if (username) {
-                gameData.player.name = username;
-                saveGameData();
-                registrationScreen.style.display = 'none';
-                mainMenu.style.display = 'block';
-                updatePlayerUI();
+        function showPanel(panelContainer) {
+            if (!panelContainer) return;
+            panelContainer.classList.remove('panel-hidden');
+            panelContainer.classList.add('panel-visible');
+            if(userProfileArea && mainScreen && mainScreen.classList.contains('active')) {
+                userProfileArea.classList.add('profile-area-hidden');
             }
         }
 
-        // Start game
-        function startGame() {
-            mainMenu.style.display = 'none';
-            gameScreen.style.display = 'block';
-            levelNumber.textContent = gameData.currentPuzzleIndex + 1;
-            showCurrentPuzzle();
-        }
+        function hidePanel(panelContainer) {
+            if (!panelContainer) return;
+            panelContainer.classList.add('panel-hidden');
+            panelContainer.classList.remove('panel-visible');
+            const isAnyPanelVisible = document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
+                                    (modalContainer && modalContainer.classList.contains('panel-visible'));
 
-        // Show current puzzle
-        function showCurrentPuzzle() {
-            const currentPuzzle = gameData.puzzles[gameData.currentPuzzleIndex];
-            
-            // Update difficulty badge
-            difficultyBadge.className = `difficulty-badge difficulty-${currentPuzzle.difficulty}`;
-            difficultyBadge.textContent = getDifficultyText(currentPuzzle.difficulty);
-            
-            // Clear previous puzzle
-            puzzleContainer.innerHTML = '';
-            
-            // Create puzzle based on type
-            if (currentPuzzle.type === 'multipleChoice') {
-                createMultipleChoicePuzzle(currentPuzzle);
-            } else if (currentPuzzle.type === 'wordPuzzle') {
-                createWordPuzzle(currentPuzzle);
-            }
-            
-            // Start timer
-            startTimer(currentPuzzle.timeLimit);
-            
-            // Update special buttons
-            updateSpecialButtons();
-        }
-
-        // Create multiple choice puzzle
-        function createMultipleChoicePuzzle(puzzle) {
-            const puzzleCard = document.createElement('div');
-            puzzleCard.className = 'puzzle-card p-6 rounded-lg slide-in';
-            
-            // Question
-            const question = document.createElement('div');
-            question.className = 'text-xl font-bold mb-6 text-center';
-            question.innerHTML = puzzle.question;
-            puzzleCard.appendChild(question);
-            
-            // Options
-            const optionsContainer = document.createElement('div');
-            optionsContainer.className = 'space-y-4';
-            
-            puzzle.options.forEach((option, index) => {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'option p-4 rounded-lg cursor-pointer text-center';
-                optionDiv.textContent = option;
-                optionDiv.dataset.index = index;
-                
-                optionDiv.addEventListener('click', function() {
-                    selectOption(this, puzzle.correctAnswer);
-                });
-                
-                optionsContainer.appendChild(optionDiv);
-            });
-            
-            puzzleCard.appendChild(optionsContainer);
-            puzzleContainer.appendChild(puzzleCard);
-        }
-
-        // Create word puzzle
-        function createWordPuzzle(puzzle) {
-            const puzzleCard = document.createElement('div');
-            puzzleCard.className = 'puzzle-card p-6 rounded-lg slide-in';
-            
-            // Question
-            const question = document.createElement('div');
-            question.className = 'text-xl font-bold mb-6 text-center';
-            question.innerHTML = puzzle.question;
-            puzzleCard.appendChild(question);
-            
-            // Word pieces container
-            const wordPiecesContainer = document.createElement('div');
-            wordPiecesContainer.className = 'flex flex-wrap justify-center mb-6';
-            
-            // Shuffle words
-            const shuffledWords = [...puzzle.words];
-            for (let i = shuffledWords.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledWords[i], shuffledWords[j]] = [shuffledWords[j], shuffledWords[i]];
-            }
-            
-            // Create word pieces
-            shuffledWords.forEach((word, index) => {
-                const wordPiece = document.createElement('div');
-                wordPiece.className = 'word-piece';
-                wordPiece.textContent = word;
-                wordPiece.dataset.word = word;
-                wordPiece.dataset.originalIndex = puzzle.words.indexOf(word);
-                
-                wordPiece.addEventListener('click', function() {
-                    selectWordPiece(this);
-                });
-                
-                wordPiecesContainer.appendChild(wordPiece);
-            });
-            
-            puzzleCard.appendChild(wordPiecesContainer);
-            
-            // Answer container
-            const answerContainer = document.createElement('div');
-            answerContainer.className = 'word-container p-4 flex flex-wrap justify-center';
-            puzzleCard.appendChild(answerContainer);
-            
-            // Check button
-            const checkButton = document.createElement('button');
-            checkButton.className = 'btn py-2 px-4 rounded-lg mt-6 mx-auto block';
-            checkButton.textContent = 'بررسی پاسخ';
-            checkButton.addEventListener('click', function() {
-                checkWordPuzzle(puzzle.correctOrder);
-            });
-            puzzleCard.appendChild(checkButton);
-            
-            puzzleContainer.appendChild(puzzleCard);
-        }
-
-        // Select option in multiple choice puzzle
-        function selectOption(option, correctAnswer) {
-            // Remove selected class from all options
-            const options = document.querySelectorAll('.option');
-            options.forEach(opt => opt.classList.remove('selected', 'correct', 'wrong'));
-            
-            // Add selected class to clicked option
-            option.classList.add('selected');
-            
-            // Check answer
-            const selectedIndex = parseInt(option.dataset.index);
-            
-            setTimeout(() => {
-                if (selectedIndex === correctAnswer) {
-                    option.classList.add('correct');
-                    puzzleSolved();
-                } else {
-                    option.classList.add('wrong');
-                    options[correctAnswer].classList.add('correct');
-                    puzzleFailed();
-                }
-                
-                // Disable all options
-                options.forEach(opt => {
-                    opt.style.pointerEvents = 'none';
-                });
-                
-                // Stop timer
-                clearInterval(gameData.timer);
-            }, 500);
-        }
-
-        // Select word piece in word puzzle
-        function selectWordPiece(piece) {
-            const answerContainer = document.querySelector('.word-container');
-            
-            if (piece.parentNode.classList.contains('word-container')) {
-                // Move back to word pieces container
-                const wordPiecesContainer = document.querySelector('.puzzle-card > div:nth-child(2)');
-                piece.classList.remove('selected');
-                wordPiecesContainer.appendChild(piece);
-            } else {
-                // Move to answer container
-                piece.classList.add('selected');
-                answerContainer.appendChild(piece);
+            if(userProfileArea && mainScreen && mainScreen.classList.contains('active') && !isAnyPanelVisible) {
+                userProfileArea.classList.remove('profile-area-hidden');
             }
         }
 
-        // Check word puzzle answer
-        function checkWordPuzzle(correctOrder) {
-            const answerContainer = document.querySelector('.word-container');
-            const selectedPieces = answerContainer.querySelectorAll('.word-piece');
-            
-            // Check if all words are selected
-            if (selectedPieces.length !== correctOrder.length) {
-                alert('لطفاً تمام کلمات را مرتب کنید!');
+        function showModal(title, message, confirmText = "تایید", cancelText = null, onConfirm = null, onCancel = null, modalType = "generic") {
+            if (!modalTitle || !modalMessage || !changeNameInputContainer || !avatarGenerationContainer || !modalConfirmBtn || !modalCancelBtn || !modalContainer) {
+                console.error("[showModal] Modal elements not found, cannot show modal.");
                 return;
             }
-            
-            // Check order
-            let isCorrect = true;
-            selectedPieces.forEach((piece, index) => {
-                const originalIndex = parseInt(piece.dataset.originalIndex);
-                if (originalIndex !== correctOrder[index]) {
-                    isCorrect = false;
+
+            modalTitle.textContent = title;
+
+            modalMessage.classList.add('hidden');
+            changeNameInputContainer.classList.add('hidden');
+            avatarGenerationContainer.classList.add('hidden');
+
+            if(userProfileArea && mainScreen && mainScreen.classList.contains('active')) {
+                userProfileArea.classList.add('profile-area-hidden');
+            }
+
+            if (modalType === "changeName") {
+                changeNameInputContainer.classList.remove('hidden');
+                if(newDisplayNameInput) newDisplayNameInput.value = gameState.displayName;
+                if(changeNameErrorMessage) changeNameErrorMessage.textContent = '';
+                if(newDisplayNameInput) newDisplayNameInput.classList.remove('invalid');
+                if (message && message.trim() !== "") {
+                    modalMessage.innerHTML = message;
+                    modalMessage.classList.remove('hidden');
                 }
-            });
-            
-            // Show result
-            if (isCorrect) {
-                selectedPieces.forEach(piece => {
-                    piece.style.borderColor = '#4CAF50';
-                    piece.style.backgroundColor = '#2a6a2a';
-                });
-                puzzleSolved();
+            } else if (modalType === "avatar") {
+                avatarGenerationContainer.classList.remove('hidden');
+                if(avatarSuggestionsContainer) avatarSuggestionsContainer.innerHTML = '';
+                if(avatarErrorMessage) avatarErrorMessage.textContent = '';
+                if(avatarAiLoading) avatarAiLoading.classList.add('hidden');
+                 if (message && message.trim() !== "") {
+                    modalMessage.innerHTML = message;
+                    modalMessage.classList.remove('hidden');
+                }
             } else {
-                selectedPieces.forEach(piece => {
-                    piece.style.borderColor = '#F44336';
-                    piece.style.backgroundColor = '#6a2a2a';
-                });
-                puzzleFailed();
+                modalMessage.innerHTML = message;
+                modalMessage.classList.remove('hidden');
             }
-            
-            // Disable all pieces
-            const allPieces = document.querySelectorAll('.word-piece');
-            allPieces.forEach(piece => {
-                piece.style.pointerEvents = 'none';
-            });
-            
-            // Disable check button
-            document.querySelector('.puzzle-card button').disabled = true;
-            
-            // Stop timer
-            clearInterval(gameData.timer);
+
+            modalConfirmBtn.textContent = confirmText;
+            modalConfirmCallback = onConfirm;
+            modalCancelCallback = onCancel;
+
+            if (cancelText || modalType === "changeName" || modalType === "avatar") {
+                modalCancelBtn.textContent = cancelText || "لغو";
+                modalCancelBtn.classList.remove('hidden');
+            } else {
+                modalCancelBtn.classList.add('hidden');
+            }
+            modalContainer.classList.remove('panel-hidden');
+            modalContainer.classList.add('panel-visible');
         }
 
-        // Puzzle solved
-        function puzzleSolved() {
-            // Calculate reward based on difficulty and time left
-            const currentPuzzle = gameData.puzzles[gameData.currentPuzzleIndex];
-            let coinsReward = 10;
-            let xpReward = 5;
-            
-            switch (currentPuzzle.difficulty) {
-                case 'medium':
-                    coinsReward = 20;
-                    xpReward = 10;
-                    break;
-                case 'hard':
-                    coinsReward = 30;
-                    xpReward = 15;
-                    break;
-                case 'expert':
-                    coinsReward = 50;
-                    xpReward = 25;
-                    break;
+        function hideModal() {
+            if (!modalContainer) return;
+            modalContainer.classList.add('panel-hidden');
+            modalContainer.classList.remove('panel-visible');
+            modalConfirmCallback = null;
+            modalCancelCallback = null;
+            if (changeNameInputContainer) changeNameInputContainer.classList.add('hidden');
+            if (avatarGenerationContainer) avatarGenerationContainer.classList.add('hidden');
+            if (modalMessage) modalMessage.classList.add('hidden');
+
+            const isAnyPanelVisible = document.querySelector('.generic-panel-container:not(.panel-hidden)');
+            if(userProfileArea && mainScreen && mainScreen.classList.contains('active') && !isAnyPanelVisible) {
+                userProfileArea.classList.remove('profile-area-hidden');
             }
-            
-            // Double reward for VIP
-            if (gameData.player.isVIP) {
-                coinsReward *= 2;
-                xpReward *= 2;
-            }
-            
-            // Add time bonus
-            const timeBonus = Math.floor(gameData.timeLeft / 5);
-            coinsReward += timeBonus;
-            
-            // Update player data
-            gameData.player.coins += coinsReward;
-            gameData.player.xp += xpReward;
-            
-            // Check if level up
-            if (gameData.player.xp >= 100) {
-                gameData.player.level++;
-                gameData.player.xp -= 100;
-                gameData.player.trophies++;
-                
-                // Show level up message
-                setTimeout(() => {
-                    alert(`تبریک! شما به سطح ${gameData.player.level} رسیدید!`);
-                }, 1000);
-            }
-            
-            // Show success message
-            setTimeout(() => {
-                alert(`آفرین! شما ${coinsReward} سکه و ${xpReward} امتیاز تجربه دریافت کردید!`);
-                
-                // Move to next puzzle
-                gameData.currentPuzzleIndex++;
-                if (gameData.currentPuzzleIndex >= gameData.puzzles.length) {
-                    gameData.currentPuzzleIndex = 0;
+        }
+
+        function handleModalConfirm() {
+            if (modalConfirmCallback) {
+                try {
+                    modalConfirmCallback();
+                } catch (e) {
+                    console.error("[handleModalConfirm] Error in modal confirm callback:", e);
+                    hideModal();
                 }
-                
-                // Update UI
-                updatePlayerUI();
-                levelNumber.textContent = gameData.currentPuzzleIndex + 1;
-                showCurrentPuzzle();
-                
-                // Save game data
-                saveGameData();
-                
-                // Create confetti effect
-                createConfetti();
-            }, 1500);
-        }
-
-        // Puzzle failed
-        function puzzleFailed() {
-            // Show failure message
-            setTimeout(() => {
-                alert('متأسفانه پاسخ شما اشتباه بود! دوباره تلاش کنید.');
-                
-                // Move to next puzzle
-                gameData.currentPuzzleIndex++;
-                if (gameData.currentPuzzleIndex >= gameData.puzzles.length) {
-                    gameData.currentPuzzleIndex = 0;
-                }
-                
-                // Update UI
-                levelNumber.textContent = gameData.currentPuzzleIndex + 1;
-                showCurrentPuzzle();
-                
-                // Save game data
-                saveGameData();
-            }, 1500);
-        }
-
-        // Start timer
-        function startTimer(seconds) {
-            // Clear previous timer
-            if (gameData.timer) {
-                clearInterval(gameData.timer);
+            } else {
+                hideModal();
             }
-            
-            // Set initial time
-            gameData.timeLeft = seconds;
-            timerBar.style.width = '100%';
-            
-            // Start countdown
-            gameData.timer = setInterval(() => {
-                gameData.timeLeft--;
-                
-                // Update timer bar
-                const percentage = (gameData.timeLeft / seconds) * 100;
-                timerBar.style.width = `${percentage}%`;
-                
-                // Check if time is up
-                if (gameData.timeLeft <= 0) {
-                    clearInterval(gameData.timer);
-                    
-                    // Show time up message
-                    alert('زمان تمام شد!');
-                    
-                    // Move to next puzzle
-                    gameData.currentPuzzleIndex++;
-                    if (gameData.currentPuzzleIndex >= gameData.puzzles.length) {
-                        gameData.currentPuzzleIndex = 0;
+        }
+
+        function handleModalCancel() {
+            if (modalCancelCallback) {
+                try {
+                    modalCancelCallback();
+                } catch (e) {
+                    console.error("[handleModalCancel] Error in modal cancel callback:", e);
+                }
+            }
+            hideModal();
+        }
+
+        function updateUI() {
+            if(displayNameOutput) displayNameOutput.textContent = gameState.displayName || "مهمان";
+            if(publicUserIdOutput) publicUserIdOutput.textContent = gameState.publicUserId || "---";
+            if(stageDisplay) stageDisplay.textContent = gameState.currentStage;
+
+            if(clanOutputBox && clanOutput) {
+                if (gameState.clanName) {
+                    clanOutput.textContent = gameState.clanName;
+                    clanOutputBox.classList.remove('hidden');
+                } else {
+                    clanOutputBox.classList.add('hidden');
+                }
+            }
+
+            if(avatarImage && gameState.avatarUrl) {
+                avatarImage.src = gameState.avatarUrl;
+            } else if (avatarImage) {
+                avatarImage.src = `https://placehold.co/80x80/333333/777777?text=?`;
+            }
+
+            let showRegistration = true;
+            let showActionButtons = false;
+            let showUserInfoAndAvatar = false;
+
+            if (isAuthReady && gameState.displayName && gameState.publicUserId) {
+                showRegistration = false;
+                showActionButtons = true;
+                if (mainScreen && mainScreen.classList.contains('active')) {
+                    showUserInfoAndAvatar = true;
+                }
+            } else if (isAuthReady && (!gameState.displayName || !gameState.publicUserId)) {
+                showRegistration = true;
+                showActionButtons = false;
+                showUserInfoAndAvatar = false;
+            } else {
+                showRegistration = true;
+                showActionButtons = false;
+                showUserInfoAndAvatar = false;
+            }
+
+            if(registrationForm){
+                registrationForm.style.display = showRegistration ? 'block' : 'none';
+            }
+
+            if(mainScreenButtonsLayout){
+                mainScreenButtonsLayout.classList.toggle('hidden', !showActionButtons);
+            }
+
+            if(userProfileArea){
+                const isAnyPanelVisible = document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
+                                        (modalContainer && modalContainer.classList.contains('panel-visible'));
+
+                if (showUserInfoAndAvatar && !isAnyPanelVisible) {
+                    userProfileArea.classList.remove('profile-area-hidden');
+                    userProfileArea.classList.remove('hidden');
+                    if(avatarContainer){
+                        avatarContainer.classList.toggle('hidden', window.innerWidth < 768);
                     }
-                    
-                    // Update UI
-                    levelNumber.textContent = gameData.currentPuzzleIndex + 1;
-                    showCurrentPuzzle();
-                    
-                    // Save game data
-                    saveGameData();
+                    if(userInfoBox) userInfoBox.classList.remove('hidden');
+
+                } else if (!showUserInfoAndAvatar) {
+                    userProfileArea.classList.add('hidden');
+                    if(avatarContainer) avatarContainer.classList.add('hidden');
+                    if(userInfoBox) userInfoBox.classList.add('hidden');
+                } else if (isAnyPanelVisible) {
+                    userProfileArea.classList.add('profile-area-hidden');
                 }
-            }, 1000);
-        }
-
-        // Back to menu
-        function backToMenu() {
-            // Clear timer
-            if (gameData.timer) {
-                clearInterval(gameData.timer);
             }
-            
-            gameScreen.style.display = 'none';
-            mainMenu.style.display = 'block';
         }
 
-        // Show coming soon modal
-        function showComingSoon() {
-            comingSoonModal.style.display = 'flex';
-        }
+        // --- Firebase & Data Management ---
 
-        // Close modal
-        function closeModal() {
-            comingSoonModal.style.display = 'none';
-        }
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                console.log("Firebase initialized.");
 
-        // Show settings
-        function showSettings() {
-            settingsModal.style.display = 'flex';
-        }
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        console.log("User is signed in:", user.uid);
+                        currentUserId = user.uid;
+                        await loadUserData();
+                    } else {
+                        console.log("User is signed out. Attempting to sign in.");
+                        await signInAnonymously(auth).catch(err => console.error("Anonymous sign-in failed:", err));
+                        Object.assign(gameState, { displayName: '', publicUserId: '', avatarUrl: '', clanId: null, clanName: null });
+                    }
+                    isAuthReady = true;
+                    updateUI();
 
-        // Close settings
-        function closeSettings() {
-            settingsModal.style.display = 'none';
-        }
-
-        // Show creators
-        function showCreators() {
-            creatorsModal.style.display = 'flex';
-            settingsModal.style.display = 'none';
-        }
-
-        // Close creators
-        function closeCreators() {
-            creatorsModal.style.display = 'none';
-            settingsModal.style.display = 'flex';
-        }
-
-        // Submit gift code
-        function submitCode() {
-            const code = giftCodeInput.value.trim();
-            
-            if (!code) {
-                alert('لطفاً کد هدیه را وارد کنید!');
-                return;
+                    if (loadingScreen && loadingScreen.classList.contains('active')) {
+                        if(loadingMessage) loadingMessage.textContent = "خوش آمدید!";
+                        setTimeout(() => {
+                            if(mainScreen) showScreen(mainScreen);
+                        }, 500);
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                if(loadingMessage) loadingMessage.textContent = "خطا در اتصال به سرور بازی.";
+                if(mainScreenButtonsLayout) mainScreenButtonsLayout.classList.add('hidden');
             }
-            
-            // Check for creator code - FIXED: Exact string comparison
-            if (code === gameData.creatorCode) {
-                if (!gameData.player.isCreator) {
-                    // Show creator privileges modal
-                    creatorPrivilegesModal.style.display = 'flex';
-                    settingsModal.style.display = 'none';
+        }
+
+        async function loadUserData() {
+            if (!currentUserId || !db) return;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+            try {
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    gameState.displayName = data.displayName || "";
+                    gameState.publicUserId = data.publicUserId || "";
+                    gameState.currentStage = data.currentStage || 1;
+                    gameState.avatarUrl = data.avatarUrl || '';
+                    gameState.clanId = data.clanId || null;
+                    if (gameState.clanId) {
+                        await loadClanData(gameState.clanId);
+                    } else {
+                        gameState.clanName = null;
+                    }
                 } else {
-                    alert('شما قبلاً دسترسی سازنده را فعال کرده‌اید!');
+                    Object.assign(gameState, { displayName: '', publicUserId: '', avatarUrl: '', clanId: null, clanName: null });
                 }
-                giftCodeInput.value = '';
-                return;
+            } catch (error) {
+                console.error("Error loading user data:", error);
+                showModal("خطا", "مشکلی در بارگذاری اطلاعات شما پیش آمد.", "باشه");
+                Object.assign(gameState, { displayName: '', publicUserId: '', avatarUrl: '', clanId: null, clanName: null });
             }
+        }
+
+        async function saveUserData() {
+            if (!currentUserId || !db) return;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+            try {
+                const dataToSave = {
+                    displayName: gameState.displayName,
+                    publicUserId: gameState.publicUserId,
+                    currentStage: gameState.currentStage,
+                    avatarUrl: gameState.avatarUrl,
+                    clanId: gameState.clanId || null,
+                    lastUpdated: serverTimestamp()
+                };
+                await setDoc(userDocRef, dataToSave, { merge: true });
+                 console.log("User data saved successfully.");
+            } catch (error) {
+                console.error("Error saving user data:", error);
+                showModal("خطا", "مشکلی در ذخیره اطلاعات شما پیش آمد.", "باشه");
+            }
+        }
+
+        // --- Gemini & Imagen API Functions ---
+        const GEMINI_API_KEY = "AIzaSyCNrIBm-Qfteoz9twSWCqsCpuvusaCqEfw";
+        const GEMINI_TEXT_MODEL = "gemini-1.5-flash";
+        const IMAGEN_MODEL = "imagen-3.0-generate-002";
+
+        async function callGeminiAPI(prompt, isJsonOutput = false) {
+            if(aiThinkingIndicator) aiThinkingIndicator.classList.remove('hidden');
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: isJsonOutput ? { responseMimeType: "application/json" } : {}
+            };
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!text) throw new Error("پاسخ نامعتبر از سرویس هوش مصنوعی دریافت شد.");
+                return isJsonOutput ? JSON.parse(text) : text;
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                showModal("خطای هوش مصنوعی", `مشکلی در ارتباط با دستیار هوش مصنوعی پیش آمد. لطفاً از خاموش بودن فیلترشکن خود مطمئن شوید و دوباره تلاش کنید.<br><br><small>جزئیات خطا: ${error.message}</small>`, "باشه");
+                return null;
+            } finally {
+                if(aiThinkingIndicator) aiThinkingIndicator.classList.add('hidden');
+            }
+        }
+
+        async function callImagenAPI(prompt, sampleCount = 1) {
+            if(avatarAiLoading) avatarAiLoading.classList.remove('hidden');
+            if(avatarErrorMessage) avatarErrorMessage.textContent = '';
+            const payload = { instances: [{ prompt }], parameters: { sampleCount } };
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${IMAGEN_MODEL}:predict?key=${GEMINI_API_KEY}`;
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API request failed: ${response.status}`);
+                const result = await response.json();
+                if (result.predictions?.length > 0) {
+                    return result.predictions.map(p => `data:image/png;base64,${p.bytesBase64Encoded}`);
+                }
+                throw new Error("پاسخ نامعتبر از سرویس ساخت تصویر دریافت شد.");
+            } catch (error) {
+                console.error("Error calling Imagen API:", error);
+                if(avatarErrorMessage) avatarErrorMessage.textContent = `خطا در ساخت آواتار: ${error.message}`;
+                return null;
+            } finally {
+                if(avatarAiLoading) avatarAiLoading.classList.add('hidden');
+            }
+        }
+
+        // --- Game Logic Functions ---
+
+        async function generateQuestion() {
+            if (gameState.isLoadingNextQuestion) return;
+            gameState.isLoadingNextQuestion = true;
+            if(questionText) questionText.textContent = "در حال تولید سوال جدید...";
+            if(optionsContainer) optionsContainer.innerHTML = "";
+            if(questionExplanation) questionExplanation.classList.add('hidden');
+            if(gameFeedback) gameFeedback.textContent = "";
             
-            // Check for VIP code - FIXED: Exact string comparison
-            if (code === gameData.vipCode) {
-                if (!gameData.player.isVIP && !gameData.player.isCreator) {
-                    vipPrivilegesModal.style.display = 'flex';
-                    settingsModal.style.display = 'none';
-                } else if (gameData.player.isCreator) {
-                    alert('شما دسترسی سازنده دارید که شامل تمام امکانات VIP نیز می‌شود!');
+            const prompt = `یک سوال چند گزینه ای با موضوع مافیا (تاریخچه، فیلم ها، اصطلاحات، یا سناریوهای مرتبط با مافیا) به زبان فارسی ایجاد کن.
+پاسخ شما باید فقط و فقط یک آبجکت JSON خام باشد و هیچ چیز دیگری در پاسخ نباشد.
+از قرار دادن بک‌تیک (\`\`\`) یا کلمه "json" در ابتدای و انتهای پاسخ خودداری کن.
+ساختار JSON باید دقیقا به این صورت باشد:
+{
+  "question": "متن سوال به فارسی",
+  "options": ["گزینه ۱", "گزینه ۲", "گزینه ۳", "گزینه ۴"],
+  "correctAnswerIndex": 0,
+  "explanation": "توضیح مختصر در مورد پاسخ صحیح به فارسی"
+}`;
+            try {
+                const data = await callGeminiAPI(prompt, true);
+                if (data && data.question && data.options?.length === 4 && data.correctAnswerIndex !== undefined) {
+                    gameState.currentQuestionData = data;
+                    displayQuestion();
                 } else {
-                    alert('شما قبلاً دسترسی VIP را فعال کرده‌اید!');
+                    throw new Error("ساختار سوال دریافت شده از AI معتبر نیست.");
                 }
-                giftCodeInput.value = '';
-                return;
+            } catch (error) {
+                console.error("Error generating question:", error);
+                if(questionText) questionText.textContent = "خطا در بارگذاری سوال.";
+                showModal("خطا در سوال", `مشکلی در تولید سوال جدید پیش آمد. (${error.message}) آیا میخواهید دوباره تلاش کنید؟`, "تلاش مجدد", "صفحه اصلی",
+                    () => { hideModal(); generateQuestion(); },
+                    () => { hideModal(); if(mainScreen) showScreen(mainScreen); }
+                );
+            } finally {
+                gameState.isLoadingNextQuestion = false;
+                gameState.isQuestionActive = true;
             }
+        }
+
+        function displayQuestion() {
+            if (!gameState.currentQuestionData || !questionText || !optionsContainer) return;
+            const { question, options } = gameState.currentQuestionData;
+            questionText.textContent = question;
+            optionsContainer.innerHTML = "";
+            options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full p-3 rounded-md text-lg text-right';
+                button.textContent = `${index + 1}. ${option}`;
+                button.dataset.index = index;
+                button.addEventListener('click', handleAnswerSelection);
+                optionsContainer.appendChild(button);
+            });
+            if(questionExplanation) questionExplanation.classList.add('hidden');
+            if(gameFeedback) gameFeedback.textContent = "";
+            gameState.isQuestionActive = true;
+        }
+
+        async function handleAnswerSelection(event) {
+            if (!gameState.isQuestionActive) return;
+            gameState.isQuestionActive = false;
+            const selectedBtn = event.target.closest('.option-btn');
+            if (!selectedBtn) return;
+
+            const selectedIndex = parseInt(selectedBtn.dataset.index);
+            const { correctAnswerIndex, explanation } = gameState.currentQuestionData;
             
-            // Check for custom gift codes
-            const giftCode = gameData.giftCodes.find(gc => gc.code === code && !gc.used);
-            
-            if (giftCode) {
-                // Check if code is expired
-                const now = new Date().getTime();
-                if (giftCode.expiry < now) {
-                    alert('این کد هدیه منقضی شده است!');
-                    giftCodeInput.value = '';
+            document.querySelectorAll('#options-container .option-btn').forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === correctAnswerIndex) {
+                selectedBtn.classList.add('correct');
+                gameFeedback.textContent = "پاسخ صحیح!";
+                gameFeedback.className = 'text-center text-lg font-semibold my-4 h-8 text-green-400';
+                gameState.currentStage++;
+                await saveUserData();
+                setTimeout(() => { generateQuestion(); updateUI(); }, 2000);
+            } else {
+                selectedBtn.classList.add('incorrect');
+                const correctButton = optionsContainer.querySelector(`.option-btn[data-index="${correctAnswerIndex}"]`);
+                if (correctButton) correctButton.classList.add('correct');
+                gameFeedback.textContent = "پاسخ اشتباه!";
+                gameFeedback.className = 'text-center text-lg font-semibold my-4 h-8 text-red-400';
+                setTimeout(() => { generateQuestion(); updateUI(); }, 4000);
+            }
+            if (explanation && questionExplanation) {
+                questionExplanation.textContent = `توضیح: ${explanation}`;
+                questionExplanation.classList.remove('hidden');
+            }
+        }
+
+        // --- Helper & Utility Functions ---
+
+        function validateAndSanitizeName(nameValue, errorElement, inputElement) {
+            if (!inputElement || !errorElement) return null;
+            const regex = /[^a-zA-Z0-9_.-]/g;
+            let sanitizedValue = nameValue.replace(regex, '');
+            if (nameValue !== sanitizedValue) inputElement.value = sanitizedValue;
+
+            const trimmedName = sanitizedValue.trim();
+            if (trimmedName.length < 3 || trimmedName.length > 20) {
+                errorElement.textContent = "نام باید بین 3 تا 20 کاراکتر انگلیسی باشد.";
+                inputElement.classList.add('invalid');
+                return null;
+            }
+            errorElement.textContent = '';
+            inputElement.classList.remove('invalid');
+            return trimmedName;
+        }
+
+        function generateAlphanumericPublicUserId(length = 5) {
+            return Array.from({length}, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.floor(Math.random() * 36))).join('');
+        }
+
+        async function generateMafiaFact() {
+            const prompt = "یک حقیقت جالب، نکته تاریخی کمتر شنیده شده، یا یک داستانک کوتاه و غافلگیرکننده (حدود ۲-۴ جمله) در مورد دنیای مافیا (تاریخچه، فیلم‌ها، شخصیت‌های معروف، یا اصطلاحات رایج) به زبان فارسی برای من تعریف کن. سعی کن هر بار یک مطلب جدید ارائه دهی.";
+            showModal("دانستنی مافیا ✨", "<div class='loader mx-auto my-3'></div><p>در حال جستجو در آرشیوهای مخفی...</p>", "باشه");
+            const fact = await callGeminiAPI(prompt);
+            if (fact) {
+                showModal("دانستنی مافیا ✨", fact.replace(/\n/g, '<br>'), "جالب بود!");
+            } else {
+                showModal("خطا", "متاسفانه در حال حاضر نکته‌ای برای گفتن نیست.", "باشه");
+            }
+        }
+
+        // --- User Profile & Avatar Functions ---
+
+        async function handleChangeDisplayName() {
+            if(!newDisplayNameInput || !changeNameErrorMessage) return;
+            const newName = validateAndSanitizeName(newDisplayNameInput.value, changeNameErrorMessage, newDisplayNameInput);
+            if (!newName || newName === gameState.displayName) return;
+            gameState.displayName = newName;
+            await saveUserData();
+            updateUI();
+            hideModal();
+            showModal("موفقیت", "نام نمایشی شما با موفقیت تغییر کرد!", "عالی!");
+        }
+
+        async function generateAndDisplayAvatars() {
+            if(!avatarAiLoading || !avatarSuggestionsContainer || !modalConfirmBtn) return;
+            const prompt = "Cool mafia character avatar, portrait, dark theme, high detail, cinematic lighting, no text, no weapons";
+            const suggestions = await callImagenAPI(prompt, 4);
+            avatarSuggestionsContainer.innerHTML = '';
+            selectedAvatarForConfirmation = null;
+            if (suggestions?.length > 0) {
+                suggestions.forEach(base64Url => {
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.className = 'avatar-suggestion-item';
+                    const img = document.createElement('img');
+                    img.src = base64Url;
+                    imgWrapper.appendChild(img);
+                    imgWrapper.addEventListener('click', () => {
+                        avatarSuggestionsContainer.querySelector('.selected')?.classList.remove('selected');
+                        imgWrapper.classList.add('selected');
+                        selectedAvatarForConfirmation = base64Url;
+                        modalConfirmBtn.disabled = false;
+                    });
+                    avatarSuggestionsContainer.appendChild(imgWrapper);
+                });
+                modalConfirmBtn.textContent = "انتخاب این آواتار";
+                modalConfirmBtn.disabled = true;
+            } else {
+                if(avatarErrorMessage) avatarErrorMessage.textContent = "متاسفانه نتوانستیم آواتاری بسازیم.";
+                modalConfirmBtn.disabled = true;
+            }
+        }
+
+        async function confirmAvatarSelection() {
+            if (selectedAvatarForConfirmation) {
+                gameState.avatarUrl = selectedAvatarForConfirmation;
+                await saveUserData();
+                updateUI();
+                hideModal();
+                showModal("موفقیت", "آواتار شما با موفقیت تغییر کرد!", "عالی!");
+            } else {
+                if(avatarErrorMessage) avatarErrorMessage.textContent = "لطفا ابتدا یک آواتار را انتخاب کنید.";
+            }
+        }
+
+        // --- Leaderboard Functions ---
+        async function showLeaderboard() {
+            showPanel(leaderboardPanelContainer);
+            leaderboardList.innerHTML = "<div class='loader mx-auto my-4'></div>";
+            try {
+                const usersRef = collection(db, `artifacts/${appId}/users`);
+                const q = query(usersRef, orderBy("mafiaGameData.profile.currentStage", "desc"), limit(50));
+                const querySnapshot = await getDocs(q);
+                
+                let rank = 1;
+                leaderboardList.innerHTML = '';
+                if (querySnapshot.empty) {
+                    leaderboardList.innerHTML = "<p class='text-center text-gray-400'>هنوز کسی در جدول امتیازات ثبت نشده است.</p>";
                     return;
                 }
+                querySnapshot.forEach(docSnap => {
+                    const data = docSnap.data().mafiaGameData.profile;
+                    if (!data || !data.displayName) return;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    item.innerHTML = `
+                        <div class="leaderboard-rank">${rank++}</div>
+                        <div class="leaderboard-player-info">
+                            <div class="leaderboard-player-name">${data.displayName}</div>
+                            <div class="leaderboard-player-id">${data.publicUserId}</div>
+                        </div>
+                        <div class="leaderboard-stage">مرحله ${data.currentStage || 1}</div>
+                    `;
+                    leaderboardList.appendChild(item);
+                });
+            } catch (error) {
+                console.error("Error loading leaderboard:", error);
+                leaderboardList.innerHTML = "<p class='text-center text-red-400'>خطا در بارگذاری جدول امتیازات.</p>";
+            }
+        }
+
+        // --- Clan Functions ---
+        async function showClansPanel() {
+            showPanel(clansPanelContainer);
+            updateClanPanelUI();
+            if (!gameState.clanId) {
+                await loadAllClans();
+            }
+        }
+
+        function updateClanPanelUI() {
+            const hasClan = !!gameState.clanId;
+            userClanView.classList.toggle('hidden', !hasClan);
+            noClanView.classList.toggle('hidden', hasClan);
+
+            if (hasClan) {
+                userClanName.textContent = gameState.clanName;
+                loadClanMembers();
+            }
+        }
+
+        async function loadAllClans(searchTerm = '') {
+            clansList.innerHTML = "<div class='loader mx-auto my-4'></div>";
+            try {
+                const clansRef = collection(db, `artifacts/${appId}/clans`);
+                const q = searchTerm 
+                    ? query(clansRef, where('nameLower', '>=', searchTerm.toLowerCase()), where('nameLower', '<=', searchTerm.toLowerCase() + '\uf8ff'))
+                    : query(clansRef, orderBy('memberCount', 'desc'), limit(30));
                 
-                // Apply gift code
-                switch (giftCode.type) {
-                    case 'coins':
-                        gameData.player.coins += giftCode.value;
-                        alert(`تبریک! ${giftCode.value} سکه به حساب شما اضافه شد!`);
-                        break;
-                    case 'vip':
-                        if (!gameData.player.isVIP && !gameData.player.isCreator) {
-                            vipPrivilegesModal.style.display = 'flex';
-                            settingsModal.style.display = 'none';
-                        } else if (gameData.player.isCreator) {
-                            alert('شما دسترسی سازنده دارید که شامل تمام امکانات VIP نیز می‌شود!');
+                const querySnapshot = await getDocs(q);
+                clansList.innerHTML = '';
+                if (querySnapshot.empty) {
+                    clansList.innerHTML = "<p class='text-center text-gray-400'>هیچ قبیله‌ای یافت نشد.</p>";
+                    return;
+                }
+                querySnapshot.forEach(docSnap => {
+                    const clan = docSnap.data();
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    item.innerHTML = `
+                        <div class="clan-info">
+                            <div class="clan-name">${clan.name}</div>
+                            <div class="clan-members">${clan.memberCount || 1} عضو</div>
+                        </div>
+                        <button class="btn-mafia-secondary join-clan-btn" data-clan-id="${docSnap.id}" data-clan-name="${clan.name}">پیوستن</button>
+                    `;
+                    clansList.appendChild(item);
+                });
+            } catch (error) {
+                console.error("Error loading all clans:", error);
+                clansList.innerHTML = "<p class='text-center text-red-400'>خطا در بارگذاری لیست قبایل.</p>";
+            }
+        }
+
+        async function loadClanData(clanId) {
+            const clanDocRef = doc(db, `artifacts/${appId}/clans/${clanId}`);
+            const docSnap = await getDoc(clanDocRef);
+            if (docSnap.exists()) {
+                gameState.clanName = docSnap.data().name;
+            } else {
+                console.warn("User's clan not found, resetting.");
+                gameState.clanId = null;
+                gameState.clanName = null;
+                await saveUserData();
+            }
+        }
+
+        async function loadClanMembers() {
+            if (!gameState.clanId) return;
+            userClanMembersList.innerHTML = "<div class='loader mx-auto my-4'></div>";
+            try {
+                const usersRef = collection(db, `artifacts/${appId}/users`);
+                const q = query(usersRef, where("mafiaGameData.profile.clanId", "==", gameState.clanId), orderBy("mafiaGameData.profile.displayName"));
+                const querySnapshot = await getDocs(q);
+                userClanMembersList.innerHTML = '';
+                querySnapshot.forEach(docSnap => {
+                    const user = docSnap.data().mafiaGameData.profile;
+                    const item = document.createElement('div');
+                    item.className = 'bg-gray-800 p-2 rounded text-center';
+                    item.textContent = user.displayName;
+                    userClanMembersList.appendChild(item);
+                });
+            } catch (error) {
+                console.error("Error loading clan members:", error);
+                userClanMembersList.innerHTML = "<p class='text-center text-red-400'>خطا در بارگذاری اعضا.</p>";
+            }
+        }
+
+        async function handleCreateClan() {
+            const clanName = validateAndSanitizeName(createClanNameInput.value, createClanErrorMessage, createClanNameInput);
+            if (!clanName) return;
+            
+            createClanBtn.disabled = true;
+            try {
+                // Check if clan name already exists
+                const clansRef = collection(db, `artifacts/${appId}/clans`);
+                const q = query(clansRef, where("nameLower", "==", clanName.toLowerCase()));
+                const existing = await getDocs(q);
+                if (!existing.empty) {
+                    throw new Error("این نام قبیله قبلا گرفته شده است.");
+                }
+
+                const batch = writeBatch(db);
+                const newClanRef = doc(collection(db, `artifacts/${appId}/clans`));
+                
+                batch.set(newClanRef, {
+                    name: clanName,
+                    nameLower: clanName.toLowerCase(),
+                    leaderId: currentUserId,
+                    memberCount: 1,
+                    createdAt: serverTimestamp()
+                });
+
+                const userProfileRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+                batch.update(userProfileRef, { clanId: newClanRef.id });
+
+                await batch.commit();
+
+                gameState.clanId = newClanRef.id;
+                gameState.clanName = clanName;
+                updateUI();
+                updateClanPanelUI();
+                showModal("موفقیت", `قبیله "${clanName}" با موفقیت ساخته شد!`, "عالی!");
+
+            } catch (error) {
+                console.error("Error creating clan:", error);
+                createClanErrorMessage.textContent = error.message;
+            } finally {
+                createClanBtn.disabled = false;
+            }
+        }
+
+        async function handleJoinClan(clanId, clanName) {
+            if (gameState.clanId) {
+                showModal("خطا", "شما در حال حاضر عضو یک قبیله هستید.", "باشه");
+                return;
+            }
+            showModal("پیوستن به قبیله", `آیا میخواهید به قبیله "${clanName}" بپیوندید؟`, "بله، بپیوند", "لغو", async () => {
+                hideModal();
+                try {
+                    const batch = writeBatch(db);
+                    const clanRef = doc(db, `artifacts/${appId}/clans/${clanId}`);
+                    const clanDoc = await getDoc(clanRef);
+                    if (!clanDoc.exists()) throw new Error("این قبیله دیگر وجود ندارد.");
+
+                    const newMemberCount = (clanDoc.data().memberCount || 0) + 1;
+                    batch.update(clanRef, { memberCount: newMemberCount });
+
+                    const userProfileRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+                    batch.update(userProfileRef, { clanId: clanId });
+
+                    await batch.commit();
+
+                    gameState.clanId = clanId;
+                    gameState.clanName = clanName;
+                    updateUI();
+                    updateClanPanelUI();
+                    showModal("موفقیت", `شما به قبیله "${clanName}" پیوستید!`, "عالی!");
+
+                } catch (error) {
+                    console.error("Error joining clan:", error);
+                    showModal("خطا", `مشکلی در پیوستن به قبیله پیش آمد: ${error.message}`, "باشه");
+                }
+            });
+        }
+
+        async function handleLeaveClan() {
+             showModal("خروج از قبیله", `آیا مطمئن هستید که میخواهید قبیله "${gameState.clanName}" را ترک کنید؟`, "بله، خارج شو", "لغو", async () => {
+                hideModal();
+                try {
+                    const batch = writeBatch(db);
+                    const clanRef = doc(db, `artifacts/${appId}/clans/${gameState.clanId}`);
+                    const clanDoc = await getDoc(clanRef);
+                    
+                    if (clanDoc.exists()) {
+                        const newMemberCount = Math.max(0, (clanDoc.data().memberCount || 1) - 1);
+                        if (newMemberCount === 0) {
+                            // Delete clan if last member leaves
+                            batch.delete(clanRef);
                         } else {
-                            alert('شما قبلاً دسترسی VIP را فعال کرده‌اید!');
+                            batch.update(clanRef, { memberCount: newMemberCount });
                         }
-                        break;
-                    case 'avatar':
-                        // Add all avatars
-                        const allAvatars = [
-                            'avatar-black-gold', 'avatar-black-red', 'avatar-red-gold',
-                            'avatar-purple-gold', 'avatar-blue-gold', 'avatar-green-gold',
-                            'avatar-rainbow'
-                        ];
-                        
-                        allAvatars.forEach(avatar => {
-                            if (!gameData.player.avatars.includes(avatar)) {
-                                gameData.player.avatars.push(avatar);
-                            }
-                        });
-                        
-                        alert('تبریک! تمام آواتارها برای شما فعال شدند!');
-                        break;
-                }
-                
-                // Mark code as used
-                giftCode.used = true;
-                
-                // Update UI
-                updatePlayerUI();
-                updateShopUI();
-                
-                // Save game data
-                saveGameData();
-                
-                giftCodeInput.value = '';
-            } else {
-                alert('کد هدیه نامعتبر است!');
-            }
-        }
-
-        // Logout
-        function logout() {
-            if (confirm('آیا مطمئن هستید که می‌خواهید از حساب خود خارج شوید؟')) {
-                localStorage.removeItem('brainGameData');
-                location.reload();
-            }
-        }
-
-        // Close creator privileges modal
-        function closeCreatorPrivileges() {
-            creatorPrivilegesModal.style.display = 'none';
-            settingsModal.style.display = 'flex';
-        }
-
-        // Activate creator privileges
-        function activateCreator() {
-            gameData.player.isCreator = true;
-            
-            // Add creator badge
-            if (!gameData.player.badges.some(badge => badge.name === 'سازنده')) {
-                gameData.player.badges.push({
-                    name: 'سازنده',
-                    class: 'creator-badge'
-                });
-            }
-            
-            // Add creator avatar
-            if (!gameData.player.avatars.includes('avatar-creator')) {
-                gameData.player.avatars.push('avatar-creator');
-                gameData.player.currentAvatar = 'avatar-creator';
-            }
-            
-            // Give access to all avatars
-            const allAvatars = [
-                'avatar-black-gold', 'avatar-black-red', 'avatar-red-gold',
-                'avatar-purple-gold', 'avatar-blue-gold', 'avatar-green-gold',
-                'avatar-rainbow'
-            ];
-            
-            allAvatars.forEach(avatar => {
-                if (!gameData.player.avatars.includes(avatar)) {
-                    gameData.player.avatars.push(avatar);
-                }
-            });
-            
-            // Update UI
-            updatePlayerUI();
-            updateAccountStatus();
-            applyUserPrivileges();
-            updateShopUI();
-            
-            // Save game data
-            saveGameData();
-            
-            // Close modal
-            creatorPrivilegesModal.style.display = 'none';
-            settingsModal.style.display = 'flex';
-            
-            // Show success message
-            alert('تبریک! دسترسی‌های سازنده با موفقیت فعال شدند!');
-            
-            // Create special effect
-            createCreatorConfetti();
-        }
-
-        // Close VIP privileges modal
-        function closeVipPrivileges() {
-            vipPrivilegesModal.style.display = 'none';
-            settingsModal.style.display = 'flex';
-        }
-
-        // Activate VIP privileges
-        function activateVip() {
-            gameData.player.isVIP = true;
-            
-            // Add VIP badge
-            if (!gameData.player.badges.some(badge => badge.name === 'VIP')) {
-                gameData.player.badges.push({
-                    name: 'VIP',
-                    class: 'vip-badge'
-                });
-            }
-            
-            // Add VIP avatar
-            if (!gameData.player.avatars.includes('avatar-vip')) {
-                gameData.player.avatars.push('avatar-vip');
-                gameData.player.currentAvatar = 'avatar-vip';
-            }
-            
-            // Update UI
-            updatePlayerUI();
-            updateAccountStatus();
-            applyUserPrivileges();
-            updateShopUI();
-            
-            // Save game data
-            saveGameData();
-            
-            // Close modal
-            vipPrivilegesModal.style.display = 'none';
-            settingsModal.style.display = 'flex';
-            
-            // Show success message
-            alert('تبریک! دسترسی‌های VIP با موفقیت فعال شدند!');
-            
-            // Create special effect
-            createVipConfetti();
-        }
-
-        // Show shop
-        function showShop() {
-            shopCoins.textContent = gameData.player.coins;
-            shopModal.style.display = 'flex';
-            updateShopUI();
-        }
-
-        // Close shop
-        function closeShop() {
-            shopModal.style.display = 'none';
-        }
-
-        // Setup shop items
-        function setupShopItems() {
-            const avatarItemElements = avatarItems.querySelectorAll('.shop-item');
-            
-            avatarItemElements.forEach(item => {
-                const avatarClass = item.dataset.avatar;
-                const price = parseInt(item.dataset.price);
-                const button = item.querySelector('button');
-                
-                if (button) {
-                    button.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        buyAvatar(avatarClass, price);
-                    });
-                }
-                
-                item.addEventListener('click', function() {
-                    if (gameData.player.avatars.includes(avatarClass)) {
-                        selectAvatar(avatarClass);
                     }
-                });
-            });
-        }
 
-        // Buy avatar
-        function buyAvatar(avatarClass, price) {
-            if (gameData.player.coins >= price) {
-                gameData.player.coins -= price;
-                gameData.player.avatars.push(avatarClass);
-                gameData.player.currentAvatar = avatarClass;
-                
-                updatePlayerUI();
-                updateShopUI();
-                saveGameData();
-                
-                alert(`آواتار جدید با موفقیت خریداری شد!`);
-            } else {
-                alert('سکه کافی ندارید!');
-            }
-        }
+                    const userProfileRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+                    batch.update(userProfileRef, { clanId: null });
 
-        // Select avatar
-        function selectAvatar(avatarClass) {
-            if (gameData.player.avatars.includes(avatarClass)) {
-                gameData.player.currentAvatar = avatarClass;
-                
-                updatePlayerUI();
-                updateShopUI();
-                saveGameData();
-            }
-        }
+                    await batch.commit();
 
-        // Update shop UI
-        function updateShopUI() {
-            shopCoins.textContent = gameData.player.coins;
-            
-            const avatarItemElements = avatarItems.querySelectorAll('.shop-item');
-            
-            avatarItemElements.forEach(item => {
-                const avatarClass = item.dataset.avatar;
-                const button = item.querySelector('button');
-                const statusSpan = item.querySelector('.text-xs');
-                
-                if (gameData.player.avatars.includes(avatarClass)) {
-                    // Player owns this avatar
-                    if (button) {
-                        button.remove();
-                    }
-                    
-                    if (!statusSpan || !statusSpan.classList.contains('text-green-500')) {
-                        const newStatus = document.createElement('span');
-                        newStatus.className = 'text-xs text-green-500';
-                        newStatus.textContent = gameData.player.currentAvatar === avatarClass ? 'فعال' : 'خریداری شده';
-                        item.querySelector('.mt-2').appendChild(newStatus);
-                    } else {
-                        statusSpan.textContent = gameData.player.currentAvatar === avatarClass ? 'فعال' : 'خریداری شده';
-                    }
-                    
-                    // Add selected class if this is the current avatar
-                    if (gameData.player.currentAvatar === avatarClass) {
-                        item.classList.add('selected');
-                    } else {
-                        item.classList.remove('selected');
-                    }
+                    showModal("موفقیت", `شما قبیله "${gameState.clanName}" را ترک کردید.`, "باشه");
+                    gameState.clanId = null;
+                    gameState.clanName = null;
+                    updateUI();
+                    updateClanPanelUI();
+                    await loadAllClans();
+
+                } catch (error) {
+                    console.error("Error leaving clan:", error);
+                    showModal("خطا", `مشکلی در خروج از قبیله پیش آمد: ${error.message}`, "باشه");
                 }
             });
         }
 
-        // Load saved data if exists
-        function loadSavedData() {
-            const savedData = localStorage.getItem('brainGameData');
-            if (savedData) {
-                const parsedData = JSON.parse(savedData);
-                gameData.player = parsedData.player;
-                gameData.currentPuzzleIndex = parsedData.currentPuzzleIndex;
-                
-                // If user has custom puzzles saved
-                if (parsedData.puzzles) {
-                    gameData.puzzles = parsedData.puzzles;
-                }
-                
-                // If user has gift codes saved
-                if (parsedData.giftCodes) {
-                    gameData.giftCodes = parsedData.giftCodes;
-                }
-                
-                updatePlayerUI();
-                updateAccountStatus();
-                applyUserPrivileges();
-            }
-        }
 
-        // Save game data
-        function saveGameData() {
-            localStorage.setItem('brainGameData', JSON.stringify({
-                player: gameData.player,
-                currentPuzzleIndex: gameData.currentPuzzleIndex,
-                puzzles: gameData.puzzles,
-                giftCodes: gameData.giftCodes
+        // --- Event Listeners & Initialization ---
+
+        function setupEventListeners() {
+            // Modals & Panels
+            if (modalConfirmBtn) modalConfirmBtn.addEventListener('click', handleModalConfirm);
+            if (modalCancelBtn) modalCancelBtn.addEventListener('click', handleModalCancel);
+            if (closeDevelopersPanelBtn) closeDevelopersPanelBtn.addEventListener('click', () => hidePanel(developersPanelContainer));
+            if (closeLeaderboardPanelBtn) closeLeaderboardPanelBtn.addEventListener('click', () => hidePanel(leaderboardPanelContainer));
+            if (closeClansPanelBtn) closeClansPanelBtn.addEventListener('click', () => hidePanel(clansPanelContainer));
+
+            // Registration
+            if (displayNameInput) displayNameInput.addEventListener('input', () => validateAndSanitizeName(displayNameInput.value, inputErrorMessage, displayNameInput));
+            if (generateUserIdBtn) generateUserIdBtn.addEventListener('click', () => {
+                userIdDisplayInput.value = generateAlphanumericPublicUserId();
+                userIdErrorMessage.textContent = '';
+            });
+            if (registerBtn) registerBtn.addEventListener('click', async () => {
+                const validatedName = validateAndSanitizeName(displayNameInput.value, inputErrorMessage, displayNameInput);
+                const publicId = userIdDisplayInput.value;
+                if (!publicId) {
+                    userIdErrorMessage.textContent = "لطفاً ابتدا یک شناسه کاربری بسازید.";
+                    return;
+                }
+                if (!validatedName) return;
+
+                gameState.displayName = validatedName;
+                gameState.publicUserId = publicId;
+                await saveUserData();
+                updateUI();
+            });
+
+            // User Profile Actions
+            if (editNameBtn) editNameBtn.addEventListener('click', () => showModal("تغییر نام نمایشی", "تغییر نام در این بازی رایگان است.", "تغییر نام", "لغو", handleChangeDisplayName, null, "changeName"));
+            if (avatarContainer) avatarContainer.addEventListener('click', () => {
+                selectedAvatarForConfirmation = null;
+                showModal("تغییر آواتار", "", "انتخاب این آواتار", "لغو", confirmAvatarSelection, null, "avatar");
+                if(modalConfirmBtn) modalConfirmBtn.disabled = true;
+            });
+            if (generateAvatarBtn) generateAvatarBtn.addEventListener('click', generateAndDisplayAvatars);
+            if (newDisplayNameInput) newDisplayNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') modalConfirmBtn.click(); });
+
+            // Main Screen Buttons
+            [startGameBtn, mafiaFactBtn, devIntroBtnHeader, leaderboardBtn, clansBtn].forEach(button => {
+                if(button) button.addEventListener('click', (event) => {
+                    if (!isAuthReady || !gameState.displayName || !gameState.publicUserId) {
+                        event.stopImmediatePropagation();
+                        showModal("ثبت نام لازم است", "برای دسترسی به این بخش، ابتدا ثبت نام خود را کامل کنید.", "باشه");
+                    }
+                }, true);
+            });
+
+            if (startGameBtn) startGameBtn.addEventListener('click', () => showModal("شروع بازی", "برای تجربه بهتر بازی لطفا از فیلترشکن در کشور ایالات‌متحده (آمریکا) استفاده کنید.", "متوجه شدم، ادامه بده", null, () => {
+                hideModal();
+                showScreen(gameScreen);
+                generateQuestion();
             }));
-        }
+            if (mafiaFactBtn) mafiaFactBtn.addEventListener('click', generateMafiaFact);
+            if (devIntroBtnHeader) devIntroBtnHeader.addEventListener('click', () => showPanel(developersPanelContainer));
+            if (leaderboardBtn) leaderboardBtn.addEventListener('click', showLeaderboard);
+            if (clansBtn) clansBtn.addEventListener('click', showClansPanel);
 
-        // Update player UI elements
-        function updatePlayerUI() {
-            playerName.textContent = gameData.player.name;
-            playerCoins.textContent = gameData.player.coins;
-            playerTrophies.textContent = gameData.player.trophies;
-            playerLevel.textContent = `سطح ${gameData.player.level}`;
-            playerXpBar.style.width = `${gameData.player.xp}%`;
-            
-            // Update avatar
-            playerAvatar.className = `profile-avatar w-16 h-16 rounded-lg mb-1 ${gameData.player.currentAvatar}`;
-            
-            // Update badges
-            playerBadges.innerHTML = '';
-            if (gameData.player.badges.length > 0) {
-                gameData.player.badges.forEach(badge => {
-                    const badgeElement = document.createElement('span');
-                    badgeElement.className = `badge ${badge.class}`;
-                    badgeElement.textContent = badge.name;
-                    playerBadges.appendChild(badgeElement);
-                });
-            }
-        }
+            // Game Screen
+            if(backToMainBtn) backToMainBtn.addEventListener('click', async () => {
+                await saveUserData();
+                gameState.currentQuestionData = null;
+                showScreen(mainScreen);
+            });
 
-        // Update account status in settings
-        function updateAccountStatus() {
-            if (gameData.player.isCreator || gameData.player.isVIP) {
-                accountStatus.classList.remove('hidden');
-                
-                let statusHTML = '';
-                if (gameData.player.isCreator) {
-                    statusHTML += `<div class="flex justify-between items-center mb-2">
-                        <span>وضعیت:</span>
-                        <span class="badge creator-badge">سازنده</span>
-                    </div>`;
-                    
-                    // Show creator tools
-                    creatorTools.classList.remove('hidden');
-                } else if (gameData.player.isVIP) {
-                    statusHTML += `<div class="flex justify-between items-center mb-2">
-                        <span>وضعیت:</span>
-                        <span class="badge vip-badge">VIP</span>
-                    </div>`;
-                    
-                    // Hide creator tools
-                    creatorTools.classList.add('hidden');
+            // Clans Panel
+            if (createClanBtn) createClanBtn.addEventListener('click', handleCreateClan);
+            if (leaveClanBtn) leaveClanBtn.addEventListener('click', handleLeaveClan);
+            if (clansList) clansList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('join-clan-btn')) {
+                    const { clanId, clanName } = e.target.dataset;
+                    handleJoinClan(clanId, clanName);
                 }
-                
-                accountDetails.innerHTML = statusHTML;
-            } else {
-                accountStatus.classList.add('hidden');
-                creatorTools.classList.add('hidden');
+            });
+            if (searchClanInput) searchClanInput.addEventListener('input', (e) => loadAllClans(e.target.value.trim()));
+        }
+
+        function cacheDOMElements() {
+            const get = (id) => document.getElementById(id);
+            // Screens
+            loadingScreen = get('loading-screen'); mainScreen = get('main-screen'); gameScreen = get('game-screen');
+            loadingMessage = get('loading-message');
+            // Registration
+            registrationForm = get('registration-form'); displayNameInput = get('display-name-input');
+            registerBtn = get('register-btn'); inputErrorMessage = get('input-error-message');
+            userIdDisplayInput = get('user-id-display'); generateUserIdBtn = get('generate-user-id-btn');
+            userIdErrorMessage = get('user-id-error-message');
+            // User Profile
+            userProfileArea = get('user-profile-area'); avatarContainer = get('avatar-container');
+            avatarImage = get('avatar-image'); userInfoBox = get('user-info-box');
+            displayNameOutput = get('display-name-output'); publicUserIdOutput = get('public-user-id-output');
+            clanOutputBox = get('clan-output-box'); clanOutput = get('clan-output');
+            editNameBtn = get('edit-name-btn');
+            // Main Buttons
+            mainScreenButtonsLayout = get('main-screen-buttons-layout'); startGameBtn = get('start-game-btn');
+            mafiaFactBtn = get('mafia-fact-btn'); devIntroBtnHeader = get('dev-intro-icon-btn-header');
+            leaderboardBtn = get('leaderboard-btn'); clansBtn = get('clans-btn');
+            // Game Screen
+            stageDisplay = get('stage-display'); questionText = get('question-text');
+            optionsContainer = get('options-container'); questionExplanation = get('question-explanation');
+            backToMainBtn = get('back-to-main-btn'); gameFeedback = get('game-feedback');
+            aiThinkingIndicator = get('ai-thinking-indicator');
+            // Modal
+            modalContainer = get('modal-container'); modalTitle = get('modal-title');
+            modalContentDynamic = get('modal-content-dynamic'); modalMessage = get('modal-message');
+            changeNameInputContainer = get('change-name-input-container'); newDisplayNameInput = get('new-display-name-input');
+            changeNameErrorMessage = get('change-name-error-message'); avatarGenerationContainer = get('avatar-generation-container');
+            generateAvatarBtn = get('generate-avatar-btn'); avatarAiLoading = get('avatar-ai-loading');
+            avatarSuggestionsContainer = get('avatar-suggestions-container'); avatarErrorMessage = get('avatar-error-message');
+            modalConfirmBtn = get('modal-confirm-btn'); modalCancelBtn = get('modal-cancel-btn');
+            // Panels
+            developersPanelContainer = get('developers-panel-container'); closeDevelopersPanelBtn = get('close-developers-panel-btn');
+            leaderboardPanelContainer = get('leaderboard-panel-container'); closeLeaderboardPanelBtn = get('close-leaderboard-panel-btn');
+            leaderboardList = get('leaderboard-list');
+            clansPanelContainer = get('clans-panel-container'); closeClansPanelBtn = get('close-clans-panel-btn');
+            clanManagementContent = get('clan-management-content'); userClanView = get('user-clan-view');
+            userClanName = get('user-clan-name'); userClanMembersList = get('user-clan-members-list');
+            leaveClanBtn = get('leave-clan-btn'); noClanView = get('no-clan-view');
+            createClanSection = get('create-clan-section'); createClanNameInput = get('create-clan-name-input');
+            createClanErrorMessage = get('create-clan-error-message'); createClanBtn = get('create-clan-btn');
+            searchClanInput = get('search-clan-input'); clansList = get('clans-list');
+        }
+
+        async function initializeGame() {
+            cacheDOMElements();
+            if(userProfileArea) userProfileArea.classList.add('hidden');
+            if(loadingMessage) loadingMessage.textContent = "در حال آماده سازی...";
+            try {
+                setupEventListeners();
+                await initFirebase();
+            } catch (error) {
+                console.error("Error during initializeGame:", error);
+                if(loadingMessage) loadingMessage.textContent = "خطا در راه اندازی بازی.";
             }
         }
 
-        // Apply user privileges based on status
-        function applyUserPrivileges() {
-            if (gameData.player.isCreator) {
-                // Apply creator privileges
-                gameTitle.classList.remove('glow');
-                gameTitle.classList.add('creator-glow');
-                document.body.classList.add('creator-bg');
-                
-                // Set creator avatar if not already set
-                if (!gameData.player.avatars.includes('avatar-creator')) {
-                    gameData.player.avatars.push('avatar-creator');
-                    gameData.player.currentAvatar = 'avatar-creator';
-                    updatePlayerUI();
-                }
-                
-                // Add creator badge if not already added
-                if (!gameData.player.badges.some(badge => badge.name === 'سازنده')) {
-                    gameData.player.badges.push({
-                        name: 'سازنده',
-                        class: 'creator-badge'
-                    });
-                    updatePlayerUI();
-                }
-                
-                // Give access to all avatars
-                const allAvatars = [
-                    'avatar-black-gold', 'avatar-black-red', 'avatar-red-gold',
-                    'avatar-purple-gold', 'avatar-blue-gold', 'avatar-green-gold',
-                    'avatar-rainbow', 'avatar-creator'
-                ];
-                
-                allAvatars.forEach(avatar => {
-                    if (!gameData.player.avatars.includes(avatar)) {
-                        gameData.player.avatars.push(avatar);
-                    }
-                });
-                
-                updateShopUI();
-            } else if (gameData.player.isVIP) {
-                // Apply VIP privileges
-                gameTitle.classList.remove('glow');
-                gameTitle.classList.add('vip-glow');
-                document.body.classList.add('vip-bg');
-                
-                // Set VIP avatar if not already set
-                if (!gameData.player.avatars.includes('avatar-vip')) {
-                    gameData.player.avatars.push('avatar-vip');
-                    gameData.player.currentAvatar = 'avatar-vip';
-                    updatePlayerUI();
-                }
-                
-                // Add VIP badge if not already added
-                if (!gameData.player.badges.some(badge => badge.name === 'VIP')) {
-                    gameData.player.badges.push({
-                        name: 'VIP',
-                        class: 'vip-badge'
-                    });
-                    updatePlayerUI();
-                }
-            }
-            
-            // Update special buttons in game screen
-            updateSpecialButtons();
-        }
+        document.addEventListener('DOMContentLoaded', initializeGame);
 
-        // Update special buttons in game screen
-        function updateSpecialButtons() {
-            specialButtons.innerHTML = '';
-            
-            if (gameData.player.isCreator) {
-                // Add skip button
-                const skipButton = document.createElement('button');
-                skipButton.className = 'skip-button';
-                skipButton.innerHTML = 'رد کردن';
-                skipButton.addEventListener('click', skipPuzzle);
-                specialButtons.appendChild(skipButton);
-                
-                // Add edit button
-                const editButton = document.createElement('button');
-                editButton.className = 'edit-button';
-                editButton.innerHTML = 'ویرایش';
-                editButton.addEventListener('click', showEditPuzzleModal);
-                specialButtons.appendChild(editButton);
-            } else if (gameData.player.isVIP) {
-                // Add hint button
-                const hintButton = document.createElement('button');
-                hintButton.className = 'hint-button';
-                hintButton.innerHTML = 'راهنمایی';
-                hintButton.addEventListener('click', showHint);
-                specialButtons.appendChild(hintButton);
-            }
-        }
-
-        // Skip current puzzle (creator only)
-        function skipPuzzle() {
-            if (!gameData.player.isCreator) return;
-            
-            clearInterval(gameData.timer);
-            
-            gameData.currentPuzzleIndex++;
-            if (gameData.currentPuzzleIndex >= gameData.puzzles.length) {
-                gameData.currentPuzzleIndex = 0;
-            }
-            
-            levelNumber.textContent = gameData.currentPuzzleIndex + 1;
-            showCurrentPuzzle();
-            saveGameData();
-            
-            // Show special effect
-            createCreatorConfetti();
-        }
-
-        // Show hint for current puzzle (VIP only)
-        function showHint() {
-            if (!gameData.player.isVIP) return;
-            
-            const currentPuzzle = gameData.puzzles[gameData.currentPuzzleIndex];
-            if (currentPuzzle.hint) {
-                alert(`راهنمایی: ${currentPuzzle.hint}`);
-                createVipConfetti();
-            }
-        }
-
-        // Show edit puzzle modal (creator only)
-        function showEditPuzzleModal() {
-            if (!gameData.player.isCreator) return;
-            
-            alert('این قابلیت به زودی اضافه خواهد شد!');
-            createCreatorConfetti();
-        }
-
-        // Create confetti effect
-        function createConfetti() {
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.top = `${Math.random() * 100}%`;
-                confetti.style.backgroundColor = getRandomColor();
-                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-                
-                document.body.appendChild(confetti);
-                
-                // Animate confetti
-                setTimeout(() => {
-                    confetti.style.opacity = '1';
-                    confetti.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`;
-                    confetti.style.transition = 'all 1s ease-out';
-                    
-                    setTimeout(() => {
-                        confetti.style.opacity = '0';
-                        setTimeout(() => {
-                            confetti.remove();
-                        }, 1000);
-                    }, 1000);
-                }, Math.random() * 500);
-            }
-        }
-
-        // Create creator confetti effect
-        function createCreatorConfetti() {
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'creator-confetti';
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.top = `${Math.random() * 100}%`;
-                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-                
-                document.body.appendChild(confetti);
-                
-                // Animate confetti
-                setTimeout(() => {
-                    confetti.style.opacity = '1';
-                    confetti.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`;
-                    confetti.style.transition = 'all 1s ease-out';
-                    
-                    setTimeout(() => {
-                        confetti.style.opacity = '0';
-                        setTimeout(() => {
-                            confetti.remove();
-                        }, 1000);
-                    }, 1000);
-                }, Math.random() * 500);
-            }
-        }
-
-        // Create VIP confetti effect
-        function createVipConfetti() {
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'vip-confetti';
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.top = `${Math.random() * 100}%`;
-                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-                
-                document.body.appendChild(confetti);
-                
-                // Animate confetti
-                setTimeout(() => {
-                    confetti.style.opacity = '1';
-                    confetti.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`;
-                    confetti.style.transition = 'all 1s ease-out';
-                    
-                    setTimeout(() => {
-                        confetti.style.opacity = '0';
-                        setTimeout(() => {
-                            confetti.remove();
-                        }, 1000);
-                    }, 1000);
-                }, Math.random() * 500);
-            }
-        }
-
-        // Get random color
-        function getRandomColor() {
-            const colors = ['#FFD700', '#FF5722', '#4CAF50', '#2196F3', '#9C27B0', '#F44336'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        // Get difficulty text
-        function getDifficultyText(difficulty) {
-            switch (difficulty) {
-                case 'easy':
-                    return 'آسان';
-                case 'medium':
-                    return 'متوسط';
-                case 'hard':
-                    return 'سخت';
-                case 'expert':
-                    return 'خبره';
-                default:
-                    return 'آسان';
-            }
-        }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'965477395629ea60',t:'MTc1MzUzODg3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
