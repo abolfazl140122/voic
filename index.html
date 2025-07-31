@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* CSS styles are unchanged, they can be copied from the previous response */
         body {
             font-family: 'Vazirmatn', sans-serif;
             color: #e0e0e0;
@@ -807,10 +808,10 @@
             border-radius: 10px;
             margin-bottom: 1.5rem;
         }
-
     </style>
 </head>
 <body>
+    <!-- HTML Body is unchanged, it can be copied from the previous response -->
     <div class="mafia-animated-bg"></div>
 
     <div id="user-profile-area" class="hidden">
@@ -1047,6 +1048,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, query, orderBy, getDocs, writeBatch, limit, where, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // IMPORTANT: The firebaseConfig object remains the same.
         const firebaseConfig = typeof __firebase_config !== 'undefined'
             ? JSON.parse(__firebase_config)
             : {
@@ -1058,8 +1060,6 @@
                 appId: "1:66458127103:web:8bcc2ad470f51b5db45aca",
                 measurementId: "G-8M0M6BJ0GG"
               };
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mafia-game-default';
 
         let app;
         let auth;
@@ -1079,7 +1079,7 @@
             isLoadingNextQuestion: false,
         };
 
-        // UI Element References
+        // All UI Element References are defined here as before...
         let loadingScreen, loadingMessage, mainScreen, gameScreen,
             registrationForm, displayNameInput, registerBtn, inputErrorMessage,
             userIdDisplayInput, generateUserIdBtn, userIdErrorMessage,
@@ -1105,18 +1105,15 @@
         let modalConfirmCallback = null;
         let modalCancelCallback = null;
         let selectedAvatarForConfirmation = null;
-
-        // --- UI & Screen Management ---
-
+        
+        // --- UI & Screen Management (Unchanged from previous version) ---
         function showScreen(screenElement) {
             if (!screenElement) return;
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             screenElement.classList.add('active');
-
             const isControllingOverflow = screenElement.id === 'main-screen' || screenElement.id === 'loading-screen';
             document.body.style.overflow = isControllingOverflow ? 'hidden' : 'auto';
             document.documentElement.style.overflow = isControllingOverflow ? 'hidden' : 'auto';
-
             screenElement.scrollTop = 0;
             updateUI();
         }
@@ -1124,7 +1121,6 @@
         function showPanel(panelContainer) {
             if (!panelContainer) return;
             panelContainer.classList.remove('panel-hidden');
-            // panelContainer.classList.add('panel-visible'); // This class is not needed for the container
             const panel = panelContainer.querySelector('.generic-panel');
             if (panel) {
                 panel.style.opacity = '1';
@@ -1156,17 +1152,13 @@
                 console.error("[showModal] Modal elements not found, cannot show modal.");
                 return;
             }
-
             modalTitle.textContent = title;
-
             modalMessage.classList.add('hidden');
             changeNameInputContainer.classList.add('hidden');
             avatarGenerationContainer.classList.add('hidden');
-
             if(userProfileArea && mainScreen && mainScreen.classList.contains('active')) {
                 userProfileArea.classList.add('profile-area-hidden');
             }
-
             if (modalType === "changeName") {
                 changeNameInputContainer.classList.remove('hidden');
                 if(newDisplayNameInput) newDisplayNameInput.value = gameState.displayName;
@@ -1189,11 +1181,9 @@
                 modalMessage.innerHTML = message;
                 modalMessage.classList.remove('hidden');
             }
-
             modalConfirmBtn.textContent = confirmText;
             modalConfirmCallback = onConfirm;
             modalCancelCallback = onCancel;
-
             if (cancelText || modalType === "changeName" || modalType === "avatar") {
                 modalCancelBtn.textContent = cancelText || "لغو";
                 modalCancelBtn.classList.remove('hidden');
@@ -1211,7 +1201,6 @@
             if (changeNameInputContainer) changeNameInputContainer.classList.add('hidden');
             if (avatarGenerationContainer) avatarGenerationContainer.classList.add('hidden');
             if (modalMessage) modalMessage.classList.add('hidden');
-
             const isAnyPanelVisible = !!document.querySelector('.generic-panel-container:not(.panel-hidden)');
             if(userProfileArea && mainScreen && mainScreen.classList.contains('active') && !isAnyPanelVisible) {
                 userProfileArea.classList.remove('profile-area-hidden');
@@ -1246,7 +1235,6 @@
             if(displayNameOutput) displayNameOutput.textContent = gameState.displayName || "مهمان";
             if(publicUserIdOutput) publicUserIdOutput.textContent = gameState.publicUserId || "---";
             if(stageDisplay) stageDisplay.textContent = gameState.currentStage;
-
             if(clanOutputBox && clanOutput) {
                 if (gameState.clanName) {
                     clanOutput.textContent = gameState.clanName;
@@ -1255,17 +1243,14 @@
                     clanOutputBox.classList.add('hidden');
                 }
             }
-
             if(avatarImage && gameState.avatarUrl) {
                 avatarImage.src = gameState.avatarUrl;
             } else if (avatarImage) {
                 avatarImage.src = `https://placehold.co/80x80/333333/777777?text=?`;
             }
-
             let showRegistration = true;
             let showActionButtons = false;
             let showUserInfoAndAvatar = false;
-
             if (isAuthReady && gameState.displayName && gameState.publicUserId) {
                 showRegistration = false;
                 showActionButtons = true;
@@ -1281,37 +1266,31 @@
                 showActionButtons = false;
                 showUserInfoAndAvatar = false;
             }
-
             if(registrationForm){
                 registrationForm.style.display = showRegistration ? 'block' : 'none';
             }
-
             if(mainScreenButtonsLayout){
                 mainScreenButtonsLayout.classList.toggle('hidden', !showActionButtons);
             }
-
             if(userProfileArea){
                  const isAnyPanelVisible = !!document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
                                         (modalContainer && !modalContainer.classList.contains('panel-hidden'));
-
                 if (showUserInfoAndAvatar) {
                     userProfileArea.classList.remove('hidden');
                     if (avatarContainer) avatarContainer.classList.remove('hidden');
                     if (userInfoBox) userInfoBox.classList.remove('hidden');
-
                     if(isAnyPanelVisible) {
                          userProfileArea.classList.add('profile-area-hidden');
                     } else {
                         userProfileArea.classList.remove('profile-area-hidden');
                     }
-
                 } else {
                     userProfileArea.classList.add('hidden');
                 }
             }
         }
-
-        // --- Firebase & Data Management ---
+        
+        // --- Firebase & Data Management (UPDATED PATHS) ---
 
         async function initFirebase() {
             try {
@@ -1352,7 +1331,8 @@
 
         async function loadUserData() {
             if (!currentUserId || !db) return;
-            const userDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+            // UPDATED PATH: Directly in the 'users' collection
+            const userDocRef = doc(db, 'users', currentUserId);
             try {
                 const docSnap = await getDoc(userDocRef);
                 if (docSnap.exists()) {
@@ -1382,7 +1362,8 @@
 
         async function saveUserData(isNewUser = false) {
             if (!currentUserId || !db) return;
-            const userDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+            // UPDATED PATH: Directly in the 'users' collection
+            const userDocRef = doc(db, 'users', currentUserId);
             try {
                 const dataToSave = {
                     displayName: gameState.displayName,
@@ -1393,30 +1374,27 @@
                     lastUpdated: serverTimestamp()
                 };
                  if (isNewUser) {
+                    // This handles both creation and overwriting, which is fine for new user registration
                     await setDoc(userDocRef, dataToSave);
                  } else {
+                    // For updates, 'merge: true' prevents overwriting fields that aren't in dataToSave
                     await setDoc(userDocRef, dataToSave, { merge: true });
                  }
                  console.log("User data saved successfully.");
-            } catch (error)
-            {
+            } catch (error) {
                 console.error("Error saving user data:", error);
                 showModal("خطا", `مشکلی در ذخیره اطلاعات شما پیش آمد. ${error.message}`, "باشه");
             }
         }
 
-        // --- Gemini & Imagen API Functions ---
+        // --- Gemini & Imagen API Functions (Unchanged) ---
         const GEMINI_API_KEY = "AIzaSyCNrIBm-Qfteoz9twSWCqsCpuvusaCqEfw";
         const GEMINI_TEXT_MODEL = "gemini-1.5-flash";
         const IMAGEN_MODEL = "imagen-3.0-generate-002";
-
         async function callGeminiAPI(prompt, isJsonOutput = false) {
             if(aiThinkingIndicator) aiThinkingIndicator.classList.remove('hidden');
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
-            const payload = {
-                contents: [{ role: "user", parts: [{ text: prompt }] }],
-                generationConfig: isJsonOutput ? { responseMimeType: "application/json" } : {}
-            };
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: isJsonOutput ? { responseMimeType: "application/json" } : {} };
             try {
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
@@ -1426,13 +1404,12 @@
                 return isJsonOutput ? JSON.parse(text) : text;
             } catch (error) {
                 console.error("Error calling Gemini API:", error);
-                showModal("خطای هوش مصنوعی", `مشکلی در ارتباط با دستیار هوش مصنوعی پیش آمد. لطفاً از خاموش بودن فیلترشکن خود مطمئن شوید و دوباره تلاش کنید.<br><br><small>جزئیات خطا: ${error.message}</small>`, "باشه");
+                showModal("خطای هوش مصنوعی", `مشکلی در ارتباط با دستیار هوش مصنوعی پیش آمد.<br><small>جزئیات خطا: ${error.message}</small>`, "باشه");
                 return null;
             } finally {
                 if(aiThinkingIndicator) aiThinkingIndicator.classList.add('hidden');
             }
         }
-
         async function callImagenAPI(prompt, sampleCount = 1) {
             if(avatarAiLoading) avatarAiLoading.classList.remove('hidden');
             if(avatarErrorMessage) avatarErrorMessage.textContent = '';
@@ -1442,9 +1419,7 @@
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) throw new Error(`API request failed: ${response.status}`);
                 const result = await response.json();
-                if (result.predictions?.length > 0) {
-                    return result.predictions.map(p => `data:image/png;base64,${p.bytesBase64Encoded}`);
-                }
+                if (result.predictions?.length > 0) return result.predictions.map(p => `data:image/png;base64,${p.bytesBase64Encoded}`);
                 throw new Error("پاسخ نامعتبر از سرویس ساخت تصویر دریافت شد.");
             } catch (error) {
                 console.error("Error calling Imagen API:", error);
@@ -1454,18 +1429,14 @@
                 if(avatarAiLoading) avatarAiLoading.classList.add('hidden');
             }
         }
-
-        // --- Game Logic Functions ---
-
-        async function generateQuestion() {
-            if (gameState.isLoadingNextQuestion) return;
-            gameState.isLoadingNextQuestion = true;
-            if(questionText) questionText.textContent = "در حال تولید سوال جدید...";
-            if(optionsContainer) optionsContainer.innerHTML = "";
-            if(questionExplanation) questionExplanation.classList.add('hidden');
-            if(gameFeedback) gameFeedback.textContent = "";
-            
-            const prompt = `یک سوال چند گزینه ای با موضوع مافیا (تاریخچه، فیلم ها، اصطلاحات، یا سناریوهای مرتبط با مافیا) به زبان فارسی ایجاد کن.
+        
+        // --- Game Logic, Helper Functions, User Profile/Avatar (Unchanged) ---
+        // These functions do not depend on Firestore paths, so they remain the same.
+        // generateQuestion, displayQuestion, handleAnswerSelection
+        // validateAndSanitizeName, generateAlphanumericPublicUserId, generateMafiaFact
+        // handleChangeDisplayName, generateAndDisplayAvatars, confirmAvatarSelection
+        // All these functions can be copied from the previous response.
+        async function generateQuestion(){if(gameState.isLoadingNextQuestion)return;gameState.isLoadingNextQuestion=!0,questionText&&(questionText.textContent="در حال تولید سوال جدید..."),optionsContainer&&(optionsContainer.innerHTML=""),questionExplanation&&questionExplanation.classList.add("hidden"),gameFeedback&&(gameFeedback.textContent="");const e=`یک سوال چند گزینه ای با موضوع مافیا (تاریخچه، فیلم ها، اصطلاحات، یا سناریوهای مرتبط با مافیا) به زبان فارسی ایجاد کن.
 پاسخ شما باید فقط و فقط یک آبجکت JSON خام باشد و هیچ چیز دیگری در پاسخ نباشد.
 از قرار دادن بک‌تیک (\`\`\`) یا کلمه "json" در ابتدای و انتهای پاسخ خودداری کن.
 ساختار JSON باید دقیقا به این صورت باشد:
@@ -1474,192 +1445,25 @@
   "options": ["گزینه ۱", "گزینه ۲", "گزینه ۳", "گزینه ۴"],
   "correctAnswerIndex": 0,
   "explanation": "توضیح مختصر در مورد پاسخ صحیح به فارسی"
-}`;
-            try {
-                const data = await callGeminiAPI(prompt, true);
-                if (data && data.question && data.options?.length === 4 && data.correctAnswerIndex !== undefined) {
-                    gameState.currentQuestionData = data;
-                    displayQuestion();
-                } else {
-                    throw new Error("ساختار سوال دریافت شده از AI معتبر نیست.");
-                }
-            } catch (error) {
-                console.error("Error generating question:", error);
-                if(questionText) questionText.textContent = "خطا در بارگذاری سوال.";
-                showModal("خطا در سوال", `مشکلی در تولید سوال جدید پیش آمد. (${error.message}) آیا میخواهید دوباره تلاش کنید؟`, "تلاش مجدد", "صفحه اصلی",
-                    () => { hideModal(); generateQuestion(); },
-                    () => { hideModal(); if(mainScreen) showScreen(mainScreen); }
-                );
-            } finally {
-                gameState.isLoadingNextQuestion = false;
-                gameState.isQuestionActive = true;
-            }
-        }
+}`;try{const t=await callGeminiAPI(e,!0);if(t&&t.question&&4===t.options?.length&&void 0!==t.correctAnswerIndex)gameState.currentQuestionData=t,displayQuestion();else throw new Error("ساختار سوال دریافت شده از AI معتبر نیست.")}catch(t){console.error("Error generating question:",t),questionText&&(questionText.textContent="خطا در بارگذاری سوال."),showModal("خطا در سوال",`مشکلی در تولید سوال جدید پیش آمد. (${t.message}) آیا میخواهید دوباره تلاش کنید؟`,"تلاش مجدد","صفحه اصلی",(()=>{hideModal(),generateQuestion()}),(()=>{hideModal(),mainScreen&&showScreen(mainScreen)}))}finally{gameState.isLoadingNextQuestion=!1,gameState.isQuestionActive=!0}}function displayQuestion(){if(!gameState.currentQuestionData||!questionText||!optionsContainer)return;const{question:e,options:t}=gameState.currentQuestionData;questionText.textContent=e,optionsContainer.innerHTML="",t.forEach(((e,t)=>{const a=document.createElement("button");a.className="option-btn w-full p-3 rounded-md text-lg text-right",a.textContent=`${t+1}. ${e}`,a.dataset.index=t,a.addEventListener("click",handleAnswerSelection),optionsContainer.appendChild(a)})),questionExplanation&&questionExplanation.classList.add("hidden"),gameFeedback&&(gameFeedback.textContent=""),gameState.isQuestionActive=!0}async function handleAnswerSelection(e){if(!gameState.isQuestionActive)return;gameState.isQuestionActive=!1;const t=e.target.closest(".option-btn");if(!t)return;const a=parseInt(t.dataset.index),{correctAnswerIndex:s,explanation:n}=gameState.currentQuestionData;if(document.querySelectorAll("#options-container .option-btn").forEach((e=>{e.disabled=!0})),a===s)t.classList.add("correct"),gameFeedback.textContent="پاسخ صحیح!",gameFeedback.className="text-center text-lg font-semibold my-4 h-8 text-green-400",gameState.currentStage++,await saveUserData(),setTimeout((()=>{generateQuestion(),updateUI()}),2e3);else{t.classList.add("incorrect");const e=optionsContainer.querySelector(`.option-btn[data-index="${s}"]`);e&&e.classList.add("correct"),gameFeedback.textContent="پاسخ اشتباه!",gameFeedback.className="text-center text-lg font-semibold my-4 h-8 text-red-400",setTimeout((()=>{generateQuestion(),updateUI()}),4e3)}n&&questionExplanation&&(questionExplanation.textContent=`توضیح: ${n}`,questionExplanation.classList.remove("hidden"))}function validateAndSanitizeName(e,t,a){if(!a||!t)return null;let s=e.replace(/[^a-zA-Z0-9_.-]/g,"");e!==s&&(a.value=s);const n=s.trim();return n.length<3||n.length>20?(t.textContent="نام باید بین 3 تا 20 کاراکتر انگلیسی باشد.",a.classList.add("invalid"),null):(t.textContent="",a.classList.remove("invalid"),n)}function generateAlphanumericPublicUserId(e=5){return Array.from({length:e},(()=>"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".charAt(Math.floor(36*Math.random())))).join("")}async function generateMafiaFact(){const e="یک حقیقت جالب، نکته تاریخی کمتر شنیده شده، یا یک داستانک کوتاه و غافلگیرکننده (حدود ۲-۴ جمله) در مورد دنیای مافیا (تاریخچه، فیلم‌ها، شخصیت‌های معروف، یا اصطلاحات رایج) به زبان فارسی برای من تعریف کن. سعی کن هر بار یک مطلب جدید ارائه دهی.";showModal("دانستنی مافیا ✨","<div class='loader mx-auto my-3'></div><p>در حال جستجو در آرشیوهای مخفی...</p>","باشه");const t=await callGeminiAPI(e);t?showModal("دانستنی مافیا ✨",t.replace(/\n/g,"<br>"),"جالب بود!"):showModal("خطا","متاسفانه در حال حاضر نکته‌ای برای گفتن نیست.","باشه")}async function handleChangeDisplayName(){if(!newDisplayNameInput||!changeNameErrorMessage)return;const e=validateAndSanitizeName(newDisplayNameInput.value,changeNameErrorMessage,newDisplayNameInput);if(!e||e===gameState.displayName)return void(e===gameState.displayName&&(changeNameErrorMessage.textContent="نام جدید باید متفاوت از نام فعلی باشد."));gameState.displayName=e,await saveUserData(),updateUI(),hideModal(),showModal("موفقیت","نام نمایشی شما با موفقیت تغییر کرد!","عالی!")}async function generateAndDisplayAvatars(){if(!avatarAiLoading||!avatarSuggestionsContainer||!modalConfirmBtn)return;const e="Cool mafia character avatar, portrait, dark theme, high detail, cinematic lighting, no text, no weapons",t=await callImagenAPI(e,4);avatarSuggestionsContainer.innerHTML="",selectedAvatarForConfirmation=null,t?.length>0?(t.forEach((e=>{const t=document.createElement("div");t.className="avatar-suggestion-item";const a=document.createElement("img");a.src=e,a.alt="Avatar suggestion",t.appendChild(a),t.addEventListener("click",(()=>{avatarSuggestionsContainer.querySelector(".selected")?.classList.remove("selected"),t.classList.add("selected"),selectedAvatarForConfirmation=e,modalConfirmBtn.disabled=!1})),avatarSuggestionsContainer.appendChild(t)})),modalConfirmBtn.textContent="انتخاب این آواتار",modalConfirmBtn.disabled=!0):avatarErrorMessage&&(avatarErrorMessage.textContent="متاسفانه نتوانستیم آواتاری بسازیم.",modalConfirmBtn.disabled=!0)}async function confirmAvatarSelection(){selectedAvatarForConfirmation?(gameState.avatarUrl=selectedAvatarForConfirmation,await saveUserData(),updateUI(),hideModal(),showModal("موفقیت","آواتار شما با موفقیت تغییر کرد!","عالی!")):avatarErrorMessage&&(avatarErrorMessage.textContent="لطفا ابتدا یک آواتار را انتخاب کنید.")}
 
-        function displayQuestion() {
-            if (!gameState.currentQuestionData || !questionText || !optionsContainer) return;
-            const { question, options } = gameState.currentQuestionData;
-            questionText.textContent = question;
-            optionsContainer.innerHTML = "";
-            options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'option-btn w-full p-3 rounded-md text-lg text-right';
-                button.textContent = `${index + 1}. ${option}`;
-                button.dataset.index = index;
-                button.addEventListener('click', handleAnswerSelection);
-                optionsContainer.appendChild(button);
-            });
-            if(questionExplanation) questionExplanation.classList.add('hidden');
-            if(gameFeedback) gameFeedback.textContent = "";
-            gameState.isQuestionActive = true;
-        }
+        // --- Leaderboard & Clans Functions (UPDATED PATHS) ---
 
-        async function handleAnswerSelection(event) {
-            if (!gameState.isQuestionActive) return;
-            gameState.isQuestionActive = false;
-            const selectedBtn = event.target.closest('.option-btn');
-            if (!selectedBtn) return;
-
-            const selectedIndex = parseInt(selectedBtn.dataset.index);
-            const { correctAnswerIndex, explanation } = gameState.currentQuestionData;
-            
-            document.querySelectorAll('#options-container .option-btn').forEach(btn => btn.disabled = true);
-
-            if (selectedIndex === correctAnswerIndex) {
-                selectedBtn.classList.add('correct');
-                gameFeedback.textContent = "پاسخ صحیح!";
-                gameFeedback.className = 'text-center text-lg font-semibold my-4 h-8 text-green-400';
-                gameState.currentStage++;
-                await saveUserData();
-                setTimeout(() => { generateQuestion(); updateUI(); }, 2000);
-            } else {
-                selectedBtn.classList.add('incorrect');
-                const correctButton = optionsContainer.querySelector(`.option-btn[data-index="${correctAnswerIndex}"]`);
-                if (correctButton) correctButton.classList.add('correct');
-                gameFeedback.textContent = "پاسخ اشتباه!";
-                gameFeedback.className = 'text-center text-lg font-semibold my-4 h-8 text-red-400';
-                setTimeout(() => { generateQuestion(); updateUI(); }, 4000);
-            }
-            if (explanation && questionExplanation) {
-                questionExplanation.textContent = `توضیح: ${explanation}`;
-                questionExplanation.classList.remove('hidden');
-            }
-        }
-
-        // --- Helper & Utility Functions ---
-
-        function validateAndSanitizeName(nameValue, errorElement, inputElement) {
-            if (!inputElement || !errorElement) return null;
-            const regex = /[^a-zA-Z0-9_.-]/g;
-            let sanitizedValue = nameValue.replace(regex, '');
-            if (nameValue !== sanitizedValue) inputElement.value = sanitizedValue;
-
-            const trimmedName = sanitizedValue.trim();
-            if (trimmedName.length < 3 || trimmedName.length > 20) {
-                errorElement.textContent = "نام باید بین 3 تا 20 کاراکتر انگلیسی باشد.";
-                inputElement.classList.add('invalid');
-                return null;
-            }
-            errorElement.textContent = '';
-            inputElement.classList.remove('invalid');
-            return trimmedName;
-        }
-
-        function generateAlphanumericPublicUserId(length = 5) {
-            return Array.from({length}, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.floor(Math.random() * 36))).join('');
-        }
-
-        async function generateMafiaFact() {
-            const prompt = "یک حقیقت جالب، نکته تاریخی کمتر شنیده شده، یا یک داستانک کوتاه و غافلگیرکننده (حدود ۲-۴ جمله) در مورد دنیای مافیا (تاریخچه، فیلم‌ها، شخصیت‌های معروف، یا اصطلاحات رایج) به زبان فارسی برای من تعریف کن. سعی کن هر بار یک مطلب جدید ارائه دهی.";
-            showModal("دانستنی مافیا ✨", "<div class='loader mx-auto my-3'></div><p>در حال جستجو در آرشیوهای مخفی...</p>", "باشه");
-            const fact = await callGeminiAPI(prompt);
-            if (fact) {
-                showModal("دانستنی مافیا ✨", fact.replace(/\n/g, '<br>'), "جالب بود!");
-            } else {
-                // Modal is already showing "loading", so we just update it.
-                showModal("خطا", "متاسفانه در حال حاضر نکته‌ای برای گفتن نیست.", "باشه");
-            }
-        }
-
-        // --- User Profile & Avatar Functions ---
-
-        async function handleChangeDisplayName() {
-            if(!newDisplayNameInput || !changeNameErrorMessage) return;
-            const newName = validateAndSanitizeName(newDisplayNameInput.value, changeNameErrorMessage, newDisplayNameInput);
-            if (!newName || newName === gameState.displayName) {
-                if (newName === gameState.displayName) {
-                    changeNameErrorMessage.textContent = "نام جدید باید متفاوت از نام فعلی باشد."
-                }
-                return
-            };
-            gameState.displayName = newName;
-            await saveUserData();
-            updateUI();
-            hideModal();
-            showModal("موفقیت", "نام نمایشی شما با موفقیت تغییر کرد!", "عالی!");
-        }
-
-        async function generateAndDisplayAvatars() {
-            if(!avatarAiLoading || !avatarSuggestionsContainer || !modalConfirmBtn) return;
-            const prompt = "Cool mafia character avatar, portrait, dark theme, high detail, cinematic lighting, no text, no weapons";
-            const suggestions = await callImagenAPI(prompt, 4);
-            avatarSuggestionsContainer.innerHTML = '';
-            selectedAvatarForConfirmation = null;
-            if (suggestions?.length > 0) {
-                suggestions.forEach(base64Url => {
-                    const imgWrapper = document.createElement('div');
-                    imgWrapper.className = 'avatar-suggestion-item';
-                    const img = document.createElement('img');
-                    img.src = base64Url;
-                    img.alt = "Avatar suggestion";
-                    imgWrapper.appendChild(img);
-                    imgWrapper.addEventListener('click', () => {
-                        avatarSuggestionsContainer.querySelector('.selected')?.classList.remove('selected');
-                        imgWrapper.classList.add('selected');
-                        selectedAvatarForConfirmation = base64Url;
-                        modalConfirmBtn.disabled = false;
-                    });
-                    avatarSuggestionsContainer.appendChild(imgWrapper);
-                });
-                modalConfirmBtn.textContent = "انتخاب این آواتار";
-                modalConfirmBtn.disabled = true;
-            } else {
-                if(avatarErrorMessage) avatarErrorMessage.textContent = "متاسفانه نتوانستیم آواتاری بسازیم.";
-                modalConfirmBtn.disabled = true;
-            }
-        }
-
-        async function confirmAvatarSelection() {
-            if (selectedAvatarForConfirmation) {
-                gameState.avatarUrl = selectedAvatarForConfirmation;
-                await saveUserData();
-                updateUI();
-                hideModal();
-                showModal("موفقیت", "آواتار شما با موفقیت تغییر کرد!", "عالی!");
-            } else {
-                if(avatarErrorMessage) avatarErrorMessage.textContent = "لطفا ابتدا یک آواتار را انتخاب کنید.";
-            }
-        }
-
-        // --- Leaderboard Functions ---
         async function showLeaderboard() {
             showPanel(leaderboardPanelContainer);
             leaderboardList.innerHTML = "<div class='loader mx-auto my-4'></div>";
             try {
-                // IMPORTANT: This query requires a composite index in Firestore.
-                // Firestore will automatically generate an error in the browser console with a link to create it.
-                // The index will be on:
-                // Collection: users
-                // Fields: mafiaGameData.profile.currentStage (Descending), mafiaGameData.profile.displayName (Ascending)
-                const usersProfileCollectionGroup = collection(db, `artifacts/${appId}/users`);
-                const q = query(usersProfileCollectionGroup,
-                    orderBy("mafiaGameData.profile.currentStage", "desc"),
-                    orderBy("mafiaGameData.profile.displayName"),
+                // This query requires a composite index in Firestore on the 'users' collection.
+                // Fields: currentStage (Descending), displayName (Ascending)
+                // UPDATED PATH: Directly query the 'users' collection
+                const usersRef = collection(db, "users");
+                const q = query(usersRef,
+                    orderBy("currentStage", "desc"),
+                    orderBy("displayName"),
                     limit(50)
                 );
                 
                 const querySnapshot = await getDocs(q);
-                
                 let rank = 1;
                 leaderboardList.innerHTML = '';
                 if (querySnapshot.empty) {
@@ -1667,8 +1471,7 @@
                     return;
                 }
                 querySnapshot.forEach(docSnap => {
-                    // Data is nested inside mafiaGameData.profile
-                    const data = docSnap.data().mafiaGameData.profile;
+                    const data = docSnap.data(); // Data is directly on the document now
                     if (!data || !data.displayName) return;
                     
                     const item = document.createElement('div');
@@ -1685,11 +1488,10 @@
                 });
             } catch (error) {
                 console.error("Error loading leaderboard:", error);
-                leaderboardList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری جدول امتیازات. <br><small>ممکن است نیاز به ساخت Index در کنسول Firebase داشته باشید. (خطا را در کنسول مرورگر بررسی کنید)</small></p>`;
+                leaderboardList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری جدول امتیازات. <br><small>ممکن است نیاز به ساخت Index جدید در کنسول Firebase داشته باشید. (خطا را در کنسول مرورگر بررسی کنید)</small></p>`;
             }
         }
 
-        // --- Clan Functions ---
         async function showClansPanel() {
             showPanel(clansPanelContainer);
             updateClanPanelUI();
@@ -1702,7 +1504,6 @@
             const hasClan = !!gameState.clanId;
             userClanView.classList.toggle('hidden', !hasClan);
             noClanView.classList.toggle('hidden', hasClan);
-
             if (hasClan) {
                 userClanName.textContent = gameState.clanName;
                 loadClanMembers();
@@ -1712,17 +1513,14 @@
         async function loadAllClans(searchTerm = '') {
             clansList.innerHTML = "<div class='loader mx-auto my-4'></div>";
             try {
-                const clansRef = collection(db, `artifacts/${appId}/clans`);
+                // UPDATED PATH: Directly query the 'clans' collection
+                const clansRef = collection(db, 'clans');
                 let q;
-
                 if (searchTerm) {
-                    // IMPORTANT: This query requires an index in Firestore on the 'nameLower' field.
-                    // You can create this in the Firebase Console under Firestore -> Indexes.
-                    // Collection: clans, Field: nameLower (Ascending)
+                    // Requires an index on 'clans' collection for 'nameLower' (Ascending)
                     q = query(clansRef, where('nameLower', '>=', searchTerm.toLowerCase()), where('nameLower', '<=', searchTerm.toLowerCase() + '\uf8ff'), limit(20));
                 } else {
-                     // IMPORTANT: This query requires an index in Firestore on the 'memberCount' field.
-                    // Collection: clans, Field: memberCount (Descending)
+                    // Requires an index on 'clans' collection for 'memberCount' (Descending)
                     q = query(clansRef, orderBy('memberCount', 'desc'), limit(30));
                 }
                 
@@ -1747,12 +1545,13 @@
                 });
             } catch (error) {
                 console.error("Error loading all clans:", error);
-                clansList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری لیست قبایل. <br><small>ممکن است نیاز به ساخت Index در کنسول Firebase داشته باشید. (خطا را در کنسول مرورگر بررسی کنید)</small></p>`;
+                clansList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری لیست قبایل. <br><small>ممکن است نیاز به ساخت Index در کنسول Firebase داشته باشید.</small></p>`;
             }
         }
 
         async function loadClanData(clanId) {
-            const clanDocRef = doc(db, `artifacts/${appId}/clans/${clanId}`);
+            // UPDATED PATH: Directly in the 'clans' collection
+            const clanDocRef = doc(db, 'clans', clanId);
             try {
                 const docSnap = await getDoc(clanDocRef);
                 if (docSnap.exists()) {
@@ -1772,17 +1571,17 @@
             if (!gameState.clanId) return;
             userClanMembersList.innerHTML = "<div class='loader mx-auto my-4'></div>";
             try {
-                // This query requires a composite index:
-                // Collection: users, Fields: mafiaGameData.profile.clanId (Ascending), mafiaGameData.profile.displayName (Ascending)
-                const usersRef = collection(db, `artifacts/${appId}/users`);
-                const q = query(usersRef, where("mafiaGameData.profile.clanId", "==", gameState.clanId), orderBy("mafiaGameData.profile.displayName"));
+                // Requires an index on 'users' collection for 'clanId' and 'displayName'
+                // UPDATED PATH: Directly query the 'users' collection
+                const usersRef = collection(db, 'users');
+                const q = query(usersRef, where("clanId", "==", gameState.clanId), orderBy("displayName"));
                 const querySnapshot = await getDocs(q);
                 userClanMembersList.innerHTML = '';
                 if(querySnapshot.empty) {
                     userClanMembersList.innerHTML = "<p class='text-center text-gray-400'>شما تنها عضو این قبیله هستید.</p>";
                 }
                 querySnapshot.forEach(docSnap => {
-                    const user = docSnap.data().mafiaGameData.profile;
+                    const user = docSnap.data();
                     const item = document.createElement('div');
                     item.className = 'bg-gray-800 p-2 rounded text-center';
                     item.textContent = user.displayName;
@@ -1797,20 +1596,16 @@
         async function handleCreateClan() {
             const clanName = validateAndSanitizeName(createClanNameInput.value, createClanErrorMessage, createClanNameInput);
             if (!clanName) return;
-            
             createClanBtn.disabled = true;
             try {
-                // Check if clan name already exists
-                const clansRef = collection(db, `artifacts/${appId}/clans`);
+                // UPDATED PATHS
+                const clansRef = collection(db, 'clans');
                 const q = query(clansRef, where("nameLower", "==", clanName.toLowerCase()));
                 const existing = await getDocs(q);
-                if (!existing.empty) {
-                    throw new Error("این نام قبیله قبلا گرفته شده است.");
-                }
+                if (!existing.empty) throw new Error("این نام قبیله قبلا گرفته شده است.");
 
                 const batch = writeBatch(db);
-                const newClanRef = doc(collection(db, `artifacts/${appId}/clans`));
-                
+                const newClanRef = doc(collection(db, 'clans'));
                 batch.set(newClanRef, {
                     name: clanName,
                     nameLower: clanName.toLowerCase(),
@@ -1818,10 +1613,8 @@
                     memberCount: 1,
                     createdAt: serverTimestamp()
                 });
-
-                const userProfileRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+                const userProfileRef = doc(db, 'users', currentUserId);
                 batch.update(userProfileRef, { clanId: newClanRef.id });
-
                 await batch.commit();
 
                 gameState.clanId = newClanRef.id;
@@ -1829,7 +1622,6 @@
                 updateUI();
                 updateClanPanelUI();
                 showModal("موفقیت", `قبیله "${clanName}" با موفقیت ساخته شد!`, "عالی!");
-
             } catch (error) {
                 console.error("Error creating clan:", error);
                 createClanErrorMessage.textContent = error.message;
@@ -1846,15 +1638,12 @@
             showModal("پیوستن به قبیله", `آیا میخواهید به قبیله "${clanName}" بپیوندید؟`, "بله، بپیوند", "لغو", async () => {
                 hideModal();
                 try {
+                    // UPDATED PATHS
                     const batch = writeBatch(db);
-                    const clanRef = doc(db, `artifacts/${appId}/clans/${clanId}`);
-
-                    // Use Firestore's atomic increment operation for safety
+                    const clanRef = doc(db, 'clans', clanId);
                     batch.update(clanRef, { memberCount: increment(1) });
-
-                    const userProfileRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+                    const userProfileRef = doc(db, 'users', currentUserId);
                     batch.update(userProfileRef, { clanId: clanId });
-
                     await batch.commit();
 
                     gameState.clanId = clanId;
@@ -1862,7 +1651,6 @@
                     updateUI();
                     updateClanPanelUI();
                     showModal("موفقیت", `شما به قبیله "${clanName}" پیوستید!`, "عالی!");
-
                 } catch (error) {
                     console.error("Error joining clan:", error);
                     showModal("خطا", `مشکلی در پیوستن به قبیله پیش آمد: ${error.message}`, "باشه");
@@ -1874,36 +1662,28 @@
              showModal("خروج از قبیله", `آیا مطمئن هستید که میخواهید قبیله "${gameState.clanName}" را ترک کنید؟`, "بله، خارج شو", "لغو", async () => {
                 hideModal();
                 if (!gameState.clanId) return;
-
                 try {
+                    // UPDATED PATHS
                     const batch = writeBatch(db);
-                    const clanRef = doc(db, `artifacts/${appId}/clans/${gameState.clanId}`);
+                    const clanRef = doc(db, 'clans', gameState.clanId);
                     const clanDoc = await getDoc(clanRef);
-                    
                     if (clanDoc.exists()) {
-                        const currentMemberCount = clanDoc.data().memberCount || 1;
-                        if (currentMemberCount <= 1) {
-                            // Delete clan if last member leaves
+                        if ((clanDoc.data().memberCount || 1) <= 1) {
                             batch.delete(clanRef);
                         } else {
-                            // Use Firestore's atomic decrement operation
                             batch.update(clanRef, { memberCount: increment(-1) });
                         }
                     }
-
-                    const userProfileRef = doc(db, `artifacts/${appId}/users/${currentUserId}/mafiaGameData/profile`);
+                    const userProfileRef = doc(db, 'users', currentUserId);
                     batch.update(userProfileRef, { clanId: null });
-
                     await batch.commit();
 
                     showModal("موفقیت", `شما قبیله "${gameState.clanName}" را ترک کردید.`, "باشه");
-                    const oldClanName = gameState.clanName; // Save for modal
                     gameState.clanId = null;
                     gameState.clanName = null;
                     updateUI();
                     updateClanPanelUI();
                     await loadAllClans();
-
                 } catch (error) {
                     console.error("Error leaving clan:", error);
                     showModal("خطا", `مشکلی در خروج از قبیله پیش آمد: ${error.message}`, "باشه");
@@ -1911,142 +1691,9 @@
             });
         }
 
-        // --- Event Listeners & Initialization ---
-
-        function setupEventListeners() {
-            // Modals & Panels
-            if (modalConfirmBtn) modalConfirmBtn.addEventListener('click', handleModalConfirm);
-            if (modalCancelBtn) modalCancelBtn.addEventListener('click', handleModalCancel);
-            if (closeDevelopersPanelBtn) closeDevelopersPanelBtn.addEventListener('click', () => hidePanel(developersPanelContainer));
-            if (closeLeaderboardPanelBtn) closeLeaderboardPanelBtn.addEventListener('click', () => hidePanel(leaderboardPanelContainer));
-            if (closeClansPanelBtn) closeClansPanelBtn.addEventListener('click', () => hidePanel(clansPanelContainer));
-
-            // Registration
-            if (displayNameInput) displayNameInput.addEventListener('input', () => validateAndSanitizeName(displayNameInput.value, inputErrorMessage, displayNameInput));
-            if (generateUserIdBtn) generateUserIdBtn.addEventListener('click', () => {
-                if(userIdDisplayInput) userIdDisplayInput.value = generateAlphanumericPublicUserId();
-                if(userIdErrorMessage) userIdErrorMessage.textContent = '';
-            });
-            if (registerBtn) registerBtn.addEventListener('click', async () => {
-                const validatedName = validateAndSanitizeName(displayNameInput.value, inputErrorMessage, displayNameInput);
-                const publicId = userIdDisplayInput.value;
-                if (!publicId) {
-                    if (userIdErrorMessage) userIdErrorMessage.textContent = "لطفاً ابتدا یک شناسه کاربری بسازید.";
-                    return;
-                }
-                if (!validatedName) return;
-
-                gameState.displayName = validatedName;
-                gameState.publicUserId = publicId;
-                gameState.currentStage = 1;
-                gameState.clanId = null;
-                await saveUserData(true); // isNewUser = true
-                updateUI();
-            });
-
-            // User Profile Actions
-            if (editNameBtn) editNameBtn.addEventListener('click', () => showModal("تغییر نام نمایشی", "تغییر نام در این بازی رایگان است.", "تغییر نام", "لغو", handleChangeDisplayName, null, "changeName"));
-            if (avatarContainer) avatarContainer.addEventListener('click', () => {
-                selectedAvatarForConfirmation = null;
-                showModal("تغییر آواتار", "", "انتخاب این آواتار", "لغو", confirmAvatarSelection, null, "avatar");
-                if(modalConfirmBtn) modalConfirmBtn.disabled = true;
-            });
-            if (generateAvatarBtn) generateAvatarBtn.addEventListener('click', generateAndDisplayAvatars);
-            if (newDisplayNameInput) newDisplayNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') modalConfirmBtn.click(); });
-
-            // Main Screen Buttons
-            [startGameBtn, mafiaFactBtn, devIntroBtnHeader, leaderboardBtn, clansBtn].forEach(button => {
-                if(button) button.addEventListener('click', (event) => {
-                    if (!isAuthReady || !gameState.displayName || !gameState.publicUserId) {
-                        event.stopImmediatePropagation();
-                        showModal("ثبت نام لازم است", "برای دسترسی به این بخش، ابتدا ثبت نام خود را کامل کنید.", "باشه");
-                    }
-                }, true);
-            });
-
-            if (startGameBtn) startGameBtn.addEventListener('click', () => showModal("شروع بازی", "برای تجربه بهتر بازی لطفا از فیلترشکن در کشور ایالات‌متحده (آمریکا) استفاده کنید.", "متوجه شدم، ادامه بده", null, () => {
-                hideModal();
-                showScreen(gameScreen);
-                generateQuestion();
-            }));
-            if (mafiaFactBtn) mafiaFactBtn.addEventListener('click', generateMafiaFact);
-            if (devIntroBtnHeader) devIntroBtnHeader.addEventListener('click', () => showPanel(developersPanelContainer));
-            if (leaderboardBtn) leaderboardBtn.addEventListener('click', showLeaderboard);
-            if (clansBtn) clansBtn.addEventListener('click', showClansPanel);
-
-            // Game Screen
-            if(backToMainBtn) backToMainBtn.addEventListener('click', async () => {
-                await saveUserData();
-                gameState.currentQuestionData = null;
-                showScreen(mainScreen);
-            });
-
-            // Clans Panel
-            if (createClanBtn) createClanBtn.addEventListener('click', handleCreateClan);
-            if (leaveClanBtn) leaveClanBtn.addEventListener('click', handleLeaveClan);
-            if (clansList) clansList.addEventListener('click', (e) => {
-                const joinBtn = e.target.closest('.join-clan-btn');
-                if (joinBtn) {
-                    const { clanId, clanName } = joinBtn.dataset;
-                    handleJoinClan(clanId, clanName);
-                }
-            });
-             if (searchClanInput) {
-                let debounceTimer;
-                searchClanInput.addEventListener('input', (e) => {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(() => {
-                        loadAllClans(e.target.value.trim());
-                    }, 300); // Debounce search to avoid too many queries
-                });
-            }
-        }
-
-        function cacheDOMElements() {
-            const get = (id) => document.getElementById(id);
-            // Screens
-            loadingScreen = get('loading-screen'); mainScreen = get('main-screen'); gameScreen = get('game-screen');
-            loadingMessage = get('loading-message');
-            // Registration
-            registrationForm = get('registration-form'); displayNameInput = get('display-name-input');
-            registerBtn = get('register-btn'); inputErrorMessage = get('input-error-message');
-            userIdDisplayInput = get('user-id-display'); generateUserIdBtn = get('generate-user-id-btn');
-            userIdErrorMessage = get('user-id-error-message');
-            // User Profile
-            userProfileArea = get('user-profile-area'); avatarContainer = get('avatar-container');
-            avatarImage = get('avatar-image'); userInfoBox = get('user-info-box');
-            displayNameOutput = get('display-name-output'); publicUserIdOutput = get('public-user-id-output');
-            clanOutputBox = get('clan-output-box'); clanOutput = get('clan-output');
-            editNameBtn = get('edit-name-btn');
-            // Main Buttons
-            mainScreenButtonsLayout = get('main-screen-buttons-layout'); startGameBtn = get('start-game-btn');
-            mafiaFactBtn = get('mafia-fact-btn'); devIntroBtnHeader = get('dev-intro-icon-btn-header');
-            leaderboardBtn = get('leaderboard-btn'); clansBtn = get('clans-btn');
-            // Game Screen
-            stageDisplay = get('stage-display'); questionText = get('question-text');
-            optionsContainer = get('options-container'); questionExplanation = get('question-explanation');
-            backToMainBtn = get('back-to-main-btn'); gameFeedback = get('game-feedback');
-            aiThinkingIndicator = get('ai-thinking-indicator');
-            // Modal
-            modalContainer = get('modal-container'); modalTitle = get('modal-title');
-            modalContentDynamic = get('modal-content-dynamic'); modalMessage = get('modal-message');
-            changeNameInputContainer = get('change-name-input-container'); newDisplayNameInput = get('new-display-name-input');
-            changeNameErrorMessage = get('change-name-error-message'); avatarGenerationContainer = get('avatar-generation-container');
-            generateAvatarBtn = get('generate-avatar-btn'); avatarAiLoading = get('avatar-ai-loading');
-            avatarSuggestionsContainer = get('avatar-suggestions-container'); avatarErrorMessage = get('avatar-error-message');
-            modalConfirmBtn = get('modal-confirm-btn'); modalCancelBtn = get('modal-cancel-btn');
-            // Panels
-            developersPanelContainer = get('developers-panel-container'); closeDevelopersPanelBtn = get('close-developers-panel-btn');
-            leaderboardPanelContainer = get('leaderboard-panel-container'); closeLeaderboardPanelBtn = get('close-leaderboard-panel-btn');
-            leaderboardList = get('leaderboard-list');
-            clansPanelContainer = get('clans-panel-container'); closeClansPanelBtn = get('close-clans-panel-btn');
-            clanManagementContent = get('clan-management-content'); userClanView = get('user-clan-view');
-            userClanName = get('user-clan-name'); userClanMembersList = get('user-clan-members-list');
-            leaveClanBtn = get('leave-clan-btn'); noClanView = get('no-clan-view');
-            createClanSection = get('create-clan-section'); createClanNameInput = get('create-clan-name-input');
-            createClanErrorMessage = get('create-clan-error-message'); createClanBtn = get('create-clan-btn');
-            searchClanInput = get('search-clan-input'); clansList = get('clans-list');
-        }
+        // --- Event Listeners & Initialization (Unchanged) ---
+        function setupEventListeners(){if(modalConfirmBtn&&modalConfirmBtn.addEventListener("click",handleModalConfirm),modalCancelBtn&&modalCancelBtn.addEventListener("click",handleModalCancel),closeDevelopersPanelBtn&&closeDevelopersPanelBtn.addEventListener("click",(()=>hidePanel(developersPanelContainer))),closeLeaderboardPanelBtn&&closeLeaderboardPanelBtn.addEventListener("click",(()=>hidePanel(leaderboardPanelContainer))),closeClansPanelBtn&&closeClansPanelBtn.addEventListener("click",(()=>hidePanel(clansPanelContainer))),displayNameInput&&displayNameInput.addEventListener("input",(()=>validateAndSanitizeName(displayNameInput.value,inputErrorMessage,displayNameInput))),generateUserIdBtn&&generateUserIdBtn.addEventListener("click",(()=>{userIdDisplayInput&&(userIdDisplayInput.value=generateAlphanumericPublicUserId()),userIdErrorMessage&&(userIdErrorMessage.textContent="")})),registerBtn&®isterBtn.addEventListener("click",(async()=>{const e=validateAndSanitizeName(displayNameInput.value,inputErrorMessage,displayNameInput),t=userIdDisplayInput.value;if(!t)return void(userIdErrorMessage&& (userIdErrorMessage.textContent="لطفاً ابتدا یک شناسه کاربری بسازید."));if(!e)return;gameState.displayName=e,gameState.publicUserId=t,gameState.currentStage=1,gameState.clanId=null,await saveUserData(!0),updateUI()})),editNameBtn&&editNameBtn.addEventListener("click",(()=>showModal("تغییر نام نمایشی","تغییر نام در این بازی رایگان است.","تغییر نام","لغو",handleChangeDisplayName,null,"changeName"))),avatarContainer&&avatarContainer.addEventListener("click",(()=>{selectedAvatarForConfirmation=null,showModal("تغییر آواتار","","انتخاب این آواتار","لغو",confirmAvatarSelection,null,"avatar"),modalConfirmBtn&&(modalConfirmBtn.disabled=!0)})),generateAvatarBtn&&generateAvatarBtn.addEventListener("click",generateAndDisplayAvatars),newDisplayNameInput&&newDisplayNameInput.addEventListener("keydown",(e=>{e.key==="Enter"&&modalConfirmBtn.click()})),[startGameBtn,mafiaFactBtn,devIntroBtnHeader,leaderboardBtn,clansBtn].forEach((e=>{e&&e.addEventListener("click",(e=>{isAuthReady&&gameState.displayName&&gameState.publicUserId||(e.stopImmediatePropagation(),showModal("ثبت نام لازم است","برای دسترسی به این بخش، ابتدا ثبت نام خود را کامل کنید.","باشه"))}),!0)})),startGameBtn&&startGameBtn.addEventListener("click",(()=>showModal("شروع بازی","برای تجربه بهتر بازی لطفا از فیلترشکن در کشور ایالات‌متحده (آمریکا) استفاده کنید.","متوجه شدم، ادامه بده",null,(()=>{hideModal(),showScreen(gameScreen),generateQuestion()})))),mafiaFactBtn&&mafiaFactBtn.addEventListener("click",generateMafiaFact),devIntroBtnHeader&&devIntroBtnHeader.addEventListener("click",(()=>showPanel(developersPanelContainer))),leaderboardBtn&&leaderboardBtn.addEventListener("click",showLeaderboard),clansBtn&&clansBtn.addEventListener("click",showClansPanel),backToMainBtn&&backToMainBtn.addEventListener("click",(async()=>{await saveUserData(),gameState.currentQuestionData=null,showScreen(mainScreen)})),createClanBtn&&createClanBtn.addEventListener("click",handleCreateClan),leaveClanBtn&&leaveClanBtn.addEventListener("click",handleLeaveClan),clansList&&clansList.addEventListener("click",(e=>{const t=e.target.closest(".join-clan-btn");if(t){const{clanId:e,clanName:a}=t.dataset;handleJoinClan(e,a)}})),searchClanInput){let e;searchClanInput.addEventListener("input",(t=>{clearTimeout(e),e=setTimeout((()=>{loadAllClans(t.target.value.trim())}),300)}))}}
+        function cacheDOMElements(){const get=e=>document.getElementById(e);loadingScreen=get("loading-screen"),mainScreen=get("main-screen"),gameScreen=get("game-screen"),loadingMessage=get("loading-message"),registrationForm=get("registration-form"),displayNameInput=get("display-name-input"),registerBtn=get("register-btn"),inputErrorMessage=get("input-error-message"),userIdDisplayInput=get("user-id-display"),generateUserIdBtn=get("generate-user-id-btn"),userIdErrorMessage=get("user-id-error-message"),userProfileArea=get("user-profile-area"),avatarContainer=get("avatar-container"),avatarImage=get("avatar-image"),userInfoBox=get("user-info-box"),displayNameOutput=get("display-name-output"),publicUserIdOutput=get("public-user-id-output"),clanOutputBox=get("clan-output-box"),clanOutput=get("clan-output"),editNameBtn=get("edit-name-btn"),mainScreenButtonsLayout=get("main-screen-buttons-layout"),startGameBtn=get("start-game-btn"),mafiaFactBtn=get("mafia-fact-btn"),devIntroBtnHeader=get("dev-intro-icon-btn-header"),leaderboardBtn=get("leaderboard-btn"),clansBtn=get("clans-btn"),stageDisplay=get("stage-display"),questionText=get("question-text"),optionsContainer=get("options-container"),questionExplanation=get("question-explanation"),backToMainBtn=get("back-to-main-btn"),gameFeedback=get("game-feedback"),aiThinkingIndicator=get("ai-thinking-indicator"),modalContainer=get("modal-container"),modalTitle=get("modal-title"),modalContentDynamic=get("modal-content-dynamic"),modalMessage=get("modal-message"),changeNameInputContainer=get("change-name-input-container"),newDisplayNameInput=get("new-display-name-input"),changeNameErrorMessage=get("change-name-error-message"),avatarGenerationContainer=get("avatar-generation-container"),generateAvatarBtn=get("generate-avatar-btn"),avatarAiLoading=get("avatar-ai-loading"),avatarSuggestionsContainer=get("avatar-suggestions-container"),avatarErrorMessage=get("avatar-error-message"),modalConfirmBtn=get("modal-confirm-btn"),modalCancelBtn=get("modal-cancel-btn"),developersPanelContainer=get("developers-panel-container"),closeDevelopersPanelBtn=get("close-developers-panel-btn"),leaderboardPanelContainer=get("leaderboard-panel-container"),closeLeaderboardPanelBtn=get("close-leaderboard-panel-btn"),leaderboardList=get("leaderboard-list"),clansPanelContainer=get("clans-panel-container"),closeClansPanelBtn=get("close-clans-panel-btn"),clanManagementContent=get("clan-management-content"),userClanView=get("user-clan-view"),userClanName=get("user-clan-name"),userClanMembersList=get("user-clan-members-list"),leaveClanBtn=get("leave-clan-btn"),noClanView=get("no-clan-view"),createClanSection=get("create-clan-section"),createClanNameInput=get("create-clan-name-input"),createClanErrorMessage=get("create-clan-error-message"),createClanBtn=get("create-clan-btn"),searchClanInput=get("search-clan-input"),clansList=get("clans-list")}
 
         async function initializeGame() {
             cacheDOMElements();
