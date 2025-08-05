@@ -3,25 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مبدل ارز گرافیکی</title>
+    <title>مبدل ارز لحظه‌ای</title>
     
-    <!-- افزودن فونت وزیرمتن از گوگل‌فونتس -->
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    <!-- افزودن آیکون‌ها از Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* ====================
-           بخش استایل‌ها (CSS)
+           بخش استایل‌ها (CSS) - گرافیک بهبود یافته
            ==================== */
-        
-        /* ریست کردن استایل‌های پیش‌فرض و تنظیمات کلی */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary-color: #5a4bcf;
+            --secondary-color: #7d6eef;
+            --dark-text: #2c255c;
+            --light-bg: rgba(255, 255, 255, 0.95);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Vazirmatn', sans-serif;
@@ -29,117 +27,154 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(45deg, #6d5dcf, #d4a4eb); /* گرادیان پس‌زمینه جذاب */
-            color: #333;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 20px;
         }
 
-        /* استایل کانتینر اصلی مبدل */
         .converter-container {
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 400px;
+            background: var(--light-bg);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
             text-align: center;
-            backdrop-filter: blur(5px); /* افکت شیشه‌ای */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative; /* برای لودر */
+            overflow: hidden; /* برای لودر */
         }
 
         .converter-container h1 {
-            margin-bottom: 25px;
-            color: #4a3f9a;
-            font-size: 24px;
+            margin-bottom: 30px;
+            color: var(--dark-text);
+            font-size: 28px;
+            font-weight: 700;
         }
-
-        /* استایل بخش‌های ورودی */
-        .input-group {
-            margin-bottom: 20px;
-            text-align: right; /* لیبل‌ها در سمت راست باشند */
-        }
-
-        .input-group label {
+        
+        .input-wrapper label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 700;
+            font-weight: 500;
             color: #555;
+            text-align: right;
         }
 
-        .input-group input, .input-group select {
+        .input-wrapper input, .input-wrapper select {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
             font-family: 'Vazirmatn', sans-serif;
             font-size: 16px;
+            background-color: #fff;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        .input-group input:focus, .input-group select:focus {
+        .input-wrapper input:focus, .input-wrapper select:focus {
             outline: none;
-            border-color: #6d5dcf;
-            box-shadow: 0 0 5px rgba(109, 93, 207, 0.5);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(90, 75, 207, 0.4);
         }
 
-        /* استایل بخش انتخاب ارزها (از و به) */
-        .currency-selector {
+        .conversion-flow {
+            margin-top: 25px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
         }
 
-        .currency-selector .from-group, .currency-selector .to-group {
+        .currency-box {
             flex: 1;
         }
-
-        /* استایل دکمه تعویض */
+        
         #swap-btn {
-            background: none;
-            border: 2px solid #6d5dcf;
-            color: #6d5dcf;
-            width: 45px;
-            height: 45px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 18px;
-            margin: 0 10px;
-            margin-top: 25px; /* برای هم‌تراز شدن با فیلدها */
-            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+            font-size: 20px;
+            margin: 0 15px;
+            margin-top: 25px;
+            transition: all 0.3s ease;
         }
 
         #swap-btn:hover {
-            background-color: #6d5dcf;
+            background-color: var(--primary-color);
             color: white;
-            transform: rotate(180deg);
+            transform: rotate(180deg) scale(1.1);
         }
 
-        /* استایل دکمه اصلی تبدیل */
-        #convert-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #4a3f9a;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
+        .result-wrapper {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f0f4ff;
+            border-radius: 10px;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 1px solid #d9e2ff;
+        }
+
+        #result-text {
+            font-size: 22px;
             font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        #convert-btn:hover {
-            background-color: #6d5dcf;
+            color: var(--dark-text);
+            word-wrap: break-word;
         }
         
-        /* استایل بخش نتیجه */
-        #result {
-            margin-top: 25px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c255c;
-            min-height: 25px; /* برای جلوگیری از پرش صفحه */
-            word-wrap: break-word; /* برای شکستن متن‌های طولانی */
+        #unit-rate-text {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #555;
         }
+
+        .api-info {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+        
+        /* استایل لودر و پیام خطا */
+        .loader {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none; /* در حالت عادی مخفی */
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        .loader.show {
+            display: flex; /* نمایش با جاوااسکریپت */
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #error-message {
+            color: #d9534f;
+            margin-top: 15px;
+            font-weight: 500;
+            display: none; /* مخفی در حالت عادی */
+        }
+
     </style>
 </head>
 <body>
@@ -148,87 +183,172 @@
          بخش ساختار (HTML)
          ==================== -->
     <div class="converter-container">
-        <h1><i class="fas fa-coins"></i> مبدل ارز</h1>
-        
-        <div class="input-group">
-            <label for="amount">مبلغ</label>
-            <input type="number" id="amount" placeholder="مقدار را وارد کنید" value="1">
+        <!-- لودر -->
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
         </div>
 
-        <div class="currency-selector">
-            <div class="from-group input-group">
+        <h1><i class="fas fa-chart-line"></i> مبدل ارز آنلاین</h1>
+        
+        <div class="input-wrapper">
+            <label for="amount">مبلغی که می‌خواهید تبدیل کنید:</label>
+            <input type="number" id="amount" value="100">
+        </div>
+        
+        <div class="conversion-flow">
+            <div class="currency-box input-wrapper">
                 <label for="from-currency">از</label>
-                <select id="from-currency">
-                    <option value="USD">دلار آمریکا (USD)</option>
-                    <option value="EUR">یورو (EUR)</option>
-                    <option value="IRR" selected>ریال ایران (IRR)</option>
-                    <option value="TRY">لیر ترکیه (TRY)</option>
-                </select>
+                <select id="from-currency"></select>
             </div>
 
-            <button id="swap-btn"><i class="fas fa-exchange-alt"></i></button>
+            <button id="swap-btn" title="جابجایی ارزها"><i class="fas fa-exchange-alt"></i></button>
 
-            <div class="to-group input-group">
+            <div class="currency-box input-wrapper">
                 <label for="to-currency">به</label>
-                <select id="to-currency">
-                    <option value="USD" selected>دلار آمریکا (USD)</option>
-                    <option value="EUR">یورو (EUR)</option>
-                    <option value="IRR">ریال ایران (IRR)</option>
-                    <option value="TRY">لیر ترکیه (TRY)</option>
-                </select>
+                <select id="to-currency"></select>
             </div>
         </div>
 
-        <button id="convert-btn">تبدیل کن</button>
-        
-        <div id="result"></div>
+        <div id="error-message"></div>
+
+        <div class="result-wrapper">
+            <div id="result-text">...</div>
+            <div id="unit-rate-text"></div>
+        </div>
+
+        <div class="api-info" id="last-update-text"></div>
     </div>
 
     <script>
         /* ====================
-           بخش منطق (JavaScript)
+           بخش منطق (JavaScript) - متصل به API
            ==================== */
-        
-        // دریافت المنت‌های HTML
+           
+        // --- عناصر DOM ---
         const amountInput = document.getElementById('amount');
         const fromCurrencySelect = document.getElementById('from-currency');
         const toCurrencySelect = document.getElementById('to-currency');
-        const convertBtn = document.getElementById('convert-btn');
         const swapBtn = document.getElementById('swap-btn');
-        const resultDiv = document.getElementById('result');
+        const resultText = document.getElementById('result-text');
+        const unitRateText = document.getElementById('unit-rate-text');
+        const lastUpdateText = document.getElementById('last-update-text');
+        const loader = document.getElementById('loader');
+        const errorMessageDiv = document.getElementById('error-message');
 
-        // نرخ‌های ارز (نسبت به دلار آمریکا)
-        // این یک API ساده و شبیه‌سازی شده است
-        const exchangeRates = {
-            "USD": 1,
-            "EUR": 0.93,       // 1 دلار = 0.93 یورو
-            "IRR": 580000,   // 1 دلار = 580,000 ریال (قیمت حدودی)
-            "TRY": 32.5        // 1 دلار = 32.5 لیر ترکیه
-        };
+        // --- کلید API ---
+        // !!! هشدار: کلید API خود را اینجا قرار دهید !!!
+        const apiKey = 'AIzaSyCNrIBm-Qfteoz9twSWCqsCpuvusaCqEfw'; // <-- این قسمت را با کلید خود جایگزین کنید
+        const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
 
-        // تابع اصلی برای تبدیل ارز
+        // متغیری برای نگهداری نرخ‌ها تا هر بار API فراخوانی نشود
+        let conversionRates = {};
+        
+        // لیست ارزهای محبوب برای نمایش اولیه
+        const popularCurrencies = ["IRR", "USD", "EUR", "TRY", "AED", "GBP", "JPY", "CAD"];
+
+        // --- توابع ---
+
+        // نمایش لودر
+        function showLoader() {
+            loader.classList.add('show');
+        }
+        // مخفی کردن لودر
+        function hideLoader() {
+            loader.classList.remove('show');
+        }
+        
+        // نمایش پیام خطا
+        function showErrorMessage(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.style.display = 'block';
+            resultText.textContent = 'خطا!';
+            unitRateText.textContent = '';
+        }
+
+        // تابع برای دریافت نرخ ارزها از API و پر کردن منوها
+        async function fetchAndPopulateCurrencies() {
+            showLoader();
+            errorMessageDiv.style.display = 'none'; // مخفی کردن خطای قبلی
+            
+            // اگر کلید وارد نشده باشد، خطا نمایش بده
+            if(apiKey === 'YOUR_API_KEY') {
+                showErrorMessage('خطا: کلید API در کد تنظیم نشده است.');
+                hideLoader();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/latest/USD`);
+                const data = await response.json();
+
+                if (data.result === 'success') {
+                    conversionRates = data.conversion_rates;
+                    const updateTime = new Date(data.time_last_update_utc).toLocaleString('fa-IR');
+                    lastUpdateText.textContent = `آخرین بروزرسانی نرخ‌ها: ${updateTime}`;
+                    
+                    // پر کردن منوهای کشویی
+                    const currencies = Object.keys(conversionRates);
+                    const filteredCurrencies = currencies.filter(c => popularCurrencies.includes(c));
+
+                    fromCurrencySelect.innerHTML = '';
+                    toCurrencySelect.innerHTML = '';
+
+                    filteredCurrencies.forEach(currency => {
+                        const option1 = document.createElement('option');
+                        option1.value = currency;
+                        option1.textContent = currency;
+                        fromCurrencySelect.appendChild(option1);
+
+                        const option2 = document.createElement('option');
+                        option2.value = currency;
+                        option2.textContent = currency;
+                        toCurrencySelect.appendChild(option2);
+                    });
+
+                    // تنظیم مقادیر پیش‌فرض
+                    fromCurrencySelect.value = 'USD';
+                    toCurrencySelect.value = 'IRR';
+                    
+                    // بعد از بارگذاری موفق، تبدیل اولیه را انجام بده
+                    convertCurrency();
+
+                } else {
+                    // مدیریت خطاهای احتمالی از سمت API (مثلا کلید نامعتبر)
+                    showErrorMessage(`خطا در دریافت اطلاعات: ${data['error-type']}`);
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                showErrorMessage('خطا در برقراری ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // تابع اصلی برای محاسبه و نمایش تبدیل
         function convertCurrency() {
             const amount = parseFloat(amountInput.value);
             const fromCurrency = fromCurrencySelect.value;
             const toCurrency = toCurrencySelect.value;
 
-            // اعتبارسنجی ورودی
-            if (isNaN(amount) || amount <= 0) {
-                resultDiv.textContent = 'لطفاً یک مبلغ معتبر وارد کنید.';
-                resultDiv.style.color = 'red';
+            // اگر نرخ‌ها هنوز لود نشده‌اند، کاری نکن
+            if (Object.keys(conversionRates).length === 0) return;
+            
+            if (isNaN(amount) || amount < 0) {
+                resultText.textContent = 'مبلغ نامعتبر';
+                unitRateText.textContent = '';
                 return;
             }
-            
-            // 1. ابتدا مبلغ را به دلار تبدیل می‌کنیم (چون مبنای ما دلار است)
-            const amountInUSD = amount / exchangeRates[fromCurrency];
-            
-            // 2. سپس مبلغ دلاری را به ارز مقصد تبدیل می‌کنیم
-            const convertedAmount = amountInUSD * exchangeRates[toCurrency];
 
-            // نمایش نتیجه با فرمت خوانا
-            resultDiv.style.color = '#2c255c'; // بازگرداندن رنگ به حالت اولیه
-            resultDiv.textContent = 
-                `${amount.toLocaleString('fa-IR')} ${fromCurrency} = ${convertedAmount.toLocaleString('fa-IR', {maximumFractionDigits: 2})} ${toCurrency}`;
+            // محاسبه بر اساس نرخ پایه (USD)
+            const fromRate = conversionRates[fromCurrency];
+            const toRate = conversionRates[toCurrency];
+            
+            const convertedAmount = (amount / fromRate) * toRate;
+            const singleUnitRate = (1 / fromRate) * toRate;
+
+            // نمایش نتیجه با فرمت‌بندی زیبا
+            resultText.textContent = `${convertedAmount.toLocaleString('fa-IR', { maximumFractionDigits: 2 })} ${toCurrency}`;
+            unitRateText.textContent = `1 ${fromCurrency} = ${singleUnitRate.toLocaleString('fa-IR', { maximumFractionDigits: 4 })} ${toCurrency}`;
         }
 
         // تابع برای جابجایی ارزها
@@ -236,22 +356,15 @@
             const temp = fromCurrencySelect.value;
             fromCurrencySelect.value = toCurrencySelect.value;
             toCurrencySelect.value = temp;
-
-            // پس از جابجایی، دوباره تبدیل را انجام می‌دهیم
-            convertCurrency();
+            convertCurrency(); // انجام مجدد تبدیل
         }
 
-        // افزودن رویدادها (Event Listeners)
-        convertBtn.addEventListener('click', convertCurrency);
-        swapBtn.addEventListener('click', swapCurrencies);
-        
-        // برای تجربه کاربری بهتر، با تغییر هر یک از فیلدها، تبدیل انجام شود
+        // --- افزودن Event Listeners ---
+        window.addEventListener('load', fetchAndPopulateCurrencies);
         amountInput.addEventListener('input', convertCurrency);
         fromCurrencySelect.addEventListener('change', convertCurrency);
         toCurrencySelect.addEventListener('change', convertCurrency);
-
-        // اجرای اولیه تابع تبدیل هنگام بارگذاری صفحه
-        window.addEventListener('load', convertCurrency);
+        swapBtn.addEventListener('click', swapCurrencies);
 
     </script>
 
