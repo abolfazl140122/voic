@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>داشبورد ارزی پیشرفته</title>
+    <title>داشبورد ارزی حرفه‌ای</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -16,12 +16,14 @@
             --primary-color: #3498db; --primary-hover: #2980b9; --border-color: #e2e8f0;
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.07); --input-bg: #fdfdff;
             --success-color: #2ecc71; --danger-color: #e74c3c; --neutral-color: #95a5a6;
+            --success-bg: rgba(46, 204, 113, 0.1); --danger-bg: rgba(231, 76, 60, 0.1);
         }
         [data-theme="dark"] {
             --bg-color: #1a202c; --card-bg: #2d3748; --text-color: #e2e8f0;
             --primary-color: #4299e1; --primary-hover: #2b6cb0; --border-color: #4a5568;
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.2); --input-bg: #1a202c;
             --success-color: #27ae60; --danger-color: #c0392b; --neutral-color: #7f8c8d;
+            --success-bg: rgba(39, 174, 96, 0.15); --danger-bg: rgba(192, 57, 43, 0.15);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,89 +33,125 @@
             min-height: 100vh; padding: 20px; transition: background-color 0.3s, color 0.3s;
         }
 
-        .main-container { width: 100%; max-width: 1200px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .main-container { width: 100%; max-width: 1400px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 20px 30px; }
         .header h1 { font-size: 28px; }
         .theme-switcher {
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50px;
-            padding: 5px; cursor: pointer; font-size: 18px; width: 80px; display: flex; justify-content: space-between;
+            padding: 5px; cursor: pointer; font-size: 18px; width: 80px; display: flex; justify-content: space-between; transition: all 0.3s;
         }
+        .theme-switcher:hover { border-color: var(--primary-color); }
         .theme-switcher i { padding: 5px; border-radius: 50%; }
         .theme-switcher .active { background: var(--primary-color); color: white; }
 
-        .app-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 800px) { .app-grid { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); } }
+        .app-grid {
+            display: grid; gap: 25px;
+            grid-template-columns: 1fr;
+            grid-template-areas: "converter" "chart" "watchlist";
+        }
+        @media (min-width: 1024px) {
+            .app-grid {
+                grid-template-columns: 1.2fr 1fr;
+                grid-template-areas: "converter watchlist" "chart watchlist";
+            }
+        }
 
+        .converter-card { grid-area: converter; }
+        .chart-card { grid-area: chart; }
+        .watchlist-card { grid-area: watchlist; }
 
         .card {
-            background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: var(--shadow);
-            border: 1px solid var(--border-color); transition: background-color 0.3s, border-color 0.3s, transform 0.5s, opacity 0.5s;
-            opacity: 0; transform: translateY(20px);
+            background: var(--card-bg); padding: 30px; border-radius: 20px; box-shadow: var(--shadow);
+            border: 1px solid var(--border-color); transition: all 0.3s;
+            opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s forwards;
             display: flex; flex-direction: column;
         }
-        .card.visible { opacity: 1; transform: translateY(0); }
-        .card h3 { margin-bottom: 20px; font-size: 20px; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .header { animation-delay: 0s; }
+        .converter-card { animation-delay: 0.1s; }
+        .chart-card { animation-delay: 0.2s; }
+        .watchlist-card { animation-delay: 0.3s; }
+
+        .card h3 { margin-bottom: 20px; font-size: 20px; color: var(--primary-color); }
 
         .converter .input-group { margin-bottom: 20px; }
         .converter label { font-weight: 500; display: block; margin-bottom: 8px; }
         .currency-input-wrapper { position: relative; }
-        .currency-input-wrapper .icon { position: absolute; top: 50%; transform: translateY(-50%); left: 15px; color: #999; font-size: 22px; }
-        .currency-input-wrapper input { padding-right: 15px; padding-left: 50px; }
+        .currency-input-wrapper .icon { position: absolute; top: 50%; transform: translateY(-50%); right: 15px; color: var(--neutral-color); font-size: 22px; }
         input {
-            width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color);
-            background: var(--input-bg); color: var(--text-color); font-family: 'Vazirmatn', sans-serif; font-size: 16px;
+            width: 100%; padding: 14px 50px 14px 15px; border-radius: 10px; border: 1px solid var(--border-color);
+            background: var(--input-bg); color: var(--text-color); font-family: 'Vazirmatn', sans-serif; font-size: 16px; transition: all 0.3s;
         }
+        input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-color-trans, rgba(52, 152, 219, 0.2)); }
+        
         .conversion-flow { display: flex; align-items: center; margin: 25px 0; }
         .conversion-flow .currency-box { flex: 1; }
-        .conversion-flow #swap-btn { background: var(--card-bg); border: 2px solid var(--primary-color); color: var(--primary-color); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; margin: 0 15px; transition: all 0.3s; }
-        .conversion-flow #swap-btn:hover { background: var(--primary-color); color: white; transform: rotate(180deg); }
+        #swap-btn { background: var(--card-bg); border: 2px solid var(--primary-color); color: var(--primary-color); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; margin: 0 15px; transition: all 0.3s; flex-shrink: 0;}
+        #swap-btn:hover { background: var(--primary-color); color: white; transform: rotate(180deg); }
         
         .currency-dropdown {
-            display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 200px;
+            display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 220px;
             overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 8px; z-index: 10; margin-top: 5px;
+            border-radius: 10px; z-index: 10; margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         .currency-dropdown.show { display: block; }
-        .currency-dropdown-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; cursor: pointer; }
+        .currency-dropdown-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; }
         .currency-dropdown-item:hover { background: var(--primary-color); color: white; }
         .currency-dropdown-item .fav-star { color: #ccc; transition: color 0.2s, transform 0.2s; }
         .currency-dropdown-item .fav-star.favorited { color: #f1c40f; transform: scale(1.2); }
         
-        #convert-btn { width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; transition: background-color 0.3s; position: relative; }
-        #convert-btn:hover { background: var(--primary-hover); }
-        #convert-btn.loading { background: var(--primary-hover); cursor: not-allowed; }
-        .btn-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; position: absolute; top: 50%; left: 20px; transform: translateY(-50%); }
-        #convert-btn.loading .btn-spinner { display: block; }
-        #convert-btn.loading .btn-text { opacity: 0.5; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         .result-box { margin-top: 25px; text-align: center; }
-        #result-final-wrapper { display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--primary-color); min-height: 35px; }
-        #copy-btn { font-size: 16px; margin-right: 10px; cursor: pointer; color: #aaa; transition: color 0.2s; }
+        #result-final-wrapper { display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: var(--primary-color); min-height: 40px; }
+        #copy-btn { font-size: 16px; margin-right: 12px; cursor: pointer; color: var(--neutral-color); transition: color 0.2s; }
         #copy-btn:hover { color: var(--primary-color); }
-        #result-rate, #result-rate-reverse { font-size: 14px; color: var(--neutral-color); min-height: 20px; }
+        #result-rate, #result-rate-reverse { font-size: 14px; color: var(--neutral-color); min-height: 20px; margin-top: 5px; }
 
-        #last-updated { font-size: 12px; color: var(--neutral-color); margin-top: 10px; }
-        #multi-result-box { margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px; }
-        #multi-result-box h4 { font-size: 16px; margin-bottom: 15px; text-align: right; }
-        .multi-result-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 15px; }
-
-        .watchlist { flex-grow: 1; }
-        .watchlist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 1px solid var(--border-color); font-size: 16px; }
-        .watchlist-item:last-child { border-bottom: none; }
-        .watchlist-item .rate { font-weight: 700; color: var(--primary-color); direction: ltr; }
-        #watchlist-empty-msg { text-align: center; color: var(--neutral-color); padding: 20px 0; margin: auto; }
+        #last-updated { font-size: 12px; color: var(--neutral-color); margin-top: 15px; text-align: center; }
         
+        .watchlist-card { flex-grow: 1; }
+        .watchlist-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid var(--border-color); font-size: 16px; }
+        .watchlist-item:last-child { border-bottom: none; }
+        .watchlist-item .currency-info { display: flex; align-items: center; }
+        .watchlist-item .currency-info .trend-arrow { width: 20px; text-align: center; margin-left: 8px; }
+        .watchlist-item .currency-info .trend-arrow.up { color: var(--success-color); }
+        .watchlist-item .currency-info .trend-arrow.down { color: var(--danger-color); }
+        .watchlist-item .rate { font-weight: 700; color: var(--text-color); direction: ltr; }
+        .watchlist-item .remove-fav-btn { background: none; border: none; color: var(--neutral-color); cursor: pointer; font-size: 16px; transition: color 0.2s; }
+        .watchlist-item .remove-fav-btn:hover { color: var(--danger-color); }
+        #watchlist-empty-msg { text-align: center; color: var(--neutral-color); padding: 20px 0; margin: auto; }
+        .skeleton { background-color: var(--border-color); border-radius: 5px; animation: pulse 1.5s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .watchlist-skeleton-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; }
+        .watchlist-skeleton-item .left { width: 120px; height: 20px; }
+        .watchlist-skeleton-item .right { width: 80px; height: 20px; }
+
         .chart-card { flex-grow: 1; }
-        .chart-container { position: relative; flex-grow: 1; min-height: 300px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; }
+        .chart-controls button { background: none; border: 1px solid var(--border-color); color: var(--neutral-color); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.3s; margin: 0 2px; }
+        .chart-controls button.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .chart-container { position: relative; flex-grow: 1; min-height: 300px; margin-top: 20px; }
         .chart-loader {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card-bg-trans);
             display: none; justify-content: center; align-items: center; z-index: 5; border-radius: 15px;
         }
-        :root { --card-bg-trans: rgba(255, 255, 255, 0.5); }
+        :root { --card-bg-trans: rgba(255, 255, 255, 0.7); }
         [data-theme="dark"] { --card-bg-trans: rgba(45, 55, 72, 0.7); }
+        .spinner { display: block; width: 50px; height: 50px; border: 5px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .chart-loader.show { display: flex; }
         
+        #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            padding: 15px 20px; background-color: var(--card-bg); color: var(--text-color); border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15); border-left: 5px solid var(--primary-color);
+            display: flex; align-items: center; gap: 10px;
+            transform: translateX(-120%); animation: slideIn 0.5s forwards, slideOut 0.5s 4s forwards;
+        }
+        .toast.error { border-left-color: var(--danger-color); }
+        .toast.success { border-left-color: var(--success-color); }
+        @keyframes slideIn { to { transform: translateX(0); } }
+        @keyframes slideOut { to { transform: translateX(-120%); opacity: 0; } }
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -122,35 +160,43 @@
 </head>
 <body>
 
+    <div id="toast-container"></div>
+
     <main class="main-container">
         <header class="header card">
-            <h1>داشبورد ارزی پیشرفته</h1>
+            <h1>داشبورد ارزی حرفه‌ای</h1>
             <div class="theme-switcher" id="theme-switcher">
                 <i class="fas fa-sun active"></i><i class="fas fa-moon"></i>
             </div>
         </header>
 
         <div class="app-grid">
-            <div class="card converter">
-                <div class="input-group"><label for="amount">مبلغ</label><input type="text" id="amount" value="1,000"></div>
+            <div class="card converter-card">
+                <h3>مبدل آنی ارز</h3>
+                <div class="input-group">
+                    <label for="amount">مبلغ</label>
+                    <input type="text" id="amount" value="1,000" inputmode="decimal">
+                </div>
                 <div class="conversion-flow">
                     <div class="currency-box input-group">
                         <label for="from-currency-input">از</label>
                         <div class="currency-input-wrapper">
                             <span class="icon" id="from-icon"></span>
-                            <input type="text" id="from-currency-input" placeholder="جستجو..."><div class="currency-dropdown" id="from-dropdown"></div>
+                            <input type="text" id="from-currency-input" placeholder="جستجو...">
+                            <div class="currency-dropdown" id="from-dropdown"></div>
                         </div>
                     </div>
-                    <button id="swap-btn" title="جابجایی"><i class="fas fa-exchange-alt"></i></button>
+                    <button id="swap-btn" title="جابجایی ارزها"><i class="fas fa-exchange-alt"></i></button>
                     <div class="currency-box input-group">
                         <label for="to-currency-input">به</label>
                         <div class="currency-input-wrapper">
                             <span class="icon" id="to-icon"></span>
-                            <input type="text" id="to-currency-input" placeholder="جستجو..."><div class="currency-dropdown" id="to-dropdown"></div>
+                            <input type="text" id="to-currency-input" placeholder="جستجو...">
+                            <div class="currency-dropdown" id="to-dropdown"></div>
                         </div>
                     </div>
                 </div>
-                <button id="convert-btn"><span class="btn-spinner"></span><span class="btn-text">تبدیل</span></button>
+                
                 <div class="result-box">
                     <div id="result-final-wrapper">
                         <i id="copy-btn" class="far fa-copy" title="کپی کردن"></i>
@@ -158,450 +204,535 @@
                     </div>
                     <div id="result-rate"></div>
                     <div id="result-rate-reverse"></div>
-                    <div id="last-updated"></div>
                 </div>
-                <div id="multi-result-box"></div>
+                <div id="last-updated"></div>
             </div>
 
-            <div class="card watchlist">
-                <h3 id="watchlist-title">لیست پیگیری نرخ‌های محبوب</h3>
+            <div class="card watchlist-card">
+                <h3 id="watchlist-title">لیست پیگیری</h3>
                 <div id="watchlist-content">
-                    <!-- Watchlist items will be injected here by JS -->
+                    <!-- Watchlist items or skeleton loaders will be injected here -->
                 </div>
             </div>
 
             <div class="card chart-card">
-                <h3 id="chart-title">تاریخچه نرخ</h3>
+                <div class="chart-header">
+                    <h3 id="chart-title">تاریخچه نرخ</h3>
+                    <div class="chart-controls" id="chart-controls">
+                        <button data-range="7" class="active">7 روز</button>
+                        <button data-range="15">15 روز</button>
+                        <button data-range="30">30 روز</button>
+                    </div>
+                </div>
                 <div class="chart-container">
-                    <div class="chart-loader" id="chart-loader"><div class="btn-spinner" style="display:block; width:50px; height:50px; border-width: 5px; border-top-color: var(--primary-color);"></div></div>
+                    <div class="chart-loader" id="chart-loader"><div class="spinner"></div></div>
                     <canvas id="history-chart"></canvas>
                 </div>
             </div>
         </div>
     </main>
 
-    <script>
-    // ================== JavaScript ==================
-    const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما
+<script>
+// ================== JavaScript ==================
+const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما
+const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
 
-    // --- دریافت عناصر DOM ---
-    const amountInput = document.getElementById('amount');
-    const fromCurrencyInput = document.getElementById('from-currency-input');
-    const toCurrencyInput = document.getElementById('to-currency-input');
-    const fromDropdown = document.getElementById('from-dropdown');
-    const toDropdown = document.getElementById('to-dropdown');
-    const fromIcon = document.getElementById('from-icon');
-    const toIcon = document.getElementById('to-icon');
-    const convertBtn = document.getElementById('convert-btn');
-    const swapBtn = document.getElementById('swap-btn');
-    const resultFinal = document.getElementById('result-final');
-    const copyBtn = document.getElementById('copy-btn');
-    const resultRate = document.getElementById('result-rate');
-    const resultRateReverse = document.getElementById('result-rate-reverse');
-    const themeSwitcher = document.getElementById('theme-switcher');
-    const chartTitle = document.getElementById('chart-title');
-    const chartLoader = document.getElementById('chart-loader');
-    const ctx = document.getElementById('history-chart').getContext('2d');
-    const lastUpdated = document.getElementById('last-updated');
-    const multiResultBox = document.getElementById('multi-result-box');
-    const watchlistContent = document.getElementById('watchlist-content');
-    const watchlistTitle = document.getElementById('watchlist-title');
+// --- دریافت عناصر DOM ---
+const dom = {
+    amountInput: document.getElementById('amount'),
+    fromCurrencyInput: document.getElementById('from-currency-input'),
+    toCurrencyInput: document.getElementById('to-currency-input'),
+    fromDropdown: document.getElementById('from-dropdown'),
+    toDropdown: document.getElementById('to-dropdown'),
+    fromIcon: document.getElementById('from-icon'),
+    toIcon: document.getElementById('to-icon'),
+    swapBtn: document.getElementById('swap-btn'),
+    resultFinal: document.getElementById('result-final'),
+    copyBtn: document.getElementById('copy-btn'),
+    resultRate: document.getElementById('result-rate'),
+    resultRateReverse: document.getElementById('result-rate-reverse'),
+    themeSwitcher: document.getElementById('theme-switcher'),
+    chartTitle: document.getElementById('chart-title'),
+    chartLoader: document.getElementById('chart-loader'),
+    chartControls: document.getElementById('chart-controls'),
+    ctx: document.getElementById('history-chart').getContext('2d'),
+    lastUpdated: document.getElementById('last-updated'),
+    watchlistContent: document.getElementById('watchlist-content'),
+    watchlistTitle: document.getElementById('watchlist-title'),
+    toastContainer: document.getElementById('toast-container'),
+};
 
+// --- وضعیت برنامه (State) ---
+const state = {
+    from: 'USD',
+    to: 'IRR',
+    allCurrencies: [],
+    favorites: ['EUR', 'GBP', 'JPY', 'AED', 'TRY'],
+    latestRates: null,
+    previousRates: null, // برای تشخیص روند
+    chartTimeRange: 7,
+};
+let historyChart;
+let conversionDebounceTimer;
 
-    // --- وضعیت برنامه ---
-    const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
-    let state = {
-        from: 'USD', to: 'IRR',
-        allCurrencies: [],
-        favorites: ['EUR', 'GBP', 'JPY', 'AED'],
-        latestRates: null,
-    };
-    let historyChart;
+// --- توابع اصلی ---
 
-    // --- توابع اصلی ---
-    async function init() {
-        loadPreferences();
-        await fetchAllCurrencies();
-        addEventListeners();
-        updateCurrencyUI('from', state.from);
-        updateCurrencyUI('to', state.to);
-        document.querySelectorAll('.card').forEach((card, index) => {
-            setTimeout(() => card.classList.add('visible'), index * 100);
-        });
-        performConversion();
+async function init() {
+    loadPreferences();
+    await fetchAllCurrencies();
+    addEventListeners();
+    updateCurrencyUI('from', state.from);
+    updateCurrencyUI('to', state.to);
+    document.querySelectorAll('.card').forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+    await performConversion();
+}
+
+async function fetchAllCurrencies() {
+    if (apiKey.includes('YOUR_API_KEY') || apiKey.length < 16) {
+        showToast('کلید API نامعتبر است. لطفاً کد را ویرایش کنید.', 'error');
+        return;
     }
-
-    async function fetchAllCurrencies() {
-        if (apiKey.includes('YOUR_API_KEY')) {
-            alert('لطفا کلید API خود را در کد جاوااسکریپت وارد کنید.'); return;
+    try {
+        const response = await fetch(`${apiUrl}/codes`);
+        const data = await response.json();
+        if (data.result === 'success') {
+            state.allCurrencies = data.supported_codes;
+        } else {
+            throw new Error(data['error-type'] || 'Failed to fetch currencies');
         }
-        try {
-            const data = await (await fetch(`${apiUrl}/codes`)).json();
-            if (data.result === 'success') state.allCurrencies = data.supported_codes;
-        } catch (error) { console.error('Error fetching currency codes:', error); }
+    } catch (error) {
+        console.error('Error fetching currency codes:', error);
+        showToast('خطا در دریافت لیست ارزها', 'error');
     }
+}
 
-    async function performConversion() {
-        const amount = parseFloat(amountInput.value.replace(/,/g, '')) || 0;
-        if (amount === 0) {
-            resultFinal.textContent = ''; resultRate.textContent = ''; resultRateReverse.textContent = '';
-            lastUpdated.textContent = ''; multiResultBox.innerHTML = '';
-            return;
-        }
-        toggleButtonLoading(true);
-        try {
-            const data = await (await fetch(`${apiUrl}/latest/${state.from}`)).json();
+async function performConversion() {
+    const amount = parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0;
+    
+    // نمایش لودرها
+    renderWatchlistSkeleton();
+    dom.chartLoader.classList.add('show');
+
+    try {
+        const response = await fetch(`${apiUrl}/latest/${state.from}`);
+        const data = await response.json();
+
+        if (data.result === 'success') {
+            // ذخیره نرخ‌های قبلی برای مقایسه روند
+            if(state.latestRates) {
+                state.previousRates = { ...state.latestRates.conversion_rates };
+            }
+            state.latestRates = data;
             
-            if (data.result === 'success') {
-                state.latestRates = data; 
-                const rate = data.conversion_rates[state.to];
-                if (!rate) {
-                    throw new Error(`نرخ تبدیل برای ${state.to} یافت نشد.`);
-                }
-                const finalAmount = amount * rate;
-
-                resultFinal.textContent = `${finalAmount.toLocaleString('fa-IR', {maximumFractionDigits: 2})} ${state.to}`;
-                resultRate.textContent = `1 ${state.from} = ${rate.toLocaleString('fa-IR', {maximumFractionDigits: 4})} ${state.to}`;
-                resultRateReverse.textContent = `1 ${state.to} = ${(1/rate).toLocaleString('fa-IR', {maximumFractionDigits: 8})} ${state.from}`;
-                
-                updateLastUpdated(data.time_last_update_utc);
-                updateMultiConverter(amount);
-                updateWatchlist();
-                
-                savePreferences();
-                updateHistoryChart(); 
-            } else {
-                resultFinal.textContent = 'خطا'; resultRate.textContent = `(${data['error-type']})`;
-            }
-        } catch (error) {
-            console.error(error);
-            resultFinal.textContent = 'خطای شبکه';
-            resultRate.textContent = error.message;
-        } finally {
-            toggleButtonLoading(false);
+            updateConverterResult(amount);
+            updateLastUpdated(data.time_last_update_utc);
+            renderWatchlist();
+            renderHistoryChart();
+            
+            savePreferences();
+        } else {
+            handleApiError(data['error-type']);
         }
+    } catch (error) {
+        console.error('Network or conversion error:', error);
+        showToast('خطای شبکه. لطفاً اتصال خود را بررسی کنید.', 'error');
+        dom.resultFinal.textContent = '-';
+        dom.resultRate.textContent = '';
+        dom.resultRateReverse.textContent = '';
+    } finally {
+        dom.chartLoader.classList.remove('show');
+    }
+}
+
+function handleApiError(errorType) {
+    let message = 'یک خطای نامشخص رخ داد.';
+    switch (errorType) {
+        case 'invalid-key': message = 'کلید API نامعتبر است.'; break;
+        case 'inactive-account': message = 'حساب کاربری API غیرفعال است.'; break;
+        case 'quota-reached': message = 'محدودیت درخواست API به پایان رسیده است.'; break;
+        case 'unsupported-code': message = `ارز ${state.from} پشتیبانی نمی‌شود.`; break;
+    }
+    showToast(message, 'error');
+    dom.resultFinal.textContent = 'خطا';
+    dom.resultRate.textContent = `(${errorType})`;
+}
+
+
+// --- توابع رندر و UI ---
+
+function updateConverterResult(amount) {
+    if (!state.latestRates) return;
+    const rate = state.latestRates.conversion_rates[state.to];
+
+    if (amount === 0 || !rate) {
+        dom.resultFinal.textContent = '0';
+        dom.resultRate.textContent = '';
+        dom.resultRateReverse.textContent = '';
+        return;
+    }
+    
+    const finalAmount = amount * rate;
+    dom.resultFinal.textContent = `${finalAmount.toLocaleString('fa-IR', {maximumFractionDigits: 2})}`;
+    dom.resultRate.textContent = `1 ${state.from} = ${rate.toLocaleString('fa-IR', {maximumFractionDigits: 4})} ${state.to}`;
+    dom.resultRateReverse.textContent = `1 ${state.to} = ${(1/rate).toLocaleString('fa-IR', {maximumFractionDigits: 8})} ${state.from}`;
+}
+
+function renderWatchlist() {
+    dom.watchlistTitle.textContent = `نرخ‌ها نسبت به 1 ${state.from}`;
+    dom.watchlistContent.innerHTML = '';
+
+    if (!state.favorites.length) {
+        dom.watchlistContent.innerHTML = `<div id="watchlist-empty-msg">ارزی را برای پیگیری ستاره‌دار کنید.</div>`;
+        return;
     }
 
-    // =========================================================================
-    //  ATTENTION: The historical chart function has been completely rewritten.
-    //  It now SIMULATES data because the free API plan doesn't support it.
-    // =========================================================================
-    function updateHistoryChart() {
-        chartTitle.textContent = `تاریخچه ۷ روزه ${state.from} به ${state.to}`;
-        chartLoader.classList.add('show');
+    if (!state.latestRates) return;
 
-        // Check if we have the latest rates data to base our simulation on.
-        if (!state.latestRates || !state.latestRates.conversion_rates[state.to]) {
-            console.warn("No rate data available to generate history chart.");
-            if (historyChart) historyChart.destroy(); // Clear old chart
-            chartLoader.classList.remove('show');
-            return;
-        }
-        
-        const currentRate = state.latestRates.conversion_rates[state.to];
-
-        // 1. Generate date labels for the last 7 days.
-        const dates = [];
-        for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
-        }
-
-        // 2. Simulate 8 data points for 7 days of history + a base for color comparison.
-        let dailyRates = [];
-        for (let i = 0; i < 8; i++) {
-            // Fluctuate by up to +/- 3% for a more visible effect
-            const fluctuation = (Math.random() - 0.5) * 0.06; 
-            let simulatedRate = currentRate * (1 + fluctuation);
-            dailyRates.push(simulatedRate);
-        }
-        // Ensure the last data point (today) is the EXACT current rate for consistency.
-        dailyRates[7] = currentRate;
-
-        // 3. Calculate bar colors based on simulated changes.
-        const backgroundColors = [];
-        const borderColors = [];
-        const successColor = getComputedStyle(document.documentElement).getPropertyValue('--success-color').trim();
-        const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger-color').trim();
-        const neutralColor = getComputedStyle(document.documentElement).getPropertyValue('--neutral-color').trim();
-
-        for (let i = 1; i < dailyRates.length; i++) { // Start from 1 to compare with previous day
-            if (dailyRates[i] > dailyRates[i - 1]) {
-                backgroundColors.push(successColor + '80');
-                borderColors.push(successColor);
-            } else if (dailyRates[i] < dailyRates[i - 1]) {
-                backgroundColors.push(dangerColor + '80');
-                borderColors.push(dangerColor);
-            } else {
-                backgroundColors.push(neutralColor + '80');
-                borderColors.push(neutralColor);
+    let content = '';
+    const rates = state.latestRates.conversion_rates;
+    
+    state.favorites.forEach(code => {
+        if (code === state.from) return;
+        if (rates[code]) {
+            const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || code;
+            
+            let trendIcon = '';
+            if (state.previousRates && state.previousRates[code]) {
+                if (rates[code] > state.previousRates[code]) {
+                    trendIcon = `<i class="fas fa-arrow-up trend-arrow up"></i>`;
+                } else if (rates[code] < state.previousRates[code]) {
+                    trendIcon = `<i class="fas fa-arrow-down trend-arrow down"></i>`;
+                }
             }
+
+            content += `
+                <div class="watchlist-item">
+                    <div class="currency-info">
+                        ${trendIcon}
+                        <span><b>${code}</b> - ${currencyName}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                      <span class="rate">${rates[code].toLocaleString('en-US', { maximumFractionDigits: 4 })}</span>
+                      <button class="remove-fav-btn" data-code="${code}" title="حذف از لیست پیگیری">&times;</button>
+                    </div>
+                </div>
+            `;
         }
-        
-        // 4. Create or update the chart with the simulated data.
+    });
+    dom.watchlistContent.innerHTML = content;
+}
+
+function renderWatchlistSkeleton() {
+    let skeletonHTML = '';
+    for (let i = 0; i < 5; i++) {
+        skeletonHTML += `
+            <div class="watchlist-skeleton-item">
+                <div class="skeleton left"></div>
+                <div class="skeleton right"></div>
+            </div>
+        `;
+    }
+    dom.watchlistContent.innerHTML = skeletonHTML;
+}
+
+function renderHistoryChart() {
+    dom.chartTitle.textContent = `تاریخچه شبیه‌سازی شده ${state.from} به ${state.to}`;
+    dom.chartLoader.classList.add('show');
+
+    if (!state.latestRates || !state.latestRates.conversion_rates[state.to]) {
+        console.warn("No rate data to generate history chart.");
         if (historyChart) historyChart.destroy();
-        
-        const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
-        const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
+        dom.chartLoader.classList.remove('show');
+        return;
+    }
+    
+    const currentRate = state.latestRates.conversion_rates[state.to];
+    
+    // 1. تولید لیبل تاریخ‌ها
+    const dates = [];
+    for (let i = state.chartTimeRange - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
+    }
 
-        historyChart = new Chart(ctx, {
-            type: 'bar',
-            data: { 
-                labels: dates, 
-                datasets: [{
-                    label: `نرخ ${state.to}`, 
-                    data: dailyRates.slice(1), // Use the last 7 data points for the 7 bars
-                    backgroundColor: backgroundColors, 
-                    borderColor: borderColors, 
-                    borderWidth: 2,
-                    borderRadius: 5,
-                }]
-            },
-            options: {
-                responsive: true, 
-                maintainAspectRatio: false,
-                scales: { 
-                    y: { 
-                        ticks: { color: textColor, padding: 10 }, 
-                        grid: { color: borderColor } 
-                    }, 
-                    x: { 
-                        ticks: { color: textColor }, 
-                        grid: { display: false } 
-                    } 
+    // 2. شبیه‌سازی داده‌ها با الگوریتم "گام تصادفی" (Random Walk) برای ظاهر واقعی‌تر
+    let dailyRates = [currentRate];
+    let lastRate = currentRate;
+    for (let i = 0; i < state.chartTimeRange - 1; i++) {
+        // نوسان بین -2.5% تا +2.5% نسبت به روز قبل
+        const fluctuation = (Math.random() - 0.5) * 0.05; 
+        lastRate = lastRate * (1 + fluctuation);
+        dailyRates.unshift(lastRate);
+    }
+
+    // 3. محاسبه رنگ‌ها بر اساس تغییرات
+    const backgroundColors = [];
+    const successColor = getComputedStyle(document.documentElement).getPropertyValue('--success-color').trim();
+    const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger-color').trim();
+
+    for (let i = 1; i < dailyRates.length; i++) {
+        backgroundColors.push(dailyRates[i] >= dailyRates[i-1] ? successColor + '80' : dangerColor + '80');
+    }
+    
+    // 4. ساخت یا به‌روزرسانی نمودار
+    if (historyChart) historyChart.destroy();
+    
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+    const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+
+    historyChart = new Chart(dom.ctx, {
+        type: 'bar',
+        data: { 
+            labels: dates, 
+            datasets: [
+                {
+                    type: 'line',
+                    label: `روند نرخ ${state.to}`, 
+                    data: dailyRates,
+                    borderColor: primaryColor,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: primaryColor,
+                    tension: 0.3,
+                    fill: false,
                 },
-                plugins: { 
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'var(--card-bg)',
-                        titleColor: 'var(--primary-color)',
-                        bodyColor: 'var(--text-color)',
-                        borderColor: 'var(--border-color)',
-                        borderWidth: 1,
-                        padding: 10,
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += context.parsed.y.toLocaleString('fa-IR', {maximumFractionDigits: 4});
-                                }
-                                return label;
-                            }
-                        }
+                {
+                    type: 'bar',
+                    label: `نرخ روزانه ${state.to}`, 
+                    data: dailyRates,
+                    backgroundColor: backgroundColors, 
+                    borderRadius: 5,
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { 
+                y: { beginAtZero: false, ticks: { color: textColor, padding: 10 }, grid: { color: borderColor } }, 
+                x: { ticks: { color: textColor }, grid: { display: false } } 
+            },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    rtl: true,
+                    titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' },
+                    backgroundColor: 'var(--card-bg)', titleColor: 'var(--primary-color)',
+                    bodyColor: 'var(--text-color)', borderColor: 'var(--border-color)', borderWidth: 1, padding: 10,
+                    callbacks: {
+                        label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString('fa-IR', {maximumFractionDigits: 4})}`
                     }
                 }
-            }
-        });
-        chartLoader.classList.remove('show');
-    }
-
-    // --- توابع کمکی و UI ---
-    function updateLastUpdated(utcTimestamp) {
-        const date = new Date(utcTimestamp);
-        const formattedDate = date.toLocaleString('fa-IR', {
-            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
-        lastUpdated.textContent = `آخرین بروزرسانی: ${formattedDate}`;
-    }
-
-    function updateMultiConverter(baseAmount) {
-        multiResultBox.innerHTML = '';
-        if (!state.latestRates) return;
-        
-        const popularCurrencies = ['EUR', 'GBP', 'JPY', 'AED', 'TRY'];
-        const rates = state.latestRates.conversion_rates;
-
-        let content = '<h4>تبدیل به چند ارز دیگر</h4>';
-        popularCurrencies.forEach(code => {
-            if (code === state.from || code === state.to) return;
-            
-            if (rates[code]) {
-                const convertedAmount = (baseAmount * rates[code]).toLocaleString('fa-IR', { maximumFractionDigits: 2 });
-                content += `
-                    <div class="multi-result-item">
-                        <span>${baseAmount.toLocaleString('fa-IR')} ${state.from}</span>
-                        <span><i class="fas fa-arrow-right" style="font-size:12px; margin: 0 5px; opacity:0.5;"></i></span>
-                        <span><b>${convertedAmount} ${code}</b></span>
-                    </div>
-                `;
-            }
-        });
-        multiResultBox.innerHTML = content;
-    }
-
-    function updateWatchlist() {
-        watchlistTitle.textContent = `نرخ‌ها نسبت به 1 ${state.from}`;
-        watchlistContent.innerHTML = '';
-        if (!state.favorites.length) {
-            watchlistContent.innerHTML = `<div id="watchlist-empty-msg">ارزی را برای پیگیری ستاره‌دار کنید.</div>`;
-            return;
+            },
+            interaction: { mode: 'index', intersect: false },
         }
+    });
+    dom.chartLoader.classList.remove('show');
+}
 
-        if (!state.latestRates) return;
+function populateDropdown(dropdown, filter = '') {
+    dropdown.innerHTML = '';
+    const sortedCurrencies = [...state.allCurrencies].sort((a, b) => {
+        const aIsFav = state.favorites.includes(a[0]);
+        const bIsFav = state.favorites.includes(b[0]);
+        if (aIsFav === bIsFav) return a[0].localeCompare(b[0]);
+        return aIsFav ? -1 : 1;
+    });
 
-        let content = '';
-        const rates = state.latestRates.conversion_rates;
+    const filterLower = filter.toLowerCase();
+    const filtered = sortedCurrencies.filter(([code, name]) => 
+        code.toLowerCase().includes(filterLower) || name.toLowerCase().includes(filterLower) || name.includes(filter)
+    );
+
+    filtered.forEach(([code, name]) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'currency-dropdown-item';
+        itemDiv.innerHTML = `<span><b>${code}</b> - ${name}</span><i class="fav-star ${state.favorites.includes(code) ? 'fas favorited' : 'far'} fa-star"></i>`;
         
-        state.favorites.forEach(code => {
-            if (code === state.from) return;
-            if (rates[code]) {
-                const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || '';
-                content += `
-                    <div class="watchlist-item">
-                        <span>${code} - ${currencyName}</span>
-                        <span class="rate">${rates[code].toLocaleString('en-US', { maximumFractionDigits: 4 })}</span>
-                    </div>
-                `;
-            }
+        itemDiv.addEventListener('click', () => {
+            const type = dropdown.id.includes('from') ? 'from' : 'to';
+            updateCurrencyUI(type, code);
+            dropdown.classList.remove('show');
+            debouncedConversion();
         });
-        watchlistContent.innerHTML = content;
+        itemDiv.querySelector('.fav-star').addEventListener('click', (e) => {
+            e.stopPropagation(); toggleFavorite(code, e.target);
+        });
+        dropdown.appendChild(itemDiv);
+    });
+}
+
+// --- توابع کمکی ---
+
+function toggleFavorite(code, starElement) {
+    const index = state.favorites.indexOf(code);
+    if (index > -1) {
+        state.favorites.splice(index, 1);
+    } else {
+        state.favorites.push(code);
+    }
+    if (starElement) {
+        starElement.classList.toggle('fas', index === -1);
+        starElement.classList.toggle('far', index > -1);
+        starElement.classList.toggle('favorited', index === -1);
+    }
+    savePreferences();
+    renderWatchlist();
+}
+
+function updateCurrencyUI(type, code) {
+    state[type] = code;
+    const input = (type === 'from') ? dom.fromCurrencyInput : dom.toCurrencyInput;
+    const icon = (type === 'from') ? dom.fromIcon : dom.toIcon;
+    const currencyData = state.allCurrencies.find(c => c[0] === code);
+    input.value = currencyData ? `${code} - ${currencyData[1]}` : code;
+    try { 
+        icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt(0) + 127397));
+    } catch(e) { 
+        icon.textContent = '🏳️';
+    }
+}
+
+function handleSwap() {
+    [state.from, state.to] = [state.to, state.from];
+    updateCurrencyUI('from', state.from);
+    updateCurrencyUI('to', state.to);
+    debouncedConversion();
+}
+
+function formatAmount(e) {
+    let value = e.target.value.replace(/,/g, '');
+    if (value === '' || isNaN(value)) return;
+    e.target.value = parseFloat(value).toLocaleString('en-US');
+}
+
+function copyResult() {
+    if(!dom.resultFinal.textContent || dom.resultFinal.textContent === '-') return;
+    const textToCopy = dom.resultFinal.textContent.replace(/,/g, '');
+    navigator.clipboard.writeText(textToCopy)
+        .then(() => showToast('مبلغ با موفقیت کپی شد', 'success'))
+        .catch(() => showToast('خطا در کپی کردن', 'error'));
+}
+
+function debouncedConversion() {
+    clearTimeout(conversionDebounceTimer);
+    conversionDebounceTimer = setTimeout(performConversion, 500); // 500ms تاخیر
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let iconClass = 'fa-info-circle';
+    if (type === 'success') iconClass = 'fa-check-circle';
+    if (type === 'error') iconClass = 'fa-exclamation-circle';
+    
+    toast.innerHTML = `<i class="fas ${iconClass}"></i><span>${message}</span>`;
+    dom.toastContainer.appendChild(toast);
+    
+    setTimeout(() => toast.remove(), 4500);
+}
+
+function updateLastUpdated(utcTimestamp) {
+    const date = new Date(utcTimestamp);
+    dom.lastUpdated.textContent = `آخرین بروزرسانی: ${date.toLocaleString('fa-IR', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    })}`;
+}
+
+// --- مدیریت تم و LocalStorage ---
+
+function toggleTheme() {
+    const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = newTheme;
+    dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
+    localStorage.setItem('currency_theme', newTheme);
+    if(historyChart) {
+        renderHistoryChart(); // بازрисовانی نمودار با رنگ‌های جدید
+    }
+}
+
+function savePreferences() {
+    const prefs = {
+        from: state.from,
+        to: state.to,
+        favorites: state.favorites,
+        chartTimeRange: state.chartTimeRange,
+    };
+    localStorage.setItem('currency_prefs', JSON.stringify(prefs));
+}
+
+function loadPreferences() {
+    const theme = localStorage.getItem('currency_theme') || 'light';
+    if (theme === 'dark') {
+        document.documentElement.dataset.theme = 'dark';
+        dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
     }
 
-    function populateDropdown(dropdown, filter = '') {
-        dropdown.innerHTML = '';
-        const sortedCurrencies = [...state.allCurrencies].sort((a, b) => {
-            const aIsFav = state.favorites.includes(a[0]);
-            const bIsFav = state.favorites.includes(b[0]);
-            if (aIsFav === bIsFav) return a[0].localeCompare(b[0]);
-            return aIsFav ? -1 : 1;
+    const prefs = JSON.parse(localStorage.getItem('currency_prefs'));
+    if (prefs) { 
+        state.from = prefs.from || 'USD'; 
+        state.to = prefs.to || 'IRR'; 
+        state.favorites = prefs.favorites || ['EUR', 'GBP', 'JPY', 'AED', 'TRY'];
+        state.chartTimeRange = prefs.chartTimeRange || 7;
+
+        // فعال کردن دکمه بازه زمانی ذخیره شده
+        dom.chartControls.querySelector('.active')?.classList.remove('active');
+        dom.chartControls.querySelector(`[data-range="${state.chartTimeRange}"]`)?.classList.add('active');
+    }
+}
+
+// --- ثبت Event Listeners ---
+function addEventListeners() {
+    dom.swapBtn.addEventListener('click', handleSwap);
+    dom.themeSwitcher.addEventListener('click', toggleTheme);
+    dom.copyBtn.addEventListener('click', copyResult);
+    
+    dom.amountInput.addEventListener('input', () => {
+        formatAmount({target: dom.amountInput});
+        // به جای فراخوانی API، فقط نتیجه را با نرخ موجود آپدیت می‌کنیم
+        updateConverterResult(parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0);
+    });
+
+    ['from', 'to'].forEach(type => {
+        const input = dom[`${type}CurrencyInput`];
+        const dropdown = dom[`${type}Dropdown`];
+        input.addEventListener('focus', () => { 
+            input.select();
+            populateDropdown(dropdown, ''); 
+            dropdown.classList.add('show'); 
         });
-
-        const filterLower = filter.toLowerCase();
-        const filtered = sortedCurrencies.filter(([code, name]) => 
-            code.toLowerCase().includes(filterLower) || name.toLowerCase().includes(filterLower) || name.includes(filter)
-        );
-
-        filtered.forEach(([code, name]) => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'currency-dropdown-item';
-            itemDiv.innerHTML = `<span>${code} - ${name}</span><i class="fav-star ${state.favorites.includes(code) ? 'fas favorited' : 'far'} fa-star"></i>`;
-            
-            itemDiv.addEventListener('click', () => {
-                const type = dropdown.id.includes('from') ? 'from' : 'to';
-                updateCurrencyUI(type, code);
+        input.addEventListener('keyup', () => populateDropdown(dropdown, input.value));
+        document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.classList.remove('show');
-                performConversion();
-            });
-            itemDiv.querySelector('.fav-star').addEventListener('click', (e) => {
-                e.stopPropagation(); toggleFavorite(code, e.target);
-            });
-            dropdown.appendChild(itemDiv);
+                updateCurrencyUI(type, state[type]); // بازگرداندن به مقدار قبلی اگر کاربر چیزی انتخاب نکند
+            }
         });
-    }
+    });
 
-    function toggleFavorite(code, starElement) {
-        const index = state.favorites.indexOf(code);
-        if (index > -1) {
-            state.favorites.splice(index, 1);
-        } else {
-            state.favorites.push(code);
+    dom.chartControls.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            dom.chartControls.querySelector('.active').classList.remove('active');
+            e.target.classList.add('active');
+            state.chartTimeRange = parseInt(e.target.dataset.range);
+            savePreferences();
+            renderHistoryChart();
         }
-        starElement.classList.toggle('fas');
-        starElement.classList.toggle('far');
-        starElement.classList.toggle('favorited');
-        savePreferences();
-        updateWatchlist();
-    }
+    });
 
-    function updateCurrencyUI(type, code) {
-        state[type] = code;
-        const input = (type === 'from') ? fromCurrencyInput : toCurrencyInput;
-        const icon = (type === 'from') ? fromIcon : toIcon;
-        const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || '';
-        input.value = `${code} - ${currencyName}`;
-        try { icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt() + 127397)); }
-        catch(e) { icon.textContent = '🏳️'; }
-    }
-
-    function toggleButtonLoading(isLoading) {
-        convertBtn.classList.toggle('loading', isLoading);
-        convertBtn.disabled = isLoading;
-        convertBtn.querySelector('.btn-text').textContent = isLoading ? 'در حال دریافت...' : 'تبدیل';
-    }
-    
-    function handleSwap() {
-        [state.from, state.to] = [state.to, state.from];
-        updateCurrencyUI('from', state.from); updateCurrencyUI('to', state.to);
-        performConversion();
-    }
-    
-    function formatAmount(e) {
-        let value = e.target.value.replace(/,/g, '');
-        if (value === '') return;
-        if (!isNaN(value)) {
-            e.target.value = parseFloat(value).toLocaleString('en-US');
-        } else {
-            e.target.value = e.target.value.slice(0, -1);
+    dom.watchlistContent.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-fav-btn')) {
+            const codeToRemove = e.target.dataset.code;
+            toggleFavorite(codeToRemove, null);
         }
-    }
+    });
+}
 
-    function copyResult() {
-        if(!resultFinal.textContent) return;
-        const textToCopy = resultFinal.textContent.split(' ')[0];
-        navigator.clipboard.writeText(textToCopy.replace(/,/g, ''));
-        copyBtn.setAttribute('title', 'کپی شد!');
-        setTimeout(() => copyBtn.setAttribute('title', 'کپی کردن'), 2000);
-    }
-
-    function toggleTheme() {
-        const currentTheme = document.documentElement.dataset.theme;
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.dataset.theme = newTheme;
-        document.body.dataset.theme = newTheme; 
-        themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
-        localStorage.setItem('currency_theme', newTheme);
-        if(historyChart) {
-            updateHistoryChart(); // Rerun the function to get correct colors
-        }
-    }
-    function savePreferences() { localStorage.setItem('currency_prefs', JSON.stringify({from: state.from, to: state.to, favorites: state.favorites})); }
-    function loadPreferences() {
-        const theme = localStorage.getItem('currency_theme') || 'light';
-        document.documentElement.dataset.theme = theme;
-        document.body.dataset.theme = theme;
-        if(theme === 'dark') themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
-
-        const prefs = JSON.parse(localStorage.getItem('currency_prefs'));
-        if (prefs) { 
-            state.from = prefs.from || 'USD'; 
-            state.to = prefs.to || 'IRR'; 
-            state.favorites = prefs.favorites || ['EUR', 'GBP', 'JPY', 'AED']; 
-        }
-    }
-
-    function addEventListeners() {
-        convertBtn.addEventListener('click', performConversion);
-        swapBtn.addEventListener('click', handleSwap);
-        themeSwitcher.addEventListener('click', toggleTheme);
-        amountInput.addEventListener('input', formatAmount);
-        copyBtn.addEventListener('click', copyResult);
-        ['from', 'to'].forEach(type => {
-            const input = document.getElementById(`${type}-currency-input`);
-            const dropdown = document.getElementById(`${type}-dropdown`);
-            input.addEventListener('focus', () => { 
-                input.select();
-                populateDropdown(dropdown, ''); 
-                dropdown.classList.add('show'); 
-            });
-            input.addEventListener('keyup', () => populateDropdown(dropdown, input.value));
-            document.addEventListener('click', (e) => {
-                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.remove('show');
-                    const currentCode = state.allCurrencies.find(c => c[0] === input.value.split(' ')[0]);
-                    if (input.value.trim() === '' || !currentCode) {
-                        updateCurrencyUI(type, state[type]);
-                    }
-                }
-            });
-        });
-    }
-
-    init();
-
-    </script>
+// --- شروع برنامه ---
+init();
+</script>
 </body>
 </html>
