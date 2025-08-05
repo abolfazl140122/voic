@@ -1,0 +1,14 @@
+{
+  "name": "داشبورد ارزی پیشرفته",
+  "short_name": "مبدل ارز",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1a202c",
+  "theme_color": "#3498db",
+  "description": "یک مبدل و داشبورد ارزی حرفه‌ای با قابلیت‌های پیشرفته.",
+  "icons": [
+    { "src": "https://cdn-icons-png.flaticon.com/128/3448/3448513.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "https://cdn-icons-png.flaticon.com/192/3448/3448513.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "https://cdn-icons-png.flaticon.com/512/3448/3448513.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
