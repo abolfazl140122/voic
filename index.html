@@ -3,370 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مبدل ارز لحظه‌ای</title>
+    <title>داشبورد ارزی حرفه‌ای</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- کتابخانه نمودار -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* ====================
-           بخش استایل‌ها (CSS) - گرافیک بهبود یافته
-           ==================== */
+        /* ================== CSS ================== */
         :root {
-            --primary-color: #5a4bcf;
-            --secondary-color: #7d6eef;
-            --dark-text: #2c255c;
-            --light-bg: rgba(255, 255, 255, 0.95);
+            --bg-color: #f4f7fc;
+            --card-bg: #ffffff;
+            --text-color: #34495e;
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            --input-bg: #fdfdff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a202c;
+            --card-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --primary-color: #4299e1;
+            --primary-hover: #2b6cb0;
+            --border-color: #4a5568;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            --input-bg: #1a202c;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* تغییر برای قرارگیری در بالا */
             min-height: 100vh;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        .converter-container {
-            background: var(--light-bg);
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        .main-container {
             width: 100%;
-            max-width: 450px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative; /* برای لودر */
-            overflow: hidden; /* برای لودر */
+            max-width: 900px;
         }
 
-        .converter-container h1 {
-            margin-bottom: 30px;
-            color: var(--dark-text);
-            font-size: 28px;
-            font-weight: 700;
-        }
-        
-        .input-wrapper label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-            text-align: right;
-        }
-
-        .input-wrapper input, .input-wrapper select {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-            font-family: 'Vazirmatn', sans-serif;
-            font-size: 16px;
-            background-color: #fff;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .input-wrapper input:focus, .input-wrapper select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(90, 75, 207, 0.4);
-        }
-
-        .conversion-flow {
-            margin-top: 25px;
+        .header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 { font-size: 28px; }
+
+        .theme-switcher {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 80px;
+            display: flex;
             justify-content: space-between;
         }
+        .theme-switcher i { padding: 5px; border-radius: 50%; }
+        .theme-switcher .active { background: var(--primary-color); color: white; }
 
-        .currency-box {
-            flex: 1;
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 800px) {
+            .app-grid { grid-template-columns: 400px 1fr; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
         }
         
-        #swap-btn {
-            background: white;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            margin: 0 15px;
-            margin-top: 25px;
-            transition: all 0.3s ease;
-        }
+        .converter .input-group { margin-bottom: 20px; }
+        .converter label { font-weight: 500; display: block; margin-bottom: 8px; }
 
-        #swap-btn:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: rotate(180deg) scale(1.1);
-        }
-
-        .result-wrapper {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f0f4ff;
-            border-radius: 10px;
-            min-height: 90px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            border: 1px solid #d9e2ff;
-        }
-
-        #result-text {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--dark-text);
-            word-wrap: break-word;
-        }
-        
-        #unit-rate-text {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #555;
-        }
-
-        .api-info {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #777;
-        }
-        
-        /* استایل لودر و پیام خطا */
-        .loader {
+        .currency-input-wrapper { position: relative; }
+        .currency-input-wrapper .icon {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: none; /* در حالت عادی مخفی */
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
+            top: 50%; transform: translateY(-50%);
+            left: 15px; color: #999;
         }
-        .loader.show {
-            display: flex; /* نمایش با جاوااسکریپت */
-        }
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary-color);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .currency-input-wrapper input {
+            padding-right: 15px; padding-left: 40px; /* برای آیکون */
         }
         
-        #error-message {
-            color: #d9534f;
-            margin-top: 15px;
-            font-weight: 500;
-            display: none; /* مخفی در حالت عادی */
+        input {
+            width: 100%; padding: 12px 15px;
+            border-radius: 8px; border: 1px solid var(--border-color);
+            background: var(--input-bg); color: var(--text-color);
+            font-family: 'Vazirmatn', sans-serif; font-size: 16px;
         }
 
+        .conversion-flow { display: flex; align-items: center; margin: 25px 0; }
+        .conversion-flow .currency-box { flex: 1; }
+        .conversion-flow #swap-btn {
+            background: var(--card-bg); border: 2px solid var(--primary-color);
+            color: var(--primary-color); width: 45px; height: 45px;
+            border-radius: 50%; cursor: pointer; font-size: 18px; margin: 0 15px;
+            transition: all 0.3s;
+        }
+        .conversion-flow #swap-btn:hover { background: var(--primary-color); color: white; transform: rotate(180deg); }
+
+        /* استایل دراپ‌داون جستجو */
+        .currency-dropdown {
+            display: none; position: absolute;
+            top: 100%; left: 0; right: 0;
+            max-height: 200px; overflow-y: auto;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; z-index: 10; margin-top: 5px;
+        }
+        .currency-dropdown.show { display: block; }
+        .currency-dropdown div {
+            padding: 10px 15px; cursor: pointer;
+        }
+        .currency-dropdown div:hover { background: var(--primary-color); color: white; }
+        
+        #convert-btn {
+            width: 100%; padding: 15px; background: var(--primary-color);
+            color: white; border: none; border-radius: 8px;
+            font-size: 18px; font-weight: 700; cursor: pointer;
+            transition: background-color 0.3s; position: relative;
+        }
+        #convert-btn:hover { background: var(--primary-hover); }
+        #convert-btn.loading { background: var(--primary-hover); cursor: not-allowed; }
+        .btn-spinner {
+            display: none;
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute; top: 50%; left: 20px;
+            transform: translateY(-50%);
+        }
+        #convert-btn.loading .btn-spinner { display: block; }
+        #convert-btn.loading .btn-text { opacity: 0.5; }
+
+        .result-box { margin-top: 25px; text-align: center; }
+        #result-final { font-size: 28px; font-weight: 700; color: var(--primary-color); min-height: 35px; }
+        #result-rate { font-size: 14px; color: #777; min-height: 20px; }
+
+        .chart-container { position: relative; height: 100%; min-height: 300px; }
     </style>
 </head>
 <body>
 
-    <!-- ====================
-         بخش ساختار (HTML)
-         ==================== -->
-    <div class="converter-container">
-        <!-- لودر -->
-        <div class="loader" id="loader">
-            <div class="spinner"></div>
-        </div>
+    <main class="main-container">
+        <header class="header">
+            <h1>داشبورد ارز</h1>
+            <div class="theme-switcher" id="theme-switcher">
+                <i class="fas fa-sun active"></i>
+                <i class="fas fa-moon"></i>
+            </div>
+        </header>
 
-        <h1><i class="fas fa-chart-line"></i> مبدل ارز آنلاین</h1>
-        
-        <div class="input-wrapper">
-            <label for="amount">مبلغی که می‌خواهید تبدیل کنید:</label>
-            <input type="number" id="amount" value="100">
-        </div>
-        
-        <div class="conversion-flow">
-            <div class="currency-box input-wrapper">
-                <label for="from-currency">از</label>
-                <select id="from-currency"></select>
+        <div class="app-grid">
+            <div class="card converter">
+                <div class="input-group">
+                    <label for="amount">مبلغ</label>
+                    <input type="text" id="amount" value="1,000">
+                </div>
+                
+                <div class="conversion-flow">
+                    <div class="currency-box input-group">
+                        <label for="from-currency-input">از</label>
+                        <div class="currency-input-wrapper">
+                            <span class="icon" id="from-icon"></span>
+                            <input type="text" id="from-currency-input" placeholder="جستجو...">
+                            <div class="currency-dropdown" id="from-dropdown"></div>
+                        </div>
+                    </div>
+                    <button id="swap-btn" title="جابجایی"><i class="fas fa-exchange-alt"></i></button>
+                    <div class="currency-box input-group">
+                        <label for="to-currency-input">به</label>
+                        <div class="currency-input-wrapper">
+                            <span class="icon" id="to-icon"></span>
+                            <input type="text" id="to-currency-input" placeholder="جستجو...">
+                            <div class="currency-dropdown" id="to-dropdown"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="convert-btn">
+                    <span class="btn-spinner"></span>
+                    <span class="btn-text">تبدیل</span>
+                </button>
+                
+                <div class="result-box">
+                    <div id="result-final"></div>
+                    <div id="result-rate"></div>
+                </div>
             </div>
 
-            <button id="swap-btn" title="جابجایی ارزها"><i class="fas fa-exchange-alt"></i></button>
-
-            <div class="currency-box input-wrapper">
-                <label for="to-currency">به</label>
-                <select id="to-currency"></select>
+            <div class="card chart-card">
+                <h3 id="chart-title">تاریخچه نرخ</h3>
+                <div class="chart-container">
+                    <canvas id="history-chart"></canvas>
+                </div>
             </div>
         </div>
-
-        <div id="error-message"></div>
-
-        <div class="result-wrapper">
-            <div id="result-text">...</div>
-            <div id="unit-rate-text"></div>
-        </div>
-
-        <div class="api-info" id="last-update-text"></div>
-    </div>
+    </main>
 
     <script>
-        /* ====================
-           بخش منطق (JavaScript) - متصل به API
-           ==================== */
-           
-        // --- عناصر DOM ---
-        const amountInput = document.getElementById('amount');
-        const fromCurrencySelect = document.getElementById('from-currency');
-        const toCurrencySelect = document.getElementById('to-currency');
-        const swapBtn = document.getElementById('swap-btn');
-        const resultText = document.getElementById('result-text');
-        const unitRateText = document.getElementById('unit-rate-text');
-        const lastUpdateText = document.getElementById('last-update-text');
-        const loader = document.getElementById('loader');
-        const errorMessageDiv = document.getElementById('error-message');
+    // ================== JavaScript ==================
+    // --- دریافت عناصر DOM ---
+    const amountInput = document.getElementById('amount');
+    const fromCurrencyInput = document.getElementById('from-currency-input');
+    const toCurrencyInput = document.getElementById('to-currency-input');
+    const fromDropdown = document.getElementById('from-dropdown');
+    const toDropdown = document.getElementById('to-dropdown');
+    const fromIcon = document.getElementById('from-icon');
+    const toIcon = document.getElementById('to-icon');
+    const convertBtn = document.getElementById('convert-btn');
+    const swapBtn = document.getElementById('swap-btn');
+    const resultFinal = document.getElementById('result-final');
+    const resultRate = document.getElementById('result-rate');
+    const themeSwitcher = document.getElementById('theme-switcher');
+    const chartTitle = document.getElementById('chart-title');
+    const ctx = document.getElementById('history-chart').getContext('2d');
 
-        // --- کلید API ---
-        // !!! هشدار: کلید API خود را اینجا قرار دهید !!!
-        const apiKey = 'AIzaSyCNrIBm-Qfteoz9twSWCqsCpuvusaCqEfw'; // <-- این قسمت را با کلید خود جایگزین کنید
-        const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
+    // --- تنظیمات و وضعیت برنامه ---
+    const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API خود را اینجا قرار دهید
+    const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
+    
+    let state = {
+        from: 'USD',
+        to: 'IRR',
+        allCurrencies: [],
+    };
+    let historyChart;
 
-        // متغیری برای نگهداری نرخ‌ها تا هر بار API فراخوانی نشود
-        let conversionRates = {};
-        
-        // لیست ارزهای محبوب برای نمایش اولیه
-        const popularCurrencies = ["IRR", "USD", "EUR", "TRY", "AED", "GBP", "JPY", "CAD"];
+    // --- توابع اصلی ---
 
-        // --- توابع ---
+    // 1. مقداردهی اولیه برنامه
+    async function init() {
+        loadPreferences();
+        await fetchAllCurrencies();
+        addEventListeners();
+        updateCurrencyUI('from', state.from);
+        updateCurrencyUI('to', state.to);
+        performConversion(); // اجرای اولیه
+    }
 
-        // نمایش لودر
-        function showLoader() {
-            loader.classList.add('show');
+    // 2. دریافت لیست تمام ارزها از API
+    async function fetchAllCurrencies() {
+        if (apiKey === 'YOUR_API_KEY') {
+            alert('لطفا کلید API خود را در کد جاوااسکریپت وارد کنید.');
+            return;
         }
-        // مخفی کردن لودر
-        function hideLoader() {
-            loader.classList.remove('show');
-        }
-        
-        // نمایش پیام خطا
-        function showErrorMessage(message) {
-            errorMessageDiv.textContent = message;
-            errorMessageDiv.style.display = 'block';
-            resultText.textContent = 'خطا!';
-            unitRateText.textContent = '';
-        }
-
-        // تابع برای دریافت نرخ ارزها از API و پر کردن منوها
-        async function fetchAndPopulateCurrencies() {
-            showLoader();
-            errorMessageDiv.style.display = 'none'; // مخفی کردن خطای قبلی
-            
-            // اگر کلید وارد نشده باشد، خطا نمایش بده
-            if(apiKey === 'YOUR_API_KEY') {
-                showErrorMessage('خطا: کلید API در کد تنظیم نشده است.');
-                hideLoader();
-                return;
+        try {
+            const response = await fetch(`${apiUrl}/codes`);
+            const data = await response.json();
+            if (data.result === 'success') {
+                state.allCurrencies = data.supported_codes;
+            } else {
+                console.error('Error fetching currency codes:', data['error-type']);
             }
+        } catch (error) {
+            console.error('Network error fetching currency codes:', error);
+        }
+    }
 
-            try {
-                const response = await fetch(`${apiUrl}/latest/USD`);
-                const data = await response.json();
+    // 3. انجام تبدیل (تابع اصلی که با کلیک فراخوانی می‌شود)
+    async function performConversion() {
+        const amount = parseFloat(amountInput.value.replace(/,/g, '')) || 0;
+        if (amount === 0) {
+            resultFinal.textContent = '';
+            resultRate.textContent = '';
+            return;
+        }
 
-                if (data.result === 'success') {
-                    conversionRates = data.conversion_rates;
-                    const updateTime = new Date(data.time_last_update_utc).toLocaleString('fa-IR');
-                    lastUpdateText.textContent = `آخرین بروزرسانی نرخ‌ها: ${updateTime}`;
-                    
-                    // پر کردن منوهای کشویی
-                    const currencies = Object.keys(conversionRates);
-                    const filteredCurrencies = currencies.filter(c => popularCurrencies.includes(c));
+        toggleButtonLoading(true);
 
-                    fromCurrencySelect.innerHTML = '';
-                    toCurrencySelect.innerHTML = '';
+        try {
+            const response = await fetch(`${apiUrl}/pair/${state.from}/${state.to}/${amount}`);
+            const data = await response.json();
 
-                    filteredCurrencies.forEach(currency => {
-                        const option1 = document.createElement('option');
-                        option1.value = currency;
-                        option1.textContent = currency;
-                        fromCurrencySelect.appendChild(option1);
+            if (data.result === 'success') {
+                const finalAmount = data.conversion_result;
+                const rate = data.conversion_rate;
+                
+                resultFinal.textContent = `${finalAmount.toLocaleString('fa-IR', {maximumFractionDigits: 2})} ${state.to}`;
+                resultRate.textContent = `1 ${state.from} = ${rate.toLocaleString('fa-IR', {maximumFractionDigits: 4})} ${state.to}`;
+                savePreferences();
+                updateHistoryChart(); // بروزرسانی نمودار
+            } else {
+                resultFinal.textContent = 'خطا در تبدیل';
+                resultRate.textContent = `(${data['error-type']})`;
+            }
+        } catch (error) {
+            resultFinal.textContent = 'خطای شبکه';
+            console.error('Conversion error:', error);
+        } finally {
+            toggleButtonLoading(false);
+        }
+    }
 
-                        const option2 = document.createElement('option');
-                        option2.value = currency;
-                        option2.textContent = currency;
-                        toCurrencySelect.appendChild(option2);
-                    });
+    // 4. دریافت تاریخچه و بروزرسانی نمودار
+    async function updateHistoryChart() {
+        chartTitle.textContent = `تاریخچه ۷ روزه ${state.from} به ${state.to}`;
+        const dates = [];
+        const rates = [];
+        const promises = [];
 
-                    // تنظیم مقادیر پیش‌فرض
-                    fromCurrencySelect.value = 'USD';
-                    toCurrencySelect.value = 'IRR';
-                    
-                    // بعد از بارگذاری موفق، تبدیل اولیه را انجام بده
-                    convertCurrency();
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
+            
+            // فراخوانی API برای هر روز
+            const promise = fetch(`${apiUrl}/history/${state.from}/${year}/${month}/${day}`)
+                .then(res => res.json())
+                .then(data => data.conversion_rates ? data.conversion_rates[state.to] : null);
+            promises.push(promise);
+        }
 
-                } else {
-                    // مدیریت خطاهای احتمالی از سمت API (مثلا کلید نامعتبر)
-                    showErrorMessage(`خطا در دریافت اطلاعات: ${data['error-type']}`);
+        const dailyRates = await Promise.all(promises);
+        
+        if (historyChart) {
+            historyChart.destroy();
+        }
+
+        historyChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: dates, datasets: [{
+                label: `نرخ ${state.to}`,
+                data: dailyRates,
+                borderColor: 'var(--primary-color)',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3
+            }]},
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { y: { ticks: { color: 'var(--text-color)' } },
+                          x: { ticks: { color: 'var(--text-color)' } } },
+                plugins: { legend: { labels: { color: 'var(--text-color)' } } }
+            }
+        });
+    }
+
+    // --- توابع کمکی و UI ---
+    
+    function populateDropdown(dropdown, filter = '') {
+        dropdown.innerHTML = '';
+        const filtered = state.allCurrencies
+            .filter(([code, name]) => 
+                code.toLowerCase().includes(filter) || name.toLowerCase().includes(filter)
+            );
+
+        filtered.forEach(([code, name]) => {
+            const div = document.createElement('div');
+            div.textContent = `${code} - ${name}`;
+            div.dataset.code = code;
+            div.addEventListener('click', () => {
+                const type = dropdown.id.includes('from') ? 'from' : 'to';
+                updateCurrencyUI(type, code);
+                dropdown.classList.remove('show');
+                performConversion();
+            });
+            dropdown.appendChild(div);
+        });
+    }
+
+    function updateCurrencyUI(type, code) {
+        state[type] = code;
+        const input = (type === 'from') ? fromCurrencyInput : toCurrencyInput;
+        const icon = (type === 'from') ? fromIcon : toIcon;
+        const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || '';
+        input.value = `${code} - ${currencyName}`;
+        try { // برای نمایش پرچم کشور
+            icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt() + 127397));
+        } catch(e) { icon.textContent = '🏳️'; }
+    }
+
+    function toggleButtonLoading(isLoading) {
+        convertBtn.classList.toggle('loading', isLoading);
+        convertBtn.disabled = isLoading;
+        convertBtn.querySelector('.btn-text').textContent = isLoading ? 'در حال دریافت...' : 'تبدیل';
+    }
+    
+    function handleSwap() {
+        [state.from, state.to] = [state.to, state.from];
+        updateCurrencyUI('from', state.from);
+        updateCurrencyUI('to', state.to);
+        performConversion();
+    }
+    
+    function formatAmount(e) {
+        let value = e.target.value.replace(/,/g, '');
+        if (!isNaN(value) && value !== '') {
+            e.target.value = parseFloat(value).toLocaleString('en-US');
+        }
+    }
+
+    // --- مدیریت تم و حافظه مرورگر ---
+    function toggleTheme() {
+        const currentTheme = document.body.dataset.theme;
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.body.dataset.theme = newTheme;
+        
+        // آپدیت ظاهر سوییچر
+        themeSwitcher.querySelectorAll('i').forEach(i => i.classList.remove('active'));
+        themeSwitcher.querySelector(newTheme === 'dark' ? '.fa-moon' : '.fa-sun').classList.add('active');
+
+        localStorage.setItem('currency_theme', newTheme);
+        // بروزرسانی نمودار با رنگ‌های جدید
+        if(historyChart) updateHistoryChart();
+    }
+
+    function savePreferences() {
+        localStorage.setItem('currency_prefs', JSON.stringify({from: state.from, to: state.to}));
+    }
+
+    function loadPreferences() {
+        const theme = localStorage.getItem('currency_theme') || 'light';
+        document.body.dataset.theme = theme;
+        themeSwitcher.querySelectorAll('i').forEach(i => i.classList.remove('active'));
+        themeSwitcher.querySelector(theme === 'dark' ? '.fa-moon' : '.fa-sun').classList.add('active');
+
+        const prefs = JSON.parse(localStorage.getItem('currency_prefs'));
+        if (prefs) {
+            state.from = prefs.from;
+            state.to = prefs.to;
+        }
+    }
+
+    // --- افزودن Event Listeners ---
+    function addEventListeners() {
+        convertBtn.addEventListener('click', performConversion);
+        swapBtn.addEventListener('click', handleSwap);
+        themeSwitcher.addEventListener('click', toggleTheme);
+        amountInput.addEventListener('keyup', formatAmount);
+
+        ['from', 'to'].forEach(type => {
+            const input = document.getElementById(`${type}-currency-input`);
+            const dropdown = document.getElementById(`${type}-dropdown`);
+            
+            input.addEventListener('focus', () => {
+                input.value = '';
+                populateDropdown(dropdown);
+                dropdown.classList.add('show');
+            });
+            
+            input.addEventListener('keyup', () => {
+                populateDropdown(dropdown, input.value.toLowerCase());
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                    if (input.value === '') updateCurrencyUI(type, state[type]);
                 }
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                showErrorMessage('خطا در برقراری ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.');
-            } finally {
-                hideLoader();
-            }
-        }
+            });
+        });
+    }
 
-        // تابع اصلی برای محاسبه و نمایش تبدیل
-        function convertCurrency() {
-            const amount = parseFloat(amountInput.value);
-            const fromCurrency = fromCurrencySelect.value;
-            const toCurrency = toCurrencySelect.value;
-
-            // اگر نرخ‌ها هنوز لود نشده‌اند، کاری نکن
-            if (Object.keys(conversionRates).length === 0) return;
-            
-            if (isNaN(amount) || amount < 0) {
-                resultText.textContent = 'مبلغ نامعتبر';
-                unitRateText.textContent = '';
-                return;
-            }
-
-            // محاسبه بر اساس نرخ پایه (USD)
-            const fromRate = conversionRates[fromCurrency];
-            const toRate = conversionRates[toCurrency];
-            
-            const convertedAmount = (amount / fromRate) * toRate;
-            const singleUnitRate = (1 / fromRate) * toRate;
-
-            // نمایش نتیجه با فرمت‌بندی زیبا
-            resultText.textContent = `${convertedAmount.toLocaleString('fa-IR', { maximumFractionDigits: 2 })} ${toCurrency}`;
-            unitRateText.textContent = `1 ${fromCurrency} = ${singleUnitRate.toLocaleString('fa-IR', { maximumFractionDigits: 4 })} ${toCurrency}`;
-        }
-
-        // تابع برای جابجایی ارزها
-        function swapCurrencies() {
-            const temp = fromCurrencySelect.value;
-            fromCurrencySelect.value = toCurrencySelect.value;
-            toCurrencySelect.value = temp;
-            convertCurrency(); // انجام مجدد تبدیل
-        }
-
-        // --- افزودن Event Listeners ---
-        window.addEventListener('load', fetchAndPopulateCurrencies);
-        amountInput.addEventListener('input', convertCurrency);
-        fromCurrencySelect.addEventListener('change', convertCurrency);
-        toCurrencySelect.addEventListener('change', convertCurrency);
-        swapBtn.addEventListener('click', swapCurrencies);
+    // --- شروع برنامه ---
+    init();
 
     </script>
-
 </body>
 </html>
