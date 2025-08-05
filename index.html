@@ -3,1713 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بازی مافیا</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <title>مبدل ارز گرافیکی</title>
+    
+    <!-- افزودن فونت وزیرمتن از گوگل‌فونتس -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- افزودن آیکون‌ها از Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* CSS styles are unchanged, they can be copied from the previous response */
+        /* ====================
+           بخش استایل‌ها (CSS)
+           ==================== */
+        
+        /* ریست کردن استایل‌های پیش‌فرض و تنظیمات کلی */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Vazirmatn', sans-serif;
-            color: #e0e0e0;
-            overflow-x: hidden;
-        }
-
-        .mafia-animated-bg {
-            background: linear-gradient(280deg, #0a0a0a, #181818, #101010, #202020, #0a0a0a);
-            background-size: 400% 400%;
-            animation: gradientAnimation 30s ease infinite;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-        }
-
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .panel {
-            background-color: rgba(30, 30, 30, 0.95);
-            border: 1px solid #c49730;
-            box-shadow: 0 0 20px rgba(200, 150, 50, 0.5);
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-        }
-
-        .panel-hidden {
-            opacity: 0;
-            transform: scale(0.9) translateY(-20px);
-            pointer-events: none;
-            visibility: hidden; /* Ensure it's not interactive when hidden */
-        }
-
-        .panel-visible {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-            visibility: visible;
-        }
-
-        .btn-mafia {
-            background-color: #c49730;
-            color: #1a1a1a;
-            border: 2px solid #a57c1a;
-            padding: 8px 16px; /* Base padding */
-            font-size: 0.9rem; /* Base font size */
-            border-radius: 8px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            white-space: nowrap; /* Prevent text wrapping inside buttons */
-            display: inline-flex; /* For aligning icon and text if any */
-            align-items: center;
+            display: flex;
             justify-content: center;
-        }
-        @media (min-width: 640px) {
-            .btn-mafia {
-                padding: 10px 20px;
-                font-size: 1rem;
-            }
-        }
-
-        .btn-mafia:hover {
-            background-color: #d4a840;
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
-            transform: translateY(-2px);
-        }
-         .btn-mafia:disabled {
-            background-color: #7e6a3b;
-            color: #524425;
-            border-color: #6a531f;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-
-        .btn-mafia-secondary {
-            background-color: #4a4a4a;
-            color: #e0e0e0;
-            border: 2px solid #333333;
-            padding: 6px 12px;
-            font-size: 0.8rem;
-            border-radius: 8px;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-         @media (min-width: 640px) {
-            .btn-mafia-secondary {
-                padding: 8px 16px;
-                font-size: 0.9rem;
-            }
-        }
-        .btn-mafia-secondary:hover {
-            background-color: #5a5a5a;
-            color: #c49730;
-            transform: scale(1.05) translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .input-mafia {
-            background-color: #333;
-            border: 1px solid #c49730;
-            color: #e0e0e0;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 1rem;
-        }
-        @media (max-width: 639px) {
-            .input-mafia {
-                font-size: 0.9rem;
-                padding: 8px;
-            }
-        }
-
-        .input-mafia:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(200, 150, 50, 0.7);
-        }
-        .input-mafia.invalid {
-            border-color: #dc3545;
-            box-shadow: 0 0 10px rgba(220, 53, 69, 0.7);
-        }
-        .input-mafia:read-only {
-            background-color: #444;
-            cursor: default;
-        }
-
-
-        .option-btn {
-            background-color: rgba(50, 50, 50, 0.8);
-            border: 1px solid #c49730;
-            color: #e0e0e0;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            font-size: 0.9rem;
-            padding: 10px;
-        }
-        @media (min-width: 768px) {
-            .option-btn {
-                font-size: 1rem;
-                padding: 12px;
-            }
-        }
-
-        .option-btn:hover {
-            background-color: rgba(70, 70, 70, 0.9);
-            transform: scale(1.02);
-        }
-        .option-btn.correct { background-color: #28a745 !important; border-color: #1e7e34 !important; color: white !important; }
-        .option-btn.incorrect { background-color: #dc3545 !important; border-color: #b02a37 !important; color: white !important; }
-        .option-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-
-        .loader {
-            border: 8px solid #444;
-            border-top: 8px solid #c49730;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @media (min-width: 640px) {
-            .loader {
-                width: 60px;
-                height: 60px;
-            }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #c49730; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #a57c1a; }
-
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+            align-items: center;
             min-height: 100vh;
-            padding: 10px; /* Base padding */
-            box-sizing: border-box;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.7s ease-in-out, visibility 0.7s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-y: auto;
-        }
-        @media (min-width: 640px) { /* sm */
-            .screen {
-                padding: 20px; /* Increased padding for larger screens */
-            }
+            background: linear-gradient(45deg, #6d5dcf, #d4a4eb); /* گرادیان پس‌زمینه جذاب */
+            color: #333;
         }
 
-        #main-screen {
-            justify-content: flex-start;
-        }
-        #loading-screen {
-             justify-content: center;
-        }
-
-        .screen.active {
-            opacity: 1;
-            visibility: visible;
-            position: relative;
-            z-index: 1;
-            overflow-y: auto;
-        }
-        .screen-content-wrapper {
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            padding-bottom: 10px;
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        @media (min-width: 640px) {
-            .screen-content-wrapper {
-                 padding-bottom: 20px;
-            }
-        }
-        #main-screen .screen-content-wrapper {
-            justify-content: space-between;
-            min-height: calc(100vh - 20px); /* Base min-height */
-            padding-top: 60px; /* Initial padding for mobile to avoid user profile */
-        }
-        @media (min-width: 640px) { /* sm */
-            #main-screen .screen-content-wrapper {
-                min-height: calc(100vh - 40px); /* Adjusted min-height for sm screens */
-                padding-top: 80px; /* Increased padding for sm screens */
-            }
-        }
-         @media (min-width: 768px) { /* md, user profile moves to top-right */
-            #main-screen .screen-content-wrapper {
-                padding-top: 20px; /* Reset padding-top as user profile is no longer in the way */
-            }
-        }
-
-        /* User Profile Area Styling */
-        #user-profile-area {
-            position: fixed;
-            z-index: 100;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-        @media (max-width: 767px) { /* Mobile: Centered at top */
-            #user-profile-area {
-                top: 10px;
-                left: 50%;
-                transform: translateX(-50%) translateY(0);
-            }
-            #user-profile-area.profile-area-hidden {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-150%);
-            }
-        }
-        @media (min-width: 768px) { /* Desktop: Top right */
-            #user-profile-area {
-                top: 20px;
-                right: 20px; /* Changed from left: auto to ensure it's on the right */
-                left: auto;
-                transform: translateY(0);
-                align-items: center;
-            }
-            #user-profile-area.profile-area-hidden {
-                opacity: 0;
-                transform: translateY(-150%);
-            }
-        }
-
-        #user-info-box {
-            background-color: rgba(15, 15, 15, 0.85);
-            border: 1px solid #c49730;
-            border-radius: 10px;
-            padding: 8px 10px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 8px;
-            width: max-content;
-            min-width: 0;
-        }
-        @media (min-width: 768px) {
-            #user-info-box {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                border-width: 2px;
-                border-radius: 12px;
-                padding: 12px 15px;
-                min-width: 180px;
-                max-width: 200px;
-                width: auto;
-            }
-        }
-
-
-        #user-info-box.hidden, #avatar-container.hidden {
-            opacity: 0;
-            transform: translateY(-20px);
-            pointer-events: none;
-        }
-        @media (max-width: 767px) {
-            #user-info-box.hidden {
-                transform: translateX(-50%) translateY(-20px);
-            }
-        }
-
-        .user-info-item {
-            background-color: rgba(40, 40, 40, 0.7);
-            padding: 4px 7px;
-            border-radius: 6px;
-            border-left: 0px solid #c49730;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        @media (min-width: 768px) {
-            .user-info-item {
-                padding: 6px 10px;
-                border-radius: 8px;
-                border-left-width: 3px;
-                display: block;
-            }
-        }
-
-        .user-info-item .label {
-            font-size: 0.7em;
-            color: #a0a0a0;
-            margin-bottom: 0;
-        }
-        @media (min-width: 768px) {
-            .user-info-item .label {
-                font-size: 0.85em;
-                margin-bottom: 1px;
-            }
-        }
-
-        .user-info-item .value {
-            font-size: 0.85em;
-            font-weight: bold;
-        }
-        @media (min-width: 768px) {
-            .user-info-item .value {
-                font-size: 1em;
-            }
-        }
-
-        #display-name-output-container {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        @media (max-width: 767px) {
-             #display-name-output-container {
-                flex-direction: row-reverse;
-            }
-        }
-
-        #edit-name-btn {
-            cursor: pointer;
-            font-size: 0.85em;
-            color: #c49730;
-            transition: color 0.3s ease;
-        }
-        #edit-name-btn:hover {
-            color: #d4a840;
-        }
-        @media (min-width: 768px) {
-            #edit-name-btn {
-                font-size: 0.95em;
-            }
-        }
-
-        #display-name-output-box .value {
-            color: #e0e0e0;
-            text-shadow: 0 0 5px rgba(200, 150, 50, 0.5);
-        }
-        @media (min-width: 768px) {
-            #display-name-output-box .value {
-                text-shadow: 0 0 7px rgba(200, 150, 50, 0.6);
-            }
-        }
-        #public-user-id-output-box .value {
-            color: #a0a0a0;
-            font-family: monospace;
-            font-size: 0.95em;
-        }
-        @media (min-width: 768px) {
-            #public-user-id-output-box .value {
-                font-size: 1em;
-            }
-        }
-        #clan-output-box .value {
-            color: #c49730;
-            font-weight: bold;
-        }
-
-
-        #avatar-container {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 2px solid #c49730;
-            background-color: #333;
-            cursor: pointer;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        @media (min-width: 768px) {
-            #avatar-container {
-                width: 70px;
-                height: 70px;
-                margin-right: 10px;
-            }
-        }
-
-        #avatar-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        #avatar-placeholder-icon {
-            font-size: 1.8rem;
-            color: #777;
-        }
-        @media (min-width: 768px) {
-            #avatar-placeholder-icon {
-                font-size: 2.2rem;
-            }
-        }
-
-        #avatar-suggestions-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .avatar-suggestion-item {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            border: 2px solid transparent;
-            cursor: pointer;
-            overflow: hidden;
-            transition: border-color 0.3s ease, transform 0.2s ease;
-        }
-        .avatar-suggestion-item:hover {
-            border-color: #c49730;
-            transform: scale(1.05);
-        }
-        .avatar-suggestion-item.selected {
-            border-color: #28a745;
-            box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
-        }
-
-        /* Main Screen Header Styling */
-        #main-screen-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding-top: 0.5rem; /* Reduced top padding for header itself */
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
-        }
-         @media (min-width: 768px) { /* md */
-             #main-screen-header {
-                padding-top: 1rem; /* Adjust for desktop if needed */
-             }
-        }
-
-
-        #main-title {
-            text-align: center;
-            flex-grow: 1;
-            font-size: 2.25rem; /* text-4xl */
-            font-weight: bold;
-            color: #c49730;
-            text-shadow: 0 2px 2px rgba(0,0,0,0.8);
-            margin-right: auto; /* Pushes title towards center if icon is on left */
-            margin-left: auto; /* Pushes title towards center if icon is on right */
-        }
-        @media (min-width: 640px) { /* sm */
-            #main-title {
-                font-size: 3rem; /* text-5xl */
-            }
-        }
-        @media (min-width: 768px) { /* md */
-            #main-title {
-                font-size: 3.75rem; /* text-6xl */
-            }
-        }
-
-        /* Developer Intro Icon Button - Header Position */
-        #dev-intro-icon-btn-header {
-            background-color: transparent;
-            color: #c49730;
-            border: 2px solid #c49730;
-            padding: 0.5rem;
-            border-radius: 50%;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            flex-shrink: 0; /* Prevent shrinking */
-        }
-        #dev-intro-icon-btn-header:hover {
-            background-color: rgba(196, 151, 48, 0.2);
-            color: #d4a840;
-            border-color: #d4a840;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            transform: scale(1.1);
-        }
-        #dev-intro-icon-btn-header svg {
-            width: 20px;
-            height: 20px;
-        }
-         @media (min-width: 640px) {
-            #dev-intro-icon-btn-header {
-                width: 44px;
-                height: 44px;
-                padding: 0.6rem;
-            }
-            #dev-intro-icon-btn-header svg {
-                width: 22px;
-                height: 22px;
-            }
-        }
-
-        /* Bottom Action Buttons Layout */
-        #main-screen-buttons-layout {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            margin-top: auto;
-            padding-top: 1rem;
-        }
-
-        #top-action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            width: 100%;
-            padding-bottom: 5px;
-        }
-        @media (min-width: 640px) {
-            #top-action-buttons {
-                gap: 0.75rem;
-                flex-wrap: nowrap;
-                overflow-x: auto;
-            }
-        }
-        @media (min-width: 768px) {
-            #top-action-buttons {
-                gap: 1rem;
-            }
-        }
-
-        #top-action-buttons .btn-mafia:not(#start-game-btn) {
-            font-size: 0.8rem;
-            padding: 0.4rem 0.8rem;
-        }
-        @media (min-width: 640px) {
-            #top-action-buttons .btn-mafia:not(#start-game-btn) {
-                font-size: 0.85rem;
-                padding: 0.5rem 1rem;
-            }
-        }
-        @media (min-width: 768px) {
-            #top-action-buttons .btn-mafia:not(#start-game-btn) {
-                font-size: 0.9rem;
-                padding: 0.6rem 1.2rem;
-            }
-        }
-
-        #start-game-btn {
-             padding: 0.6rem 1.2rem !important;
-             font-size: 0.95rem !important;
-             order: 0;
-        }
-        @media (min-width: 640px) {
-            #start-game-btn {
-                padding: 0.7rem 1.5rem !important;
-                font-size: 1.05rem !important;
-            }
-        }
-        @media (min-width: 768px) {
-            #start-game-btn {
-                padding: 0.8rem 1.8rem !important;
-                font-size: 1.15rem !important;
-            }
-        }
-
-
-        #input-error-message, #user-id-error-message, #change-name-error-message, #create-clan-error-message, #chat-message-error {
-            color: #dc3545;
-            font-size: 0.8rem;
-            text-align: right;
-            min-height: 1.2rem;
-            margin-top: 0.25rem;
-            margin-bottom: 0.5rem;
-        }
-        @media (min-width: 640px) {
-            #input-error-message, #user-id-error-message, #change-name-error-message, #create-clan-error-message, #chat-message-error {
-                font-size: 0.875rem;
-            }
-        }
-        .hidden {
-            display: none !important;
-        }
-
-        /* Styles for Generic Panels */
-        .generic-panel-container {
-            background-color: rgba(10, 10, 10, 0.92);
-        }
-        .generic-panel {
-            background: radial-gradient(circle at top center, rgba(45, 45, 55, 0.98), rgba(15, 15, 20, 0.99));
-            border: 2px solid #c49730;
-            box-shadow: 0 0 35px rgba(200, 150, 50, 0.65), 0 0 10px rgba(200, 150, 50, 0.4) inset;
-            max-height: 85vh;
-            overflow-y: auto;
+        /* استایل کانتینر اصلی مبدل */
+        .converter-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
             border-radius: 15px;
-        }
-        .close-generic-panel-btn {
-            position: absolute;
-            top: 18px;
-            right: 18px;
-            width: 34px;
-            height: 34px;
-            background-color: rgba(196, 151, 48, 0.85);
-            color: #101010;
-            border-radius: 50%;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            font-weight: bold;
-            line-height: 1;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 3px 7px rgba(0,0,0,0.5);
-            z-index: 10;
-        }
-        .close-generic-panel-btn:hover {
-            background-color: #d4a840;
-            transform: scale(1.1) rotate(180deg);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-        }
-        .panel-content-list {
-             space-y-4 text-right max-h-[calc(85vh-120px)] sm:max-h-[calc(85vh-150px)] overflow-y-auto pr-2 sm:pr-3 pl-1
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(5px); /* افکت شیشه‌ای */
         }
 
-        .list-item {
-            background-color: rgba(28, 28, 35, 0.92);
-            padding: 1.2rem 1.5rem;
-            border-radius: 12px;
-            border: 1px solid rgba(196, 151, 48, 0.25);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
-            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-            text-align: right;
-            margin-bottom: 1rem;
+        .converter-container h1 {
+            margin-bottom: 25px;
+            color: #4a3f9a;
+            font-size: 24px;
         }
-        .list-item:last-child {
-            margin-bottom: 0;
+
+        /* استایل بخش‌های ورودی */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right; /* لیبل‌ها در سمت راست باشند */
         }
-        .list-item:hover {
-            transform: translateY(-5px) scale(1.015);
-            box-shadow: 0 10px 28px rgba(196, 151, 48, 0.45);
-            border-color: rgba(196, 151, 48, 0.6);
-        }
-        .list-item-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.6rem;
-            border-bottom: 1px solid rgba(196, 151, 48, 0.2);
-            padding-bottom: 0.6rem;
-        }
-        .list-item-icon {
-            font-size: 1.7em;
-            color: #c49730;
-            margin-left: 10px;
-            width: 28px;
-            text-align: center;
-            line-height: 1;
-        }
-        .list-item-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #e8e8e8;
-        }
-        .list-item-main-text {
-            color: #efbe5a;
-            font-family: 'Vazirmatn', 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 1.25rem;
+
+        .input-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            margin-top: 0.2rem;
-        }
-        .list-item-description {
-            font-size: 0.9rem;
-            color: #b8b8b8;
-            line-height: 1.65;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #555;
         }
 
-        /* Leaderboard Specific Styles */
-        #leaderboard-list .list-item {
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #6d5dcf;
+            box-shadow: 0 0 5px rgba(109, 93, 207, 0.5);
+        }
+
+        /* استایل بخش انتخاب ارزها (از و به) */
+        .currency-selector {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 0.8rem 1.2rem;
-        }
-        .leaderboard-rank {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #c49730;
-            width: 40px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        .leaderboard-player-info {
-            flex-grow: 1;
-            text-align: right;
-            margin-right: 1rem;
-        }
-        .leaderboard-player-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #e0e0e0;
-        }
-        .leaderboard-player-id {
-            font-size: 0.8rem;
-            color: #a0a0a0;
-            font-family: monospace;
-        }
-        .leaderboard-stage {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #efbe5a;
-            background-color: rgba(0,0,0,0.2);
-            padding: 5px 10px;
-            border-radius: 6px;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
 
-        /* Clan Specific Styles */
-        #clans-panel .list-item {
-             display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .currency-selector .from-group, .currency-selector .to-group {
+            flex: 1;
         }
-        .clan-info {
-            flex-grow: 1;
+
+        /* استایل دکمه تعویض */
+        #swap-btn {
+            background: none;
+            border: 2px solid #6d5dcf;
+            color: #6d5dcf;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 0 10px;
+            margin-top: 25px; /* برای هم‌تراز شدن با فیلدها */
+            transition: background-color 0.3s, color 0.3s, transform 0.3s;
         }
-        .clan-name {
-            font-size: 1.2rem;
+
+        #swap-btn:hover {
+            background-color: #6d5dcf;
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        /* استایل دکمه اصلی تبدیل */
+        #convert-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #4a3f9a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #convert-btn:hover {
+            background-color: #6d5dcf;
+        }
+        
+        /* استایل بخش نتیجه */
+        #result {
+            margin-top: 25px;
+            font-size: 18px;
             font-weight: bold;
-            color: #efbe5a;
-        }
-        .clan-members {
-            font-size: 0.9rem;
-            color: #b8b8b8;
-        }
-        #create-clan-section {
-            border: 1px dashed #c49730;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
+            color: #2c255c;
+            min-height: 25px; /* برای جلوگیری از پرش صفحه */
+            word-wrap: break-word; /* برای شکستن متن‌های طولانی */
         }
     </style>
 </head>
 <body>
-    <!-- HTML Body is unchanged, it can be copied from the previous response -->
-    <div class="mafia-animated-bg"></div>
 
-    <div id="user-profile-area" class="hidden">
-        <div id="avatar-container" title="تغییر آواتار">
-            <img id="avatar-image" src="https://placehold.co/80x80/333333/777777?text=?" alt="آواتار کاربر" onerror="this.src='https://placehold.co/80x80/333333/777777?text=?'">
+    <!-- ====================
+         بخش ساختار (HTML)
+         ==================== -->
+    <div class="converter-container">
+        <h1><i class="fas fa-coins"></i> مبدل ارز</h1>
+        
+        <div class="input-group">
+            <label for="amount">مبلغ</label>
+            <input type="number" id="amount" placeholder="مقدار را وارد کنید" value="1">
         </div>
-        <div id="user-info-box" class="hidden">
-            <div id="display-name-output-box" class="user-info-item">
-                <div class="label">بازیکن:</div>
-                <div id="display-name-output-container">
-                    <span id="edit-name-btn" title="تغییر نام">✏️</span>
-                    <div id="display-name-output" class="value"></div>
-                </div>
+
+        <div class="currency-selector">
+            <div class="from-group input-group">
+                <label for="from-currency">از</label>
+                <select id="from-currency">
+                    <option value="USD">دلار آمریکا (USD)</option>
+                    <option value="EUR">یورو (EUR)</option>
+                    <option value="IRR" selected>ریال ایران (IRR)</option>
+                    <option value="TRY">لیر ترکیه (TRY)</option>
+                </select>
             </div>
-            <div id="public-user-id-output-box" class="user-info-item">
-                <div class="label">شناسه کاربری:</div>
-                <div id="public-user-id-output" class="value"></div>
-            </div>
-            <div id="clan-output-box" class="user-info-item hidden">
-                <div class="label">قبیله:</div>
-                <div id="clan-output" class="value"></div>
+
+            <button id="swap-btn"><i class="fas fa-exchange-alt"></i></button>
+
+            <div class="to-group input-group">
+                <label for="to-currency">به</label>
+                <select id="to-currency">
+                    <option value="USD" selected>دلار آمریکا (USD)</option>
+                    <option value="EUR">یورو (EUR)</option>
+                    <option value="IRR">ریال ایران (IRR)</option>
+                    <option value="TRY">لیر ترکیه (TRY)</option>
+                </select>
             </div>
         </div>
+
+        <button id="convert-btn">تبدیل کن</button>
+        
+        <div id="result"></div>
     </div>
 
-    <div id="loading-screen" class="screen active flex flex-col items-center justify-center text-center">
-        <div class="screen-content-wrapper justify-center">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-6 text-[#c49730]">بارگذاری بازی مافیا...</h1>
-            <div class="loader mb-4"></div>
-            <p id="loading-message" class="text-lg sm:text-xl">در حال بررسی اتصال...</p>
-        </div>
-    </div>
+    <script>
+        /* ====================
+           بخش منطق (JavaScript)
+           ==================== */
+        
+        // دریافت المنت‌های HTML
+        const amountInput = document.getElementById('amount');
+        const fromCurrencySelect = document.getElementById('from-currency');
+        const toCurrencySelect = document.getElementById('to-currency');
+        const convertBtn = document.getElementById('convert-btn');
+        const swapBtn = document.getElementById('swap-btn');
+        const resultDiv = document.getElementById('result');
 
-    <div id="main-screen" class="screen">
-        <div class="screen-content-wrapper"> <!-- Increased padding-top here -->
-            <div>
-                <div id="main-screen-header">
-                    <!-- Developer Intro Icon Button - Moved to the left (visual right in RTL) -->
-                    <button id="dev-intro-icon-btn-header" title="معرفی توسعه دهندگان">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M17 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                    </button>
-                    <h1 id="main-title">شهر مافیا</h1>
-                     <!-- Spacer on the right (visual left in RTL) to balance the icon button -->
-                    <div style="width: 40px; flex-shrink: 0;"></div>
-                </div>
-
-                <div id="registration-form" class="mb-4 panel panel-visible p-4 sm:p-6 rounded-lg max-w-md mx-auto">
-                    <h2 class="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-center text-[#c49730]">ثبت نام / ورود</h2>
-                    <input type="text" id="display-name-input" placeholder="نام نمایشی (فقط انگلیسی)" class="input-mafia w-full mb-1 p-2 sm:p-3 text-base sm:text-lg" maxlength="20">
-                    <p id="input-error-message" class=""></p>
-
-                    <div class="mt-3 mb-2">
-                        <label for="user-id-display" class="block text-sm font-medium text-gray-300 mb-1">شناسه کاربری (5 رقمی):</label>
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="user-id-display" class="input-mafia w-full p-2 sm:p-3 text-base sm:text-lg text-center" readonly placeholder="ابتدا بسازید">
-                            <button id="generate-user-id-btn" class="btn-mafia-secondary whitespace-nowrap px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm">ساخت شناسه</button>
-                        </div>
-                        <p id="user-id-error-message" class=""></p>
-                    </div>
-
-                    <button id="register-btn" class="btn-mafia w-full p-2 sm:p-3 text-base sm:text-lg mt-3">ورود به شهر</button>
-                </div>
-            </div>
-
-            <div id="main-screen-buttons-layout" class="pb-2 sm:pb-4 hidden">
-                <div id="top-action-buttons" class="">
-                    <button id="start-game-btn" class="btn-mafia">شروع بازی آنلاین</button>
-                    <button id="leaderboard-btn" class="btn-mafia" style="order: 2;">جدول امتیازات 🏆</button>
-                    <button id="clans-btn" class="btn-mafia" style="order: 3;">قبیله 🛡️</button>
-                    <button id="mafia-fact-btn" class="btn-mafia" style="order: 1;">دانستنی‌های مافیا ✨</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="game-screen" class="screen">
-        <div class="screen-content-wrapper justify-start"> <!-- Default padding-top for game screen -->
-            <div class="flex justify-between items-center mb-4 sm:mb-6 p-2 sm:p-3 bg-[rgba(0,0,0,0.3)] rounded-lg text-sm sm:text-base md:text-xl">
-                <button id="back-to-main-btn" class="btn-mafia-secondary">بازگشت ⟵</button>
-                <div>مرحله: <span id="stage-display" class="font-bold text-[#c49730]">1</span></div>
-            </div>
-
-            <div id="question-container" class="panel panel-visible p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 min-h-[150px] sm:min-h-[200px] flex flex-col justify-center">
-                <p id="question-text" class="text-xl md:text-2xl mb-6 text-center leading-relaxed">سوال بارگذاری می‌شود...</p>
-                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4"></div>
-                <p id="question-explanation" class="text-xs sm:text-sm mt-3 sm:mt-4 text-gray-400 text-center hidden"></p>
-            </div>
-
-            <div id="game-feedback" class="text-center text-base sm:text-lg font-semibold my-3 sm:my-4 h-8"></div>
-            
-            <div id="ai-thinking-indicator" class="text-center mt-3 sm:mt-4 hidden">
-                <div class="loader inline-block"></div>
-                <p class="text-sm sm:text-base">دستیار هوش مصنوعی در حال فکر کردن است...</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-3 sm:p-4 panel-hidden z-50">
-        <div class="panel panel-visible p-6 sm:p-8 rounded-lg max-w-md md:max-w-lg w-full text-center">
-            <h3 id="modal-title" class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-[#c49730]">توجه</h3>
-            <div id="modal-content-dynamic">
-                <p id="modal-message" class="mb-2 sm:mb-3 text-sm sm:text-base"></p>
-                <div id="change-name-input-container" class="hidden mb-2">
-                    <input type="text" id="new-display-name-input" placeholder="نام نمایشی جدید (فقط انگلیسی)" class="input-mafia w-full mb-1 p-2 sm:p-3 text-base sm:text-lg" maxlength="20">
-                    <p id="change-name-error-message" class=""></p>
-                </div>
-                <div id="avatar-generation-container" class="hidden">
-                    <button id="generate-avatar-btn" class="btn-mafia my-4">ساخت آواتار جدید با AI</button>
-                    <div id="avatar-ai-loading" class="my-4 hidden">
-                        <div class="loader mx-auto"></div>
-                        <p class="mt-2 text-sm text-gray-400">در حال ساخت آواتارهای پیشنهادی... (ممکن است کمی طول بکشد)</p>
-                    </div>
-                    <div id="avatar-suggestions-container">
-                        </div>
-                    <p id="avatar-error-message" class="text-red-400 text-sm mt-2"></p>
-                </div>
-            </div>
-            <div id="modal-actions" class="flex justify-center gap-3 sm:gap-4 mt-4">
-                <button id="modal-confirm-btn" class="btn-mafia">تایید</button>
-                <button id="modal-cancel-btn" class="btn-mafia-secondary">لغو</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Developers Panel -->
-    <div id="developers-panel-container" class="fixed inset-0 flex items-center justify-center p-3 sm:p-4 panel-hidden z-[51] generic-panel-container">
-        <div id="developers-panel" class="generic-panel p-5 sm:p-7 rounded-xl max-w-lg md:max-w-xl w-full relative transform transition-all duration-500 ease-out">
-            <button id="close-developers-panel-btn" class="close-generic-panel-btn">×</button>
-            <h3 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-[#c49730] drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">سازندگان شهر مافیا</h3>
-            <div id="developers-list" class="space-y-4 text-right max-h-[calc(85vh-120px)] sm:max-h-[calc(85vh-150px)] overflow-y-auto pr-2 sm:pr-3 pl-1">
-                <div class="list-item">
-                    <div class="list-item-header">
-                        <span class="list-item-icon">💻</span>
-                        <h4 class="list-item-title">برنامه نویس ارشد</h4>
-                    </div>
-                    <p class="list-item-main-text">abolfazl1401</p>
-                    <p class="list-item-description">معمار و توسعه‌دهنده اصلی گیم‌پلی، رابط کاربری و منطق بازی شهر مافیا.</p>
-                </div>
-                <div class="list-item">
-                    <div class="list-item-header">
-                        <span class="list-item-icon">🎨</span>
-                        <h4 class="list-item-title">طراح گرافیک</h4>
-                    </div>
-                    <p class="list-item-main-text">Vahid</p>
-                    <p class="list-item-description">طراح رابط کاربری (UI) و تجربه کاربری (UX). مسئولیت خلق هویت بصری جذاب و تم مافیایی بازی بر عهده او بوده است.</p>
-                </div>
-                <div class="list-item">
-                    <div class="list-item-header">
-                        <span class="list-item-icon">💡</span>
-                        <h4 class="list-item-title">ایده پرداز</h4>
-                    </div>
-                    <p class="list-item-main-text">Ali.k</p>
-                    <p class="list-item-description">خالق ایده‌های نوآورانه برای مراحل، چالش‌ها و داستان‌سرایی در دنیای مافیا.</p>
-                </div>
-                <div class="list-item">
-                    <div class="list-item-header">
-                        <span class="list-item-icon">☁️</span>
-                        <h4 class="list-item-title">توسعه دهنده سرور</h4>
-                    </div>
-                    <p class="list-item-main-text">Neda_Tech</p>
-                    <p class="list-item-description">متخصص در پیاده‌سازی و نگهداری زیرساخت‌های سرور، تضمین پایداری و امنیت بازی.</p>
-                </div>
-                <div class="list-item">
-                    <div class="list-item-header">
-                        <span class="list-item-icon">⚙️</span>
-                        <h4 class="list-item-title">توسعه دهنده سرور</h4>
-                    </div>
-                    <p class="list-item-main-text">SinaCloud</p>
-                    <p class="list-item-description">مسئول بهینه‌سازی ارتباطات شبکه و مدیریت پایگاه داده‌های بازی برای تجربه‌ای روان.</p>
-                </div>
-                <div class="list-item">
-                    <div class="list-item-header">
-                        <span class="list-item-icon">🚀</span>
-                        <h4 class="list-item-title">توسعه دهنده سرور (DevOps)</h4>
-                    </div>
-                    <p class="list-item-main-text">ParsaDevOps</p>
-                    <p class="list-item-description">متمرکز بر فرآیندهای DevOps، استقرار خودکار و مانیتورینگ عملکرد سرورهای بازی.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Leaderboard Panel -->
-    <div id="leaderboard-panel-container" class="fixed inset-0 flex items-center justify-center p-3 sm:p-4 panel-hidden z-[51] generic-panel-container">
-        <div id="leaderboard-panel" class="generic-panel p-5 sm:p-7 rounded-xl max-w-lg md:max-w-xl w-full relative transform transition-all duration-500 ease-out">
-            <button id="close-leaderboard-panel-btn" class="close-generic-panel-btn">×</button>
-            <h3 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-[#c49730] drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">🏆 جدول امتیازات 🏆</h3>
-            <div id="leaderboard-list" class="space-y-3 text-right max-h-[calc(85vh-120px)] sm:max-h-[calc(85vh-150px)] overflow-y-auto pr-2 sm:pr-3 pl-1">
-                <!-- Leaderboard items will be injected here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Clans Panel -->
-    <div id="clans-panel-container" class="fixed inset-0 flex items-center justify-center p-3 sm:p-4 panel-hidden z-[51] generic-panel-container">
-        <div id="clans-panel" class="generic-panel p-5 sm:p-7 rounded-xl max-w-lg md:max-w-xl w-full relative transform transition-all duration-500 ease-out">
-            <button id="close-clans-panel-btn" class="close-generic-panel-btn">×</button>
-            <h3 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-[#c49730] drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">🛡️ مدیریت قبیله 🛡️</h3>
-
-            <div id="clan-management-content" class="max-h-[calc(85vh-120px)] sm:max-h-[calc(85vh-150px)] overflow-y-auto pr-2 sm:pr-3 pl-1">
-                <div id="user-clan-view" class="hidden">
-                    <h4 class="text-xl font-bold text-center mb-4">قبیله شما: <span id="user-clan-name" class="text-[#efbe5a]"></span></h4>
-                    <p class="text-center text-gray-400 mb-4">اعضای قبیله:</p>
-                    <div id="user-clan-members-list" class="space-y-2 mb-6"></div>
-                    <button id="leave-clan-btn" class="btn-mafia w-full bg-red-700 border-red-900 hover:bg-red-600">خروج از قبیله</button>
-                </div>
-
-                <div id="no-clan-view">
-                    <div id="create-clan-section">
-                        <h4 class="text-lg font-semibold mb-3 text-center">ایجاد قبیله جدید</h4>
-                        <input type="text" id="create-clan-name-input" placeholder="نام قبیله (3 تا 20 کاراکتر انگلیسی)" class="input-mafia w-full mb-1" maxlength="20">
-                        <p id="create-clan-error-message"></p>
-                        <button id="create-clan-btn" class="btn-mafia w-full mt-2">ایجاد قبیله</button>
-                    </div>
-
-                    <h4 class="text-lg font-semibold my-4 text-center border-t border-b border-gray-700 py-2">یا پیوستن به قبیله موجود</h4>
-                    <input type="text" id="search-clan-input" placeholder="جستجوی نام قبیله..." class="input-mafia w-full mb-4">
-                    <div id="clans-list" class="space-y-3">
-                        <!-- Clan list to join will be injected here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, query, orderBy, getDocs, writeBatch, limit, where, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // IMPORTANT: The firebaseConfig object remains the same.
-        const firebaseConfig = typeof __firebase_config !== 'undefined'
-            ? JSON.parse(__firebase_config)
-            : {
-                apiKey: "AIzaSyBkUfmc3_TvcR8AkepIr1eB7YEvCD-7P3s",
-                authDomain: "city-mafia.firebaseapp.com",
-                projectId: "city-mafia",
-                storageBucket: "city-mafia.appspot.com", 
-                messagingSenderId: "66458127103",
-                appId: "1:66458127103:web:8bcc2ad470f51b5db45aca",
-                measurementId: "G-8M0M6BJ0GG"
-              };
-
-        let app;
-        let auth;
-        let db;
-        let currentUserId = null;
-        let isAuthReady = false;
-
-        const gameState = {
-            displayName: '',
-            publicUserId: '',
-            currentStage: 1,
-            avatarUrl: '',
-            clanId: null,
-            clanName: null,
-            currentQuestionData: null,
-            isQuestionActive: false,
-            isLoadingNextQuestion: false,
+        // نرخ‌های ارز (نسبت به دلار آمریکا)
+        // این یک API ساده و شبیه‌سازی شده است
+        const exchangeRates = {
+            "USD": 1,
+            "EUR": 0.93,       // 1 دلار = 0.93 یورو
+            "IRR": 580000,   // 1 دلار = 580,000 ریال (قیمت حدودی)
+            "TRY": 32.5        // 1 دلار = 32.5 لیر ترکیه
         };
 
-        // All UI Element References are defined here as before...
-        let loadingScreen, loadingMessage, mainScreen, gameScreen,
-            registrationForm, displayNameInput, registerBtn, inputErrorMessage,
-            userIdDisplayInput, generateUserIdBtn, userIdErrorMessage,
-            userProfileArea, avatarContainer, avatarImage, userInfoBox, displayNameOutput,
-            publicUserIdOutput, clanOutputBox, clanOutput,
-            editNameBtn,
-            mainScreenButtonsLayout,
-            startGameBtn, mafiaFactBtn, devIntroBtnHeader, clansBtn, leaderboardBtn,
-            stageDisplay, questionText,
-            optionsContainer, questionExplanation, backToMainBtn,
-            gameFeedback, aiThinkingIndicator,
-            modalContainer, modalTitle, modalContentDynamic, modalMessage,
-            changeNameInputContainer, newDisplayNameInput, changeNameErrorMessage,
-            avatarGenerationContainer, generateAvatarBtn, avatarAiLoading,
-            avatarSuggestionsContainer, avatarErrorMessage, modalConfirmBtn, modalCancelBtn,
-            developersPanelContainer, closeDevelopersPanelBtn,
-            leaderboardPanelContainer, closeLeaderboardPanelBtn, leaderboardList,
-            clansPanelContainer, closeClansPanelBtn, clanManagementContent,
-            userClanView, userClanName, userClanMembersList, leaveClanBtn,
-            noClanView, createClanSection, createClanNameInput, createClanErrorMessage, createClanBtn,
-            searchClanInput, clansList;
+        // تابع اصلی برای تبدیل ارز
+        function convertCurrency() {
+            const amount = parseFloat(amountInput.value);
+            const fromCurrency = fromCurrencySelect.value;
+            const toCurrency = toCurrencySelect.value;
 
-        let modalConfirmCallback = null;
-        let modalCancelCallback = null;
-        let selectedAvatarForConfirmation = null;
-        
-        // --- UI & Screen Management (Unchanged from previous version) ---
-        function showScreen(screenElement) {
-            if (!screenElement) return;
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            screenElement.classList.add('active');
-            const isControllingOverflow = screenElement.id === 'main-screen' || screenElement.id === 'loading-screen';
-            document.body.style.overflow = isControllingOverflow ? 'hidden' : 'auto';
-            document.documentElement.style.overflow = isControllingOverflow ? 'hidden' : 'auto';
-            screenElement.scrollTop = 0;
-            updateUI();
-        }
-
-        function showPanel(panelContainer) {
-            if (!panelContainer) return;
-            panelContainer.classList.remove('panel-hidden');
-            const panel = panelContainer.querySelector('.generic-panel');
-            if (panel) {
-                panel.style.opacity = '1';
-                panel.style.transform = 'scale(1)';
-            }
-            if(userProfileArea && mainScreen && mainScreen.classList.contains('active')) {
-                userProfileArea.classList.add('profile-area-hidden');
-            }
-        }
-
-        function hidePanel(panelContainer) {
-            if (!panelContainer) return;
-            panelContainer.classList.add('panel-hidden');
-            const panel = panelContainer.querySelector('.generic-panel');
-            if (panel) {
-                panel.style.opacity = '0';
-                panel.style.transform = 'scale(0.95)';
-            }
-            const isAnyPanelVisible = !!document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
-                                    (modalContainer && !modalContainer.classList.contains('panel-hidden'));
-
-            if(userProfileArea && mainScreen && mainScreen.classList.contains('active') && !isAnyPanelVisible) {
-                userProfileArea.classList.remove('profile-area-hidden');
-            }
-        }
-
-        function showModal(title, message, confirmText = "تایید", cancelText = null, onConfirm = null, onCancel = null, modalType = "generic") {
-            if (!modalTitle || !modalMessage || !changeNameInputContainer || !avatarGenerationContainer || !modalConfirmBtn || !modalCancelBtn || !modalContainer) {
-                console.error("[showModal] Modal elements not found, cannot show modal.");
+            // اعتبارسنجی ورودی
+            if (isNaN(amount) || amount <= 0) {
+                resultDiv.textContent = 'لطفاً یک مبلغ معتبر وارد کنید.';
+                resultDiv.style.color = 'red';
                 return;
             }
-            modalTitle.textContent = title;
-            modalMessage.classList.add('hidden');
-            changeNameInputContainer.classList.add('hidden');
-            avatarGenerationContainer.classList.add('hidden');
-            if(userProfileArea && mainScreen && mainScreen.classList.contains('active')) {
-                userProfileArea.classList.add('profile-area-hidden');
-            }
-            if (modalType === "changeName") {
-                changeNameInputContainer.classList.remove('hidden');
-                if(newDisplayNameInput) newDisplayNameInput.value = gameState.displayName;
-                if(changeNameErrorMessage) changeNameErrorMessage.textContent = '';
-                if(newDisplayNameInput) newDisplayNameInput.classList.remove('invalid');
-                if (message && message.trim() !== "") {
-                    modalMessage.innerHTML = message;
-                    modalMessage.classList.remove('hidden');
-                }
-            } else if (modalType === "avatar") {
-                avatarGenerationContainer.classList.remove('hidden');
-                if(avatarSuggestionsContainer) avatarSuggestionsContainer.innerHTML = '';
-                if(avatarErrorMessage) avatarErrorMessage.textContent = '';
-                if(avatarAiLoading) avatarAiLoading.classList.add('hidden');
-                 if (message && message.trim() !== "") {
-                    modalMessage.innerHTML = message;
-                    modalMessage.classList.remove('hidden');
-                }
-            } else {
-                modalMessage.innerHTML = message;
-                modalMessage.classList.remove('hidden');
-            }
-            modalConfirmBtn.textContent = confirmText;
-            modalConfirmCallback = onConfirm;
-            modalCancelCallback = onCancel;
-            if (cancelText || modalType === "changeName" || modalType === "avatar") {
-                modalCancelBtn.textContent = cancelText || "لغو";
-                modalCancelBtn.classList.remove('hidden');
-            } else {
-                modalCancelBtn.classList.add('hidden');
-            }
-            modalContainer.classList.remove('panel-hidden');
+            
+            // 1. ابتدا مبلغ را به دلار تبدیل می‌کنیم (چون مبنای ما دلار است)
+            const amountInUSD = amount / exchangeRates[fromCurrency];
+            
+            // 2. سپس مبلغ دلاری را به ارز مقصد تبدیل می‌کنیم
+            const convertedAmount = amountInUSD * exchangeRates[toCurrency];
+
+            // نمایش نتیجه با فرمت خوانا
+            resultDiv.style.color = '#2c255c'; // بازگرداندن رنگ به حالت اولیه
+            resultDiv.textContent = 
+                `${amount.toLocaleString('fa-IR')} ${fromCurrency} = ${convertedAmount.toLocaleString('fa-IR', {maximumFractionDigits: 2})} ${toCurrency}`;
         }
 
-        function hideModal() {
-            if (!modalContainer) return;
-            modalContainer.classList.add('panel-hidden');
-            modalConfirmCallback = null;
-            modalCancelCallback = null;
-            if (changeNameInputContainer) changeNameInputContainer.classList.add('hidden');
-            if (avatarGenerationContainer) avatarGenerationContainer.classList.add('hidden');
-            if (modalMessage) modalMessage.classList.add('hidden');
-            const isAnyPanelVisible = !!document.querySelector('.generic-panel-container:not(.panel-hidden)');
-            if(userProfileArea && mainScreen && mainScreen.classList.contains('active') && !isAnyPanelVisible) {
-                userProfileArea.classList.remove('profile-area-hidden');
-            }
+        // تابع برای جابجایی ارزها
+        function swapCurrencies() {
+            const temp = fromCurrencySelect.value;
+            fromCurrencySelect.value = toCurrencySelect.value;
+            toCurrencySelect.value = temp;
+
+            // پس از جابجایی، دوباره تبدیل را انجام می‌دهیم
+            convertCurrency();
         }
 
-        function handleModalConfirm() {
-            if (modalConfirmCallback) {
-                try {
-                    modalConfirmCallback();
-                } catch (e) {
-                    console.error("[handleModalConfirm] Error in modal confirm callback:", e);
-                    hideModal();
-                }
-            } else {
-                hideModal();
-            }
-        }
-
-        function handleModalCancel() {
-            if (modalCancelCallback) {
-                try {
-                    modalCancelCallback();
-                } catch (e) {
-                    console.error("[handleModalCancel] Error in modal cancel callback:", e);
-                }
-            }
-            hideModal();
-        }
-
-        function updateUI() {
-            if(displayNameOutput) displayNameOutput.textContent = gameState.displayName || "مهمان";
-            if(publicUserIdOutput) publicUserIdOutput.textContent = gameState.publicUserId || "---";
-            if(stageDisplay) stageDisplay.textContent = gameState.currentStage;
-            if(clanOutputBox && clanOutput) {
-                if (gameState.clanName) {
-                    clanOutput.textContent = gameState.clanName;
-                    clanOutputBox.classList.remove('hidden');
-                } else {
-                    clanOutputBox.classList.add('hidden');
-                }
-            }
-            if(avatarImage && gameState.avatarUrl) {
-                avatarImage.src = gameState.avatarUrl;
-            } else if (avatarImage) {
-                avatarImage.src = `https://placehold.co/80x80/333333/777777?text=?`;
-            }
-            let showRegistration = true;
-            let showActionButtons = false;
-            let showUserInfoAndAvatar = false;
-            if (isAuthReady && gameState.displayName && gameState.publicUserId) {
-                showRegistration = false;
-                showActionButtons = true;
-                if (mainScreen && mainScreen.classList.contains('active')) {
-                    showUserInfoAndAvatar = true;
-                }
-            } else if (isAuthReady && (!gameState.displayName || !gameState.publicUserId)) {
-                showRegistration = true;
-                showActionButtons = false;
-                showUserInfoAndAvatar = false;
-            } else {
-                showRegistration = true;
-                showActionButtons = false;
-                showUserInfoAndAvatar = false;
-            }
-            if(registrationForm){
-                registrationForm.style.display = showRegistration ? 'block' : 'none';
-            }
-            if(mainScreenButtonsLayout){
-                mainScreenButtonsLayout.classList.toggle('hidden', !showActionButtons);
-            }
-            if(userProfileArea){
-                 const isAnyPanelVisible = !!document.querySelector('.generic-panel-container:not(.panel-hidden)') ||
-                                        (modalContainer && !modalContainer.classList.contains('panel-hidden'));
-                if (showUserInfoAndAvatar) {
-                    userProfileArea.classList.remove('hidden');
-                    if (avatarContainer) avatarContainer.classList.remove('hidden');
-                    if (userInfoBox) userInfoBox.classList.remove('hidden');
-                    if(isAnyPanelVisible) {
-                         userProfileArea.classList.add('profile-area-hidden');
-                    } else {
-                        userProfileArea.classList.remove('profile-area-hidden');
-                    }
-                } else {
-                    userProfileArea.classList.add('hidden');
-                }
-            }
-        }
+        // افزودن رویدادها (Event Listeners)
+        convertBtn.addEventListener('click', convertCurrency);
+        swapBtn.addEventListener('click', swapCurrencies);
         
-        // --- Firebase & Data Management (UPDATED PATHS) ---
+        // برای تجربه کاربری بهتر، با تغییر هر یک از فیلدها، تبدیل انجام شود
+        amountInput.addEventListener('input', convertCurrency);
+        fromCurrencySelect.addEventListener('change', convertCurrency);
+        toCurrencySelect.addEventListener('change', convertCurrency);
 
-        async function initFirebase() {
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                console.log("Firebase initialized.");
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        console.log("User is signed in:", user.uid);
-                        currentUserId = user.uid;
-                        await loadUserData();
-                    } else {
-                        console.log("User is signed out. Attempting to sign in.");
-                        await signInAnonymously(auth).catch(err => {
-                             console.error("Anonymous sign-in failed:", err);
-                             if(loadingMessage) loadingMessage.textContent = "خطا در ورود به سیستم. لطفا صفحه را رفرش کنید.";
-                        });
-                        Object.assign(gameState, { displayName: '', publicUserId: '', avatarUrl: '', clanId: null, clanName: null });
-                    }
-                    isAuthReady = true;
-                    updateUI();
-
-                    if (loadingScreen && loadingScreen.classList.contains('active')) {
-                        if(loadingMessage) loadingMessage.textContent = "خوش آمدید!";
-                        setTimeout(() => {
-                            if(mainScreen) showScreen(mainScreen);
-                        }, 500);
-                    }
-                });
-            } catch (error) {
-                console.error("Firebase initialization error:", error);
-                if(loadingMessage) loadingMessage.textContent = "خطا در اتصال به سرور بازی.";
-                if(mainScreenButtonsLayout) mainScreenButtonsLayout.classList.add('hidden');
-            }
-        }
-
-        async function loadUserData() {
-            if (!currentUserId || !db) return;
-            // UPDATED PATH: Directly in the 'users' collection
-            const userDocRef = doc(db, 'users', currentUserId);
-            try {
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    gameState.displayName = data.displayName || "";
-                    gameState.publicUserId = data.publicUserId || "";
-                    gameState.currentStage = data.currentStage || 1;
-                    gameState.avatarUrl = data.avatarUrl || '';
-                    gameState.clanId = data.clanId || null;
-                    if (gameState.clanId) {
-                        await loadClanData(gameState.clanId);
-                    } else {
-                        gameState.clanName = null;
-                    }
-                } else {
-                    console.log("No user profile found, user needs to register.");
-                    Object.assign(gameState, { displayName: '', publicUserId: '', currentStage: 1, avatarUrl: '', clanId: null, clanName: null });
-                }
-            } catch (error) {
-                console.error("Error loading user data:", error);
-                showModal("خطا", "مشکلی در بارگذاری اطلاعات شما پیش آمد.", "باشه");
-                Object.assign(gameState, { displayName: '', publicUserId: '', avatarUrl: '', clanId: null, clanName: null });
-            } finally {
-                updateUI();
-            }
-        }
-
-        async function saveUserData(isNewUser = false) {
-            if (!currentUserId || !db) return;
-            // UPDATED PATH: Directly in the 'users' collection
-            const userDocRef = doc(db, 'users', currentUserId);
-            try {
-                const dataToSave = {
-                    displayName: gameState.displayName,
-                    publicUserId: gameState.publicUserId,
-                    currentStage: gameState.currentStage,
-                    avatarUrl: gameState.avatarUrl,
-                    clanId: gameState.clanId, // can be null
-                    lastUpdated: serverTimestamp()
-                };
-                 if (isNewUser) {
-                    // This handles both creation and overwriting, which is fine for new user registration
-                    await setDoc(userDocRef, dataToSave);
-                 } else {
-                    // For updates, 'merge: true' prevents overwriting fields that aren't in dataToSave
-                    await setDoc(userDocRef, dataToSave, { merge: true });
-                 }
-                 console.log("User data saved successfully.");
-            } catch (error) {
-                console.error("Error saving user data:", error);
-                showModal("خطا", `مشکلی در ذخیره اطلاعات شما پیش آمد. ${error.message}`, "باشه");
-            }
-        }
-
-        // --- Gemini & Imagen API Functions (Unchanged) ---
-        const GEMINI_API_KEY = "AIzaSyCNrIBm-Qfteoz9twSWCqsCpuvusaCqEfw";
-        const GEMINI_TEXT_MODEL = "gemini-1.5-flash";
-        const IMAGEN_MODEL = "imagen-3.0-generate-002";
-        async function callGeminiAPI(prompt, isJsonOutput = false) {
-            if(aiThinkingIndicator) aiThinkingIndicator.classList.remove('hidden');
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
-            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: isJsonOutput ? { responseMimeType: "application/json" } : {} };
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-                const result = await response.json();
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!text) throw new Error("پاسخ نامعتبر از سرویس هوش مصنوعی دریافت شد.");
-                return isJsonOutput ? JSON.parse(text) : text;
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                showModal("خطای هوش مصنوعی", `مشکلی در ارتباط با دستیار هوش مصنوعی پیش آمد.<br><small>جزئیات خطا: ${error.message}</small>`, "باشه");
-                return null;
-            } finally {
-                if(aiThinkingIndicator) aiThinkingIndicator.classList.add('hidden');
-            }
-        }
-        async function callImagenAPI(prompt, sampleCount = 1) {
-            if(avatarAiLoading) avatarAiLoading.classList.remove('hidden');
-            if(avatarErrorMessage) avatarErrorMessage.textContent = '';
-            const payload = { instances: [{ prompt }], parameters: { sampleCount } };
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${IMAGEN_MODEL}:predict?key=${GEMINI_API_KEY}`;
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`API request failed: ${response.status}`);
-                const result = await response.json();
-                if (result.predictions?.length > 0) return result.predictions.map(p => `data:image/png;base64,${p.bytesBase64Encoded}`);
-                throw new Error("پاسخ نامعتبر از سرویس ساخت تصویر دریافت شد.");
-            } catch (error) {
-                console.error("Error calling Imagen API:", error);
-                if(avatarErrorMessage) avatarErrorMessage.textContent = `خطا در ساخت آواتار: ${error.message}`;
-                return null;
-            } finally {
-                if(avatarAiLoading) avatarAiLoading.classList.add('hidden');
-            }
-        }
-        
-        // --- Game Logic, Helper Functions, User Profile/Avatar (Unchanged) ---
-        // These functions do not depend on Firestore paths, so they remain the same.
-        // generateQuestion, displayQuestion, handleAnswerSelection
-        // validateAndSanitizeName, generateAlphanumericPublicUserId, generateMafiaFact
-        // handleChangeDisplayName, generateAndDisplayAvatars, confirmAvatarSelection
-        // All these functions can be copied from the previous response.
-        async function generateQuestion(){if(gameState.isLoadingNextQuestion)return;gameState.isLoadingNextQuestion=!0,questionText&&(questionText.textContent="در حال تولید سوال جدید..."),optionsContainer&&(optionsContainer.innerHTML=""),questionExplanation&&questionExplanation.classList.add("hidden"),gameFeedback&&(gameFeedback.textContent="");const e=`یک سوال چند گزینه ای با موضوع مافیا (تاریخچه، فیلم ها، اصطلاحات، یا سناریوهای مرتبط با مافیا) به زبان فارسی ایجاد کن.
-پاسخ شما باید فقط و فقط یک آبجکت JSON خام باشد و هیچ چیز دیگری در پاسخ نباشد.
-از قرار دادن بک‌تیک (\`\`\`) یا کلمه "json" در ابتدای و انتهای پاسخ خودداری کن.
-ساختار JSON باید دقیقا به این صورت باشد:
-{
-  "question": "متن سوال به فارسی",
-  "options": ["گزینه ۱", "گزینه ۲", "گزینه ۳", "گزینه ۴"],
-  "correctAnswerIndex": 0,
-  "explanation": "توضیح مختصر در مورد پاسخ صحیح به فارسی"
-}`;try{const t=await callGeminiAPI(e,!0);if(t&&t.question&&4===t.options?.length&&void 0!==t.correctAnswerIndex)gameState.currentQuestionData=t,displayQuestion();else throw new Error("ساختار سوال دریافت شده از AI معتبر نیست.")}catch(t){console.error("Error generating question:",t),questionText&&(questionText.textContent="خطا در بارگذاری سوال."),showModal("خطا در سوال",`مشکلی در تولید سوال جدید پیش آمد. (${t.message}) آیا میخواهید دوباره تلاش کنید؟`,"تلاش مجدد","صفحه اصلی",(()=>{hideModal(),generateQuestion()}),(()=>{hideModal(),mainScreen&&showScreen(mainScreen)}))}finally{gameState.isLoadingNextQuestion=!1,gameState.isQuestionActive=!0}}function displayQuestion(){if(!gameState.currentQuestionData||!questionText||!optionsContainer)return;const{question:e,options:t}=gameState.currentQuestionData;questionText.textContent=e,optionsContainer.innerHTML="",t.forEach(((e,t)=>{const a=document.createElement("button");a.className="option-btn w-full p-3 rounded-md text-lg text-right",a.textContent=`${t+1}. ${e}`,a.dataset.index=t,a.addEventListener("click",handleAnswerSelection),optionsContainer.appendChild(a)})),questionExplanation&&questionExplanation.classList.add("hidden"),gameFeedback&&(gameFeedback.textContent=""),gameState.isQuestionActive=!0}async function handleAnswerSelection(e){if(!gameState.isQuestionActive)return;gameState.isQuestionActive=!1;const t=e.target.closest(".option-btn");if(!t)return;const a=parseInt(t.dataset.index),{correctAnswerIndex:s,explanation:n}=gameState.currentQuestionData;if(document.querySelectorAll("#options-container .option-btn").forEach((e=>{e.disabled=!0})),a===s)t.classList.add("correct"),gameFeedback.textContent="پاسخ صحیح!",gameFeedback.className="text-center text-lg font-semibold my-4 h-8 text-green-400",gameState.currentStage++,await saveUserData(),setTimeout((()=>{generateQuestion(),updateUI()}),2e3);else{t.classList.add("incorrect");const e=optionsContainer.querySelector(`.option-btn[data-index="${s}"]`);e&&e.classList.add("correct"),gameFeedback.textContent="پاسخ اشتباه!",gameFeedback.className="text-center text-lg font-semibold my-4 h-8 text-red-400",setTimeout((()=>{generateQuestion(),updateUI()}),4e3)}n&&questionExplanation&&(questionExplanation.textContent=`توضیح: ${n}`,questionExplanation.classList.remove("hidden"))}function validateAndSanitizeName(e,t,a){if(!a||!t)return null;let s=e.replace(/[^a-zA-Z0-9_.-]/g,"");e!==s&&(a.value=s);const n=s.trim();return n.length<3||n.length>20?(t.textContent="نام باید بین 3 تا 20 کاراکتر انگلیسی باشد.",a.classList.add("invalid"),null):(t.textContent="",a.classList.remove("invalid"),n)}function generateAlphanumericPublicUserId(e=5){return Array.from({length:e},(()=>"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".charAt(Math.floor(36*Math.random())))).join("")}async function generateMafiaFact(){const e="یک حقیقت جالب، نکته تاریخی کمتر شنیده شده، یا یک داستانک کوتاه و غافلگیرکننده (حدود ۲-۴ جمله) در مورد دنیای مافیا (تاریخچه، فیلم‌ها، شخصیت‌های معروف، یا اصطلاحات رایج) به زبان فارسی برای من تعریف کن. سعی کن هر بار یک مطلب جدید ارائه دهی.";showModal("دانستنی مافیا ✨","<div class='loader mx-auto my-3'></div><p>در حال جستجو در آرشیوهای مخفی...</p>","باشه");const t=await callGeminiAPI(e);t?showModal("دانستنی مافیا ✨",t.replace(/\n/g,"<br>"),"جالب بود!"):showModal("خطا","متاسفانه در حال حاضر نکته‌ای برای گفتن نیست.","باشه")}async function handleChangeDisplayName(){if(!newDisplayNameInput||!changeNameErrorMessage)return;const e=validateAndSanitizeName(newDisplayNameInput.value,changeNameErrorMessage,newDisplayNameInput);if(!e||e===gameState.displayName)return void(e===gameState.displayName&&(changeNameErrorMessage.textContent="نام جدید باید متفاوت از نام فعلی باشد."));gameState.displayName=e,await saveUserData(),updateUI(),hideModal(),showModal("موفقیت","نام نمایشی شما با موفقیت تغییر کرد!","عالی!")}async function generateAndDisplayAvatars(){if(!avatarAiLoading||!avatarSuggestionsContainer||!modalConfirmBtn)return;const e="Cool mafia character avatar, portrait, dark theme, high detail, cinematic lighting, no text, no weapons",t=await callImagenAPI(e,4);avatarSuggestionsContainer.innerHTML="",selectedAvatarForConfirmation=null,t?.length>0?(t.forEach((e=>{const t=document.createElement("div");t.className="avatar-suggestion-item";const a=document.createElement("img");a.src=e,a.alt="Avatar suggestion",t.appendChild(a),t.addEventListener("click",(()=>{avatarSuggestionsContainer.querySelector(".selected")?.classList.remove("selected"),t.classList.add("selected"),selectedAvatarForConfirmation=e,modalConfirmBtn.disabled=!1})),avatarSuggestionsContainer.appendChild(t)})),modalConfirmBtn.textContent="انتخاب این آواتار",modalConfirmBtn.disabled=!0):avatarErrorMessage&&(avatarErrorMessage.textContent="متاسفانه نتوانستیم آواتاری بسازیم.",modalConfirmBtn.disabled=!0)}async function confirmAvatarSelection(){selectedAvatarForConfirmation?(gameState.avatarUrl=selectedAvatarForConfirmation,await saveUserData(),updateUI(),hideModal(),showModal("موفقیت","آواتار شما با موفقیت تغییر کرد!","عالی!")):avatarErrorMessage&&(avatarErrorMessage.textContent="لطفا ابتدا یک آواتار را انتخاب کنید.")}
-
-        // --- Leaderboard & Clans Functions (UPDATED PATHS) ---
-
-        async function showLeaderboard() {
-            showPanel(leaderboardPanelContainer);
-            leaderboardList.innerHTML = "<div class='loader mx-auto my-4'></div>";
-            try {
-                // This query requires a composite index in Firestore on the 'users' collection.
-                // Fields: currentStage (Descending), displayName (Ascending)
-                // UPDATED PATH: Directly query the 'users' collection
-                const usersRef = collection(db, "users");
-                const q = query(usersRef,
-                    orderBy("currentStage", "desc"),
-                    orderBy("displayName"),
-                    limit(50)
-                );
-                
-                const querySnapshot = await getDocs(q);
-                let rank = 1;
-                leaderboardList.innerHTML = '';
-                if (querySnapshot.empty) {
-                    leaderboardList.innerHTML = "<p class='text-center text-gray-400'>هنوز کسی در جدول امتیازات ثبت نشده است.</p>";
-                    return;
-                }
-                querySnapshot.forEach(docSnap => {
-                    const data = docSnap.data(); // Data is directly on the document now
-                    if (!data || !data.displayName) return;
-                    
-                    const item = document.createElement('div');
-                    item.className = 'list-item';
-                    item.innerHTML = `
-                        <div class="leaderboard-rank">${rank++}</div>
-                        <div class="leaderboard-player-info">
-                            <div class="leaderboard-player-name">${data.displayName}</div>
-                            <div class="leaderboard-player-id">${data.publicUserId}</div>
-                        </div>
-                        <div class="leaderboard-stage">مرحله ${data.currentStage || 1}</div>
-                    `;
-                    leaderboardList.appendChild(item);
-                });
-            } catch (error) {
-                console.error("Error loading leaderboard:", error);
-                leaderboardList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری جدول امتیازات. <br><small>ممکن است نیاز به ساخت Index جدید در کنسول Firebase داشته باشید. (خطا را در کنسول مرورگر بررسی کنید)</small></p>`;
-            }
-        }
-
-        async function showClansPanel() {
-            showPanel(clansPanelContainer);
-            updateClanPanelUI();
-            if (!gameState.clanId) {
-                await loadAllClans();
-            }
-        }
-
-        function updateClanPanelUI() {
-            const hasClan = !!gameState.clanId;
-            userClanView.classList.toggle('hidden', !hasClan);
-            noClanView.classList.toggle('hidden', hasClan);
-            if (hasClan) {
-                userClanName.textContent = gameState.clanName;
-                loadClanMembers();
-            }
-        }
-
-        async function loadAllClans(searchTerm = '') {
-            clansList.innerHTML = "<div class='loader mx-auto my-4'></div>";
-            try {
-                // UPDATED PATH: Directly query the 'clans' collection
-                const clansRef = collection(db, 'clans');
-                let q;
-                if (searchTerm) {
-                    // Requires an index on 'clans' collection for 'nameLower' (Ascending)
-                    q = query(clansRef, where('nameLower', '>=', searchTerm.toLowerCase()), where('nameLower', '<=', searchTerm.toLowerCase() + '\uf8ff'), limit(20));
-                } else {
-                    // Requires an index on 'clans' collection for 'memberCount' (Descending)
-                    q = query(clansRef, orderBy('memberCount', 'desc'), limit(30));
-                }
-                
-                const querySnapshot = await getDocs(q);
-                clansList.innerHTML = '';
-                if (querySnapshot.empty) {
-                    clansList.innerHTML = "<p class='text-center text-gray-400'>هیچ قبیله‌ای یافت نشد.</p>";
-                    return;
-                }
-                querySnapshot.forEach(docSnap => {
-                    const clan = docSnap.data();
-                    const item = document.createElement('div');
-                    item.className = 'list-item';
-                    item.innerHTML = `
-                        <div class="clan-info">
-                            <div class="clan-name">${clan.name}</div>
-                            <div class="clan-members">${clan.memberCount || 0} عضو</div>
-                        </div>
-                        <button class="btn-mafia-secondary join-clan-btn" data-clan-id="${docSnap.id}" data-clan-name="${clan.name}">پیوستن</button>
-                    `;
-                    clansList.appendChild(item);
-                });
-            } catch (error) {
-                console.error("Error loading all clans:", error);
-                clansList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری لیست قبایل. <br><small>ممکن است نیاز به ساخت Index در کنسول Firebase داشته باشید.</small></p>`;
-            }
-        }
-
-        async function loadClanData(clanId) {
-            // UPDATED PATH: Directly in the 'clans' collection
-            const clanDocRef = doc(db, 'clans', clanId);
-            try {
-                const docSnap = await getDoc(clanDocRef);
-                if (docSnap.exists()) {
-                    gameState.clanName = docSnap.data().name;
-                } else {
-                    console.warn("User's clan not found, resetting.");
-                    gameState.clanId = null;
-                    gameState.clanName = null;
-                    await saveUserData();
-                }
-            } catch (error) {
-                 console.error("Error loading clan data:", error);
-            }
-        }
-
-        async function loadClanMembers() {
-            if (!gameState.clanId) return;
-            userClanMembersList.innerHTML = "<div class='loader mx-auto my-4'></div>";
-            try {
-                // Requires an index on 'users' collection for 'clanId' and 'displayName'
-                // UPDATED PATH: Directly query the 'users' collection
-                const usersRef = collection(db, 'users');
-                const q = query(usersRef, where("clanId", "==", gameState.clanId), orderBy("displayName"));
-                const querySnapshot = await getDocs(q);
-                userClanMembersList.innerHTML = '';
-                if(querySnapshot.empty) {
-                    userClanMembersList.innerHTML = "<p class='text-center text-gray-400'>شما تنها عضو این قبیله هستید.</p>";
-                }
-                querySnapshot.forEach(docSnap => {
-                    const user = docSnap.data();
-                    const item = document.createElement('div');
-                    item.className = 'bg-gray-800 p-2 rounded text-center';
-                    item.textContent = user.displayName;
-                    userClanMembersList.appendChild(item);
-                });
-            } catch (error) {
-                console.error("Error loading clan members:", error);
-                userClanMembersList.innerHTML = `<p class='text-center text-red-400'>خطا در بارگذاری اعضا. <br><small>ممکن است نیاز به ساخت Index در کنسول Firebase داشته باشید.</small></p>`;
-            }
-        }
-
-        async function handleCreateClan() {
-            const clanName = validateAndSanitizeName(createClanNameInput.value, createClanErrorMessage, createClanNameInput);
-            if (!clanName) return;
-            createClanBtn.disabled = true;
-            try {
-                // UPDATED PATHS
-                const clansRef = collection(db, 'clans');
-                const q = query(clansRef, where("nameLower", "==", clanName.toLowerCase()));
-                const existing = await getDocs(q);
-                if (!existing.empty) throw new Error("این نام قبیله قبلا گرفته شده است.");
-
-                const batch = writeBatch(db);
-                const newClanRef = doc(collection(db, 'clans'));
-                batch.set(newClanRef, {
-                    name: clanName,
-                    nameLower: clanName.toLowerCase(),
-                    leaderId: currentUserId,
-                    memberCount: 1,
-                    createdAt: serverTimestamp()
-                });
-                const userProfileRef = doc(db, 'users', currentUserId);
-                batch.update(userProfileRef, { clanId: newClanRef.id });
-                await batch.commit();
-
-                gameState.clanId = newClanRef.id;
-                gameState.clanName = clanName;
-                updateUI();
-                updateClanPanelUI();
-                showModal("موفقیت", `قبیله "${clanName}" با موفقیت ساخته شد!`, "عالی!");
-            } catch (error) {
-                console.error("Error creating clan:", error);
-                createClanErrorMessage.textContent = error.message;
-            } finally {
-                createClanBtn.disabled = false;
-            }
-        }
-
-        async function handleJoinClan(clanId, clanName) {
-            if (gameState.clanId) {
-                showModal("خطا", "شما در حال حاضر عضو یک قبیله هستید.", "باشه");
-                return;
-            }
-            showModal("پیوستن به قبیله", `آیا میخواهید به قبیله "${clanName}" بپیوندید؟`, "بله، بپیوند", "لغو", async () => {
-                hideModal();
-                try {
-                    // UPDATED PATHS
-                    const batch = writeBatch(db);
-                    const clanRef = doc(db, 'clans', clanId);
-                    batch.update(clanRef, { memberCount: increment(1) });
-                    const userProfileRef = doc(db, 'users', currentUserId);
-                    batch.update(userProfileRef, { clanId: clanId });
-                    await batch.commit();
-
-                    gameState.clanId = clanId;
-                    gameState.clanName = clanName;
-                    updateUI();
-                    updateClanPanelUI();
-                    showModal("موفقیت", `شما به قبیله "${clanName}" پیوستید!`, "عالی!");
-                } catch (error) {
-                    console.error("Error joining clan:", error);
-                    showModal("خطا", `مشکلی در پیوستن به قبیله پیش آمد: ${error.message}`, "باشه");
-                }
-            });
-        }
-
-        async function handleLeaveClan() {
-             showModal("خروج از قبیله", `آیا مطمئن هستید که میخواهید قبیله "${gameState.clanName}" را ترک کنید؟`, "بله، خارج شو", "لغو", async () => {
-                hideModal();
-                if (!gameState.clanId) return;
-                try {
-                    // UPDATED PATHS
-                    const batch = writeBatch(db);
-                    const clanRef = doc(db, 'clans', gameState.clanId);
-                    const clanDoc = await getDoc(clanRef);
-                    if (clanDoc.exists()) {
-                        if ((clanDoc.data().memberCount || 1) <= 1) {
-                            batch.delete(clanRef);
-                        } else {
-                            batch.update(clanRef, { memberCount: increment(-1) });
-                        }
-                    }
-                    const userProfileRef = doc(db, 'users', currentUserId);
-                    batch.update(userProfileRef, { clanId: null });
-                    await batch.commit();
-
-                    showModal("موفقیت", `شما قبیله "${gameState.clanName}" را ترک کردید.`, "باشه");
-                    gameState.clanId = null;
-                    gameState.clanName = null;
-                    updateUI();
-                    updateClanPanelUI();
-                    await loadAllClans();
-                } catch (error) {
-                    console.error("Error leaving clan:", error);
-                    showModal("خطا", `مشکلی در خروج از قبیله پیش آمد: ${error.message}`, "باشه");
-                }
-            });
-        }
-
-        // --- Event Listeners & Initialization (Unchanged) ---
-        function setupEventListeners(){if(modalConfirmBtn&&modalConfirmBtn.addEventListener("click",handleModalConfirm),modalCancelBtn&&modalCancelBtn.addEventListener("click",handleModalCancel),closeDevelopersPanelBtn&&closeDevelopersPanelBtn.addEventListener("click",(()=>hidePanel(developersPanelContainer))),closeLeaderboardPanelBtn&&closeLeaderboardPanelBtn.addEventListener("click",(()=>hidePanel(leaderboardPanelContainer))),closeClansPanelBtn&&closeClansPanelBtn.addEventListener("click",(()=>hidePanel(clansPanelContainer))),displayNameInput&&displayNameInput.addEventListener("input",(()=>validateAndSanitizeName(displayNameInput.value,inputErrorMessage,displayNameInput))),generateUserIdBtn&&generateUserIdBtn.addEventListener("click",(()=>{userIdDisplayInput&&(userIdDisplayInput.value=generateAlphanumericPublicUserId()),userIdErrorMessage&&(userIdErrorMessage.textContent="")})),registerBtn&®isterBtn.addEventListener("click",(async()=>{const e=validateAndSanitizeName(displayNameInput.value,inputErrorMessage,displayNameInput),t=userIdDisplayInput.value;if(!t)return void(userIdErrorMessage&& (userIdErrorMessage.textContent="لطفاً ابتدا یک شناسه کاربری بسازید."));if(!e)return;gameState.displayName=e,gameState.publicUserId=t,gameState.currentStage=1,gameState.clanId=null,await saveUserData(!0),updateUI()})),editNameBtn&&editNameBtn.addEventListener("click",(()=>showModal("تغییر نام نمایشی","تغییر نام در این بازی رایگان است.","تغییر نام","لغو",handleChangeDisplayName,null,"changeName"))),avatarContainer&&avatarContainer.addEventListener("click",(()=>{selectedAvatarForConfirmation=null,showModal("تغییر آواتار","","انتخاب این آواتار","لغو",confirmAvatarSelection,null,"avatar"),modalConfirmBtn&&(modalConfirmBtn.disabled=!0)})),generateAvatarBtn&&generateAvatarBtn.addEventListener("click",generateAndDisplayAvatars),newDisplayNameInput&&newDisplayNameInput.addEventListener("keydown",(e=>{e.key==="Enter"&&modalConfirmBtn.click()})),[startGameBtn,mafiaFactBtn,devIntroBtnHeader,leaderboardBtn,clansBtn].forEach((e=>{e&&e.addEventListener("click",(e=>{isAuthReady&&gameState.displayName&&gameState.publicUserId||(e.stopImmediatePropagation(),showModal("ثبت نام لازم است","برای دسترسی به این بخش، ابتدا ثبت نام خود را کامل کنید.","باشه"))}),!0)})),startGameBtn&&startGameBtn.addEventListener("click",(()=>showModal("شروع بازی","برای تجربه بهتر بازی لطفا از فیلترشکن در کشور ایالات‌متحده (آمریکا) استفاده کنید.","متوجه شدم، ادامه بده",null,(()=>{hideModal(),showScreen(gameScreen),generateQuestion()})))),mafiaFactBtn&&mafiaFactBtn.addEventListener("click",generateMafiaFact),devIntroBtnHeader&&devIntroBtnHeader.addEventListener("click",(()=>showPanel(developersPanelContainer))),leaderboardBtn&&leaderboardBtn.addEventListener("click",showLeaderboard),clansBtn&&clansBtn.addEventListener("click",showClansPanel),backToMainBtn&&backToMainBtn.addEventListener("click",(async()=>{await saveUserData(),gameState.currentQuestionData=null,showScreen(mainScreen)})),createClanBtn&&createClanBtn.addEventListener("click",handleCreateClan),leaveClanBtn&&leaveClanBtn.addEventListener("click",handleLeaveClan),clansList&&clansList.addEventListener("click",(e=>{const t=e.target.closest(".join-clan-btn");if(t){const{clanId:e,clanName:a}=t.dataset;handleJoinClan(e,a)}})),searchClanInput){let e;searchClanInput.addEventListener("input",(t=>{clearTimeout(e),e=setTimeout((()=>{loadAllClans(t.target.value.trim())}),300)}))}}
-        function cacheDOMElements(){const get=e=>document.getElementById(e);loadingScreen=get("loading-screen"),mainScreen=get("main-screen"),gameScreen=get("game-screen"),loadingMessage=get("loading-message"),registrationForm=get("registration-form"),displayNameInput=get("display-name-input"),registerBtn=get("register-btn"),inputErrorMessage=get("input-error-message"),userIdDisplayInput=get("user-id-display"),generateUserIdBtn=get("generate-user-id-btn"),userIdErrorMessage=get("user-id-error-message"),userProfileArea=get("user-profile-area"),avatarContainer=get("avatar-container"),avatarImage=get("avatar-image"),userInfoBox=get("user-info-box"),displayNameOutput=get("display-name-output"),publicUserIdOutput=get("public-user-id-output"),clanOutputBox=get("clan-output-box"),clanOutput=get("clan-output"),editNameBtn=get("edit-name-btn"),mainScreenButtonsLayout=get("main-screen-buttons-layout"),startGameBtn=get("start-game-btn"),mafiaFactBtn=get("mafia-fact-btn"),devIntroBtnHeader=get("dev-intro-icon-btn-header"),leaderboardBtn=get("leaderboard-btn"),clansBtn=get("clans-btn"),stageDisplay=get("stage-display"),questionText=get("question-text"),optionsContainer=get("options-container"),questionExplanation=get("question-explanation"),backToMainBtn=get("back-to-main-btn"),gameFeedback=get("game-feedback"),aiThinkingIndicator=get("ai-thinking-indicator"),modalContainer=get("modal-container"),modalTitle=get("modal-title"),modalContentDynamic=get("modal-content-dynamic"),modalMessage=get("modal-message"),changeNameInputContainer=get("change-name-input-container"),newDisplayNameInput=get("new-display-name-input"),changeNameErrorMessage=get("change-name-error-message"),avatarGenerationContainer=get("avatar-generation-container"),generateAvatarBtn=get("generate-avatar-btn"),avatarAiLoading=get("avatar-ai-loading"),avatarSuggestionsContainer=get("avatar-suggestions-container"),avatarErrorMessage=get("avatar-error-message"),modalConfirmBtn=get("modal-confirm-btn"),modalCancelBtn=get("modal-cancel-btn"),developersPanelContainer=get("developers-panel-container"),closeDevelopersPanelBtn=get("close-developers-panel-btn"),leaderboardPanelContainer=get("leaderboard-panel-container"),closeLeaderboardPanelBtn=get("close-leaderboard-panel-btn"),leaderboardList=get("leaderboard-list"),clansPanelContainer=get("clans-panel-container"),closeClansPanelBtn=get("close-clans-panel-btn"),clanManagementContent=get("clan-management-content"),userClanView=get("user-clan-view"),userClanName=get("user-clan-name"),userClanMembersList=get("user-clan-members-list"),leaveClanBtn=get("leave-clan-btn"),noClanView=get("no-clan-view"),createClanSection=get("create-clan-section"),createClanNameInput=get("create-clan-name-input"),createClanErrorMessage=get("create-clan-error-message"),createClanBtn=get("create-clan-btn"),searchClanInput=get("search-clan-input"),clansList=get("clans-list")}
-
-        async function initializeGame() {
-            cacheDOMElements();
-            if(userProfileArea) userProfileArea.classList.add('hidden');
-            if(loadingMessage) loadingMessage.textContent = "در حال آماده سازی...";
-            try {
-                setupEventListeners();
-                await initFirebase();
-            } catch (error) {
-                console.error("Error during initializeGame:", error);
-                if(loadingMessage) loadingMessage.textContent = "خطا در راه اندازی بازی.";
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', initializeGame);
+        // اجرای اولیه تابع تبدیل هنگام بارگذاری صفحه
+        window.addEventListener('load', convertCurrency);
 
     </script>
+
 </body>
 </html>
