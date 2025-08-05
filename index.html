@@ -152,43 +152,6 @@
         @keyframes slideIn { to { transform: translateX(0); } }
         @keyframes slideOut { to { transform: translateX(-120%); opacity: 0; } }
 
-        /* ================== Announcement Modal ================== */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none; justify-content: center; align-items: center;
-            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal-overlay.show { display: flex; opacity: 1; }
-        
-        .modal-content {
-            background: var(--card-bg); color: var(--text-color);
-            padding: 30px; border-radius: 15px; max-width: 500px;
-            width: 90%; text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            position: relative;
-            transform: scale(0.9); transition: transform 0.3s ease;
-        }
-        .modal-overlay.show .modal-content { transform: scale(1); }
-
-        .modal-content h3 {
-            font-size: 22px; margin-bottom: 15px; color: var(--primary-color);
-        }
-        .modal-content h3 i { margin-left: 10px; }
-
-        .modal-content p {
-            font-size: 16px; line-height: 1.8; margin-bottom: 25px;
-        }
-
-        .modal-ok-btn {
-            background-color: var(--primary-color); color: white;
-            border: none; border-radius: 8px;
-            padding: 12px 30px; font-size: 16px;
-            font-family: 'Vazirmatn', sans-serif; cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .modal-ok-btn:hover { background-color: var(--primary-hover); }
-
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -269,21 +232,10 @@
         </div>
     </main>
 
-    <!-- ======== START: Announcement Modal HTML ======== -->
-    <div id="announcement-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h3><i class="fas fa-bullhorn"></i> اطلاعیه</h3>
-            <p id="announcement-text"></p>
-            <button id="modal-ok-btn" class="modal-ok-btn">متوجه شدم</button>
-        </div>
-    </div>
-    <!-- ======== END: Announcement Modal HTML ======== -->
-
 <script>
 // ================== JavaScript ==================
 const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما
 const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
-const announcementUrl = 'https://litebase.ir/code/servers/ealan_arz_poll.json'; // <-- لینک سرور اعلامیه
 
 // --- دریافت عناصر DOM ---
 const dom = {
@@ -308,10 +260,6 @@ const dom = {
     watchlistContent: document.getElementById('watchlist-content'),
     watchlistTitle: document.getElementById('watchlist-title'),
     toastContainer: document.getElementById('toast-container'),
-    // عناصر مودال اعلامیه
-    announcementModal: document.getElementById('announcement-modal'),
-    announcementText: document.getElementById('announcement-text'),
-    modalOkBtn: document.getElementById('modal-ok-btn'),
 };
 
 // --- وضعیت برنامه (State) ---
@@ -323,7 +271,6 @@ const state = {
     latestRates: null,
     previousRates: null, // برای تشخیص روند
     chartTimeRange: 7,
-    lastShownAnnouncement: null, // برای ذخیره آخرین اعلامیه نمایش داده شده
 };
 let historyChart;
 let conversionDebounceTimer;
@@ -340,10 +287,6 @@ async function init() {
         card.style.animationDelay = `${index * 0.1}s`;
     });
     await performConversion();
-    
-    // شروع بررسی اعلامیه‌ها
-    checkAnnouncements(); // بررسی در لحظه شروع
-    setInterval(checkAnnouncements, 60000); // بررسی هر 60 ثانیه
 }
 
 async function fetchAllCurrencies() {
@@ -741,36 +684,6 @@ function loadPreferences() {
     }
 }
 
-// --- START: توابع مربوط به اعلامیه ---
-async function checkAnnouncements() {
-    try {
-        // افزودن یک پارامتر برای جلوگیری از کش شدن فایل جیسون توسط مرورگر
-        const response = await fetch(`${announcementUrl}?t=${new Date().getTime()}`);
-        if (!response.ok) return; // در صورت خطا، بدون هیچ پیامی خارج شو
-        
-        const data = await response.json();
-        
-        // بررسی می‌کنیم که داده یک آرایه باشد، خالی نباشد و پیام آن با آخرین پیام نمایش داده شده متفاوت باشد
-        if (Array.isArray(data) && data.length > 0 && data[0] && data[0] !== state.lastShownAnnouncement) {
-            showAnnouncement(data[0]);
-        }
-    } catch (error) {
-        console.error('Error fetching announcement:', error);
-        // خطاهای مربوط به اعلامیه را به کاربر نشان نمی‌دهیم تا تجربه کاربری مختل نشود
-    }
-}
-
-function showAnnouncement(message) {
-    state.lastShownAnnouncement = message;
-    dom.announcementText.textContent = message;
-    dom.announcementModal.classList.add('show');
-}
-
-function hideAnnouncement() {
-    dom.announcementModal.classList.remove('show');
-}
-// --- END: توابع مربوط به اعلامیه ---
-
 // --- ثبت Event Listeners ---
 function addEventListeners() {
     dom.swapBtn.addEventListener('click', handleSwap);
@@ -779,6 +692,7 @@ function addEventListeners() {
     
     dom.amountInput.addEventListener('input', () => {
         formatAmount({target: dom.amountInput});
+        // به جای فراخوانی API، فقط نتیجه را با نرخ موجود آپدیت می‌کنیم
         updateConverterResult(parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0);
     });
 
@@ -794,7 +708,7 @@ function addEventListeners() {
         document.addEventListener('click', (e) => {
             if (!input.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.classList.remove('show');
-                updateCurrencyUI(type, state[type]);
+                updateCurrencyUI(type, state[type]); // بازگرداندن به مقدار قبلی اگر کاربر چیزی انتخاب نکند
             }
         });
     });
@@ -813,15 +727,6 @@ function addEventListeners() {
         if (e.target.classList.contains('remove-fav-btn')) {
             const codeToRemove = e.target.dataset.code;
             toggleFavorite(codeToRemove, null);
-        }
-    });
-
-    // Event listeners برای مودال اعلامیه
-    dom.modalOkBtn.addEventListener('click', hideAnnouncement);
-    dom.announcementModal.addEventListener('click', (e) => {
-        // بستن مودال با کلیک روی پس‌زمینه تیره
-        if (e.target === dom.announcementModal) {
-            hideAnnouncement();
         }
     });
 }
