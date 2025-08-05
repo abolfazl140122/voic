@@ -3,194 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>داشبورد ارزی حرفه‌ای</title>
+    <title>داشبورد ارزی پیشرفته</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- کتابخانه نمودار -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         /* ================== CSS ================== */
         :root {
-            --bg-color: #f4f7fc;
-            --card-bg: #ffffff;
-            --text-color: #34495e;
-            --primary-color: #3498db;
-            --primary-hover: #2980b9;
-            --border-color: #e2e8f0;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-            --input-bg: #fdfdff;
+            --bg-color: #f4f7fc; --card-bg: #ffffff; --text-color: #34495e;
+            --primary-color: #3498db; --primary-hover: #2980b9; --border-color: #e2e8f0;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.07); --input-bg: #fdfdff;
+            --success-color: #2ecc71; --danger-color: #e74c3c; --neutral-color: #95a5a6;
         }
-
         [data-theme="dark"] {
-            --bg-color: #1a202c;
-            --card-bg: #2d3748;
-            --text-color: #e2e8f0;
-            --primary-color: #4299e1;
-            --primary-hover: #2b6cb0;
-            --border-color: #4a5568;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            --input-bg: #1a202c;
+            --bg-color: #1a202c; --card-bg: #2d3748; --text-color: #e2e8f0;
+            --primary-color: #4299e1; --primary-hover: #2b6cb0; --border-color: #4a5568;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.2); --input-bg: #1a202c;
+            --success-color: #27ae60; --danger-color: #c0392b; --neutral-color: #7f8c8d;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* تغییر برای قرارگیری در بالا */
-            min-height: 100vh;
-            padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
+            font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-color); color: var(--text-color);
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; padding: 20px; transition: background-color 0.3s, color 0.3s;
         }
 
-        .main-container {
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
+        .main-container { width: 100%; max-width: 900px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .header h1 { font-size: 28px; }
-
         .theme-switcher {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 50px;
-            padding: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 80px;
-            display: flex;
-            justify-content: space-between;
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50px;
+            padding: 5px; cursor: pointer; font-size: 18px; width: 80px; display: flex; justify-content: space-between;
         }
         .theme-switcher i { padding: 5px; border-radius: 50%; }
         .theme-switcher .active { background: var(--primary-color); color: white; }
 
-        .app-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        @media (min-width: 800px) {
-            .app-grid { grid-template-columns: 400px 1fr; }
-        }
+        .app-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 800px) { .app-grid { grid-template-columns: 400px 1fr; } }
 
         .card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
+            background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: var(--shadow);
+            border: 1px solid var(--border-color); transition: background-color 0.3s, border-color 0.3s, transform 0.5s, opacity 0.5s;
+            opacity: 0; transform: translateY(20px);
         }
-        
+        .card.visible { opacity: 1; transform: translateY(0); }
+
+        /* ... (بقیه استایل‌های کارت و ورودی‌ها مثل قبل) ... */
         .converter .input-group { margin-bottom: 20px; }
         .converter label { font-weight: 500; display: block; margin-bottom: 8px; }
-
         .currency-input-wrapper { position: relative; }
-        .currency-input-wrapper .icon {
-            position: absolute;
-            top: 50%; transform: translateY(-50%);
-            left: 15px; color: #999;
-        }
-        .currency-input-wrapper input {
-            padding-right: 15px; padding-left: 40px; /* برای آیکون */
-        }
-        
+        .currency-input-wrapper .icon { position: absolute; top: 50%; transform: translateY(-50%); left: 15px; color: #999; font-size: 22px; }
+        .currency-input-wrapper input { padding-right: 15px; padding-left: 50px; }
         input {
-            width: 100%; padding: 12px 15px;
-            border-radius: 8px; border: 1px solid var(--border-color);
-            background: var(--input-bg); color: var(--text-color);
-            font-family: 'Vazirmatn', sans-serif; font-size: 16px;
+            width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color);
+            background: var(--input-bg); color: var(--text-color); font-family: 'Vazirmatn', sans-serif; font-size: 16px;
         }
-
         .conversion-flow { display: flex; align-items: center; margin: 25px 0; }
         .conversion-flow .currency-box { flex: 1; }
-        .conversion-flow #swap-btn {
-            background: var(--card-bg); border: 2px solid var(--primary-color);
-            color: var(--primary-color); width: 45px; height: 45px;
-            border-radius: 50%; cursor: pointer; font-size: 18px; margin: 0 15px;
-            transition: all 0.3s;
-        }
+        .conversion-flow #swap-btn { background: var(--card-bg); border: 2px solid var(--primary-color); color: var(--primary-color); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; margin: 0 15px; transition: all 0.3s; }
         .conversion-flow #swap-btn:hover { background: var(--primary-color); color: white; transform: rotate(180deg); }
-
-        /* استایل دراپ‌داون جستجو */
+        
         .currency-dropdown {
-            display: none; position: absolute;
-            top: 100%; left: 0; right: 0;
-            max-height: 200px; overflow-y: auto;
-            background: var(--card-bg); border: 1px solid var(--border-color);
+            display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 200px;
+            overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color);
             border-radius: 8px; z-index: 10; margin-top: 5px;
         }
         .currency-dropdown.show { display: block; }
-        .currency-dropdown div {
-            padding: 10px 15px; cursor: pointer;
-        }
-        .currency-dropdown div:hover { background: var(--primary-color); color: white; }
+        .currency-dropdown-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; cursor: pointer; }
+        .currency-dropdown-item:hover { background: var(--primary-color); color: white; }
+        .currency-dropdown-item .fav-star { color: #ccc; transition: color 0.2s, transform 0.2s; }
+        .currency-dropdown-item .fav-star.favorited { color: #f1c40f; transform: scale(1.2); }
         
-        #convert-btn {
-            width: 100%; padding: 15px; background: var(--primary-color);
-            color: white; border: none; border-radius: 8px;
-            font-size: 18px; font-weight: 700; cursor: pointer;
-            transition: background-color 0.3s; position: relative;
-        }
+        #convert-btn { width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; transition: background-color 0.3s; position: relative; }
         #convert-btn:hover { background: var(--primary-hover); }
         #convert-btn.loading { background: var(--primary-hover); cursor: not-allowed; }
-        .btn-spinner {
-            display: none;
-            width: 20px; height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            position: absolute; top: 50%; left: 20px;
-            transform: translateY(-50%);
-        }
+        .btn-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; position: absolute; top: 50%; left: 20px; transform: translateY(-50%); }
         #convert-btn.loading .btn-spinner { display: block; }
         #convert-btn.loading .btn-text { opacity: 0.5; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .result-box { margin-top: 25px; text-align: center; }
-        #result-final { font-size: 28px; font-weight: 700; color: var(--primary-color); min-height: 35px; }
-        #result-rate { font-size: 14px; color: #777; min-height: 20px; }
+        #result-final-wrapper { display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--primary-color); min-height: 35px; }
+        #copy-btn { font-size: 16px; margin-right: 10px; cursor: pointer; color: #aaa; transition: color 0.2s; }
+        #copy-btn:hover { color: var(--primary-color); }
+        #result-rate, #result-rate-reverse { font-size: 14px; color: #777; min-height: 20px; }
 
         .chart-container { position: relative; height: 100%; min-height: 300px; }
+        .chart-loader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.5);
+            display: none; justify-content: center; align-items: center; z-index: 5;
+        }
+        [data-theme="dark"] .chart-loader { background: rgba(45, 55, 72, 0.7); }
+        .chart-loader.show { display: flex; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #555; }
     </style>
 </head>
 <body>
 
     <main class="main-container">
-        <header class="header">
-            <h1>داشبورد ارز</h1>
+        <header class="header card">
+            <h1>داشبورد ارزی</h1>
             <div class="theme-switcher" id="theme-switcher">
-                <i class="fas fa-sun active"></i>
-                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun active"></i><i class="fas fa-moon"></i>
             </div>
         </header>
 
         <div class="app-grid">
             <div class="card converter">
-                <div class="input-group">
-                    <label for="amount">مبلغ</label>
-                    <input type="text" id="amount" value="1,000">
-                </div>
-                
+                <!-- ... محتوای مبدل مثل قبل ... -->
+                <div class="input-group"><label for="amount">مبلغ</label><input type="text" id="amount" value="1,000"></div>
                 <div class="conversion-flow">
                     <div class="currency-box input-group">
                         <label for="from-currency-input">از</label>
                         <div class="currency-input-wrapper">
                             <span class="icon" id="from-icon"></span>
-                            <input type="text" id="from-currency-input" placeholder="جستجو...">
-                            <div class="currency-dropdown" id="from-dropdown"></div>
+                            <input type="text" id="from-currency-input" placeholder="جستجو..."><div class="currency-dropdown" id="from-dropdown"></div>
                         </div>
                     </div>
                     <button id="swap-btn" title="جابجایی"><i class="fas fa-exchange-alt"></i></button>
@@ -198,26 +132,25 @@
                         <label for="to-currency-input">به</label>
                         <div class="currency-input-wrapper">
                             <span class="icon" id="to-icon"></span>
-                            <input type="text" id="to-currency-input" placeholder="جستجو...">
-                            <div class="currency-dropdown" id="to-dropdown"></div>
+                            <input type="text" id="to-currency-input" placeholder="جستجو..."><div class="currency-dropdown" id="to-dropdown"></div>
                         </div>
                     </div>
                 </div>
-
-                <button id="convert-btn">
-                    <span class="btn-spinner"></span>
-                    <span class="btn-text">تبدیل</span>
-                </button>
-                
+                <button id="convert-btn"><span class="btn-spinner"></span><span class="btn-text">تبدیل</span></button>
                 <div class="result-box">
-                    <div id="result-final"></div>
+                    <div id="result-final-wrapper">
+                        <i id="copy-btn" class="far fa-copy" title="کپی کردن"></i>
+                        <span id="result-final"></span>
+                    </div>
                     <div id="result-rate"></div>
+                    <div id="result-rate-reverse"></div>
                 </div>
             </div>
 
             <div class="card chart-card">
                 <h3 id="chart-title">تاریخچه نرخ</h3>
                 <div class="chart-container">
+                    <div class="chart-loader" id="chart-loader"><div class="btn-spinner" style="display:block; width:50px; height:50px; border-width: 5px; border-top-color: var(--primary-color);"></div></div>
                     <canvas id="history-chart"></canvas>
                 </div>
             </div>
@@ -226,6 +159,9 @@
 
     <script>
     // ================== JavaScript ==================
+    const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API خود را اینجا قرار دهید
+    
+    // ... (تمام کدهای جاوااسکریپت در اینجا قرار می‌گیرند) ...
     // --- دریافت عناصر DOM ---
     const amountInput = document.getElementById('amount');
     const fromCurrencyInput = document.getElementById('from-currency-input');
@@ -237,158 +173,162 @@
     const convertBtn = document.getElementById('convert-btn');
     const swapBtn = document.getElementById('swap-btn');
     const resultFinal = document.getElementById('result-final');
+    const copyBtn = document.getElementById('copy-btn');
     const resultRate = document.getElementById('result-rate');
+    const resultRateReverse = document.getElementById('result-rate-reverse');
     const themeSwitcher = document.getElementById('theme-switcher');
     const chartTitle = document.getElementById('chart-title');
+    const chartLoader = document.getElementById('chart-loader');
     const ctx = document.getElementById('history-chart').getContext('2d');
 
-    // --- تنظیمات و وضعیت برنامه ---
-    const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API خود را اینجا قرار دهید
+    // --- وضعیت برنامه ---
     const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
-    
     let state = {
-        from: 'USD',
-        to: 'IRR',
+        from: 'USD', to: 'IRR',
         allCurrencies: [],
+        favorites: [],
     };
     let historyChart;
 
     // --- توابع اصلی ---
-
-    // 1. مقداردهی اولیه برنامه
     async function init() {
         loadPreferences();
         await fetchAllCurrencies();
         addEventListeners();
         updateCurrencyUI('from', state.from);
         updateCurrencyUI('to', state.to);
-        performConversion(); // اجرای اولیه
+        document.querySelectorAll('.card').forEach((card, index) => {
+            setTimeout(() => card.classList.add('visible'), index * 100);
+        });
+        performConversion();
     }
 
-    // 2. دریافت لیست تمام ارزها از API
     async function fetchAllCurrencies() {
         if (apiKey === 'YOUR_API_KEY') {
-            alert('لطفا کلید API خود را در کد جاوااسکریپت وارد کنید.');
-            return;
+            alert('لطفا کلید API خود را در کد جاوااسکریپت وارد کنید.'); return;
         }
         try {
-            const response = await fetch(`${apiUrl}/codes`);
-            const data = await response.json();
-            if (data.result === 'success') {
-                state.allCurrencies = data.supported_codes;
-            } else {
-                console.error('Error fetching currency codes:', data['error-type']);
-            }
-        } catch (error) {
-            console.error('Network error fetching currency codes:', error);
-        }
+            const data = await (await fetch(`${apiUrl}/codes`)).json();
+            if (data.result === 'success') state.allCurrencies = data.supported_codes;
+        } catch (error) { console.error('Error fetching currency codes:', error); }
     }
 
-    // 3. انجام تبدیل (تابع اصلی که با کلیک فراخوانی می‌شود)
     async function performConversion() {
         const amount = parseFloat(amountInput.value.replace(/,/g, '')) || 0;
         if (amount === 0) {
-            resultFinal.textContent = '';
-            resultRate.textContent = '';
+            resultFinal.textContent = ''; resultRate.textContent = ''; resultRateReverse.textContent = '';
             return;
         }
-
         toggleButtonLoading(true);
-
         try {
-            const response = await fetch(`${apiUrl}/pair/${state.from}/${state.to}/${amount}`);
-            const data = await response.json();
-
+            const data = await (await fetch(`${apiUrl}/pair/${state.from}/${state.to}/${amount}`)).json();
             if (data.result === 'success') {
                 const finalAmount = data.conversion_result;
                 const rate = data.conversion_rate;
-                
                 resultFinal.textContent = `${finalAmount.toLocaleString('fa-IR', {maximumFractionDigits: 2})} ${state.to}`;
                 resultRate.textContent = `1 ${state.from} = ${rate.toLocaleString('fa-IR', {maximumFractionDigits: 4})} ${state.to}`;
+                resultRateReverse.textContent = `1 ${state.to} = ${(1/rate).toLocaleString('fa-IR', {maximumFractionDigits: 8})} ${state.from}`;
                 savePreferences();
-                updateHistoryChart(); // بروزرسانی نمودار
+                updateHistoryChart();
             } else {
-                resultFinal.textContent = 'خطا در تبدیل';
-                resultRate.textContent = `(${data['error-type']})`;
+                resultFinal.textContent = 'خطا'; resultRate.textContent = `(${data['error-type']})`;
             }
         } catch (error) {
             resultFinal.textContent = 'خطای شبکه';
-            console.error('Conversion error:', error);
         } finally {
             toggleButtonLoading(false);
         }
     }
 
-    // 4. دریافت تاریخچه و بروزرسانی نمودار
     async function updateHistoryChart() {
         chartTitle.textContent = `تاریخچه ۷ روزه ${state.from} به ${state.to}`;
+        chartLoader.classList.add('show');
         const dates = [];
-        const rates = [];
         const promises = [];
 
-        for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            
-            dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
-            
-            // فراخوانی API برای هر روز
-            const promise = fetch(`${apiUrl}/history/${state.from}/${year}/${month}/${day}`)
-                .then(res => res.json())
-                .then(data => data.conversion_rates ? data.conversion_rates[state.to] : null);
+        for (let i = 7; i >= 0; i--) { // 8 روز برای مقایسه روز اول
+            const date = new Date(); date.setDate(date.getDate() - i);
+            const promise = fetch(`${apiUrl}/history/${state.from}/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`)
+                .then(res => res.json());
             promises.push(promise);
+            if (i > 0) dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
         }
 
-        const dailyRates = await Promise.all(promises);
+        const historyData = await Promise.all(promises);
+        const dailyRates = historyData.map(data => data.conversion_rates ? data.conversion_rates[state.to] : null);
         
-        if (historyChart) {
-            historyChart.destroy();
+        const backgroundColors = [];
+        const borderColors = [];
+        const successColor = getComputedStyle(document.documentElement).getPropertyValue('--success-color').trim();
+        const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger-color').trim();
+        const neutralColor = getComputedStyle(document.documentElement).getPropertyValue('--neutral-color').trim();
+
+        for (let i = 1; i < dailyRates.length; i++) {
+            if (dailyRates[i] > dailyRates[i-1]) {
+                backgroundColors.push(successColor + '80'); borderColors.push(successColor); // 80 برای شفافیت
+            } else if (dailyRates[i] < dailyRates[i-1]) {
+                backgroundColors.push(dangerColor + '80'); borderColors.push(dangerColor);
+            } else {
+                backgroundColors.push(neutralColor + '80'); borderColors.push(neutralColor);
+            }
         }
 
+        if (historyChart) historyChart.destroy();
         historyChart = new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: { labels: dates, datasets: [{
-                label: `نرخ ${state.to}`,
-                data: dailyRates,
-                borderColor: 'var(--primary-color)',
-                backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.3
+                label: `نرخ ${state.to}`, data: dailyRates.slice(1),
+                backgroundColor: backgroundColors, borderColor: borderColors, borderWidth: 2,
             }]},
             options: {
                 responsive: true, maintainAspectRatio: false,
-                scales: { y: { ticks: { color: 'var(--text-color)' } },
-                          x: { ticks: { color: 'var(--text-color)' } } },
-                plugins: { legend: { labels: { color: 'var(--text-color)' } } }
+                scales: { y: { ticks: { color: 'var(--text-color)' } }, x: { ticks: { color: 'var(--text-color)' } } },
+                plugins: { legend: { display: false } }
             }
         });
+        chartLoader.classList.remove('show');
     }
 
     // --- توابع کمکی و UI ---
-    
     function populateDropdown(dropdown, filter = '') {
         dropdown.innerHTML = '';
-        const filtered = state.allCurrencies
-            .filter(([code, name]) => 
-                code.toLowerCase().includes(filter) || name.toLowerCase().includes(filter)
-            );
+        const sortedCurrencies = [...state.allCurrencies].sort((a, b) => {
+            const aIsFav = state.favorites.includes(a[0]);
+            const bIsFav = state.favorites.includes(b[0]);
+            if (aIsFav === bIsFav) return a[0].localeCompare(b[0]);
+            return aIsFav ? -1 : 1;
+        });
+
+        const filtered = sortedCurrencies.filter(([code, name]) => 
+            code.toLowerCase().includes(filter) || name.toLowerCase().includes(filter)
+        );
 
         filtered.forEach(([code, name]) => {
-            const div = document.createElement('div');
-            div.textContent = `${code} - ${name}`;
-            div.dataset.code = code;
-            div.addEventListener('click', () => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'currency-dropdown-item';
+            itemDiv.innerHTML = `<span>${code} - ${name}</span><i class="fav-star ${state.favorites.includes(code) ? 'fas' : 'far'} fa-star"></i>`;
+            
+            itemDiv.addEventListener('click', () => {
                 const type = dropdown.id.includes('from') ? 'from' : 'to';
                 updateCurrencyUI(type, code);
                 dropdown.classList.remove('show');
                 performConversion();
             });
-            dropdown.appendChild(div);
+            itemDiv.querySelector('.fav-star').addEventListener('click', (e) => {
+                e.stopPropagation(); toggleFavorite(code, e.target);
+            });
+            dropdown.appendChild(itemDiv);
         });
+    }
+
+    function toggleFavorite(code, starElement) {
+        const index = state.favorites.indexOf(code);
+        if (index > -1) state.favorites.splice(index, 1);
+        else state.favorites.push(code);
+        starElement.classList.toggle('fas');
+        starElement.classList.toggle('far');
+        starElement.classList.toggle('favorited');
+        savePreferences();
     }
 
     function updateCurrencyUI(type, code) {
@@ -397,9 +337,8 @@
         const icon = (type === 'from') ? fromIcon : toIcon;
         const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || '';
         input.value = `${code} - ${currencyName}`;
-        try { // برای نمایش پرچم کشور
-            icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt() + 127397));
-        } catch(e) { icon.textContent = '🏳️'; }
+        try { icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt() + 127397)); }
+        catch(e) { icon.textContent = '🏳️'; }
     }
 
     function toggleButtonLoading(isLoading) {
@@ -410,48 +349,37 @@
     
     function handleSwap() {
         [state.from, state.to] = [state.to, state.from];
-        updateCurrencyUI('from', state.from);
-        updateCurrencyUI('to', state.to);
+        updateCurrencyUI('from', state.from); updateCurrencyUI('to', state.to);
         performConversion();
     }
     
     function formatAmount(e) {
         let value = e.target.value.replace(/,/g, '');
-        if (!isNaN(value) && value !== '') {
-            e.target.value = parseFloat(value).toLocaleString('en-US');
-        }
+        if (!isNaN(value) && value !== '') e.target.value = parseFloat(value).toLocaleString('en-US');
+    }
+
+    function copyResult() {
+        const textToCopy = resultFinal.textContent.split(' ')[0];
+        navigator.clipboard.writeText(textToCopy.replace(/,/g, ''));
+        copyBtn.setAttribute('title', 'کپی شد!');
+        setTimeout(() => copyBtn.setAttribute('title', 'کپی کردن'), 2000);
     }
 
     // --- مدیریت تم و حافظه مرورگر ---
     function toggleTheme() {
-        const currentTheme = document.body.dataset.theme;
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        const newTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
         document.body.dataset.theme = newTheme;
-        
-        // آپدیت ظاهر سوییچر
-        themeSwitcher.querySelectorAll('i').forEach(i => i.classList.remove('active'));
-        themeSwitcher.querySelector(newTheme === 'dark' ? '.fa-moon' : '.fa-sun').classList.add('active');
-
+        themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
         localStorage.setItem('currency_theme', newTheme);
-        // بروزرسانی نمودار با رنگ‌های جدید
-        if(historyChart) updateHistoryChart();
+        if(historyChart) updateHistoryChart(); // بروزرسانی نمودار با رنگ‌های جدید
     }
-
-    function savePreferences() {
-        localStorage.setItem('currency_prefs', JSON.stringify({from: state.from, to: state.to}));
-    }
-
+    function savePreferences() { localStorage.setItem('currency_prefs', JSON.stringify({from: state.from, to: state.to, favorites: state.favorites})); }
     function loadPreferences() {
         const theme = localStorage.getItem('currency_theme') || 'light';
         document.body.dataset.theme = theme;
-        themeSwitcher.querySelectorAll('i').forEach(i => i.classList.remove('active'));
-        themeSwitcher.querySelector(theme === 'dark' ? '.fa-moon' : '.fa-sun').classList.add('active');
-
+        if(theme === 'dark') themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
         const prefs = JSON.parse(localStorage.getItem('currency_prefs'));
-        if (prefs) {
-            state.from = prefs.from;
-            state.to = prefs.to;
-        }
+        if (prefs) { state.from = prefs.from; state.to = prefs.to; state.favorites = prefs.favorites || []; }
     }
 
     // --- افزودن Event Listeners ---
@@ -460,25 +388,15 @@
         swapBtn.addEventListener('click', handleSwap);
         themeSwitcher.addEventListener('click', toggleTheme);
         amountInput.addEventListener('keyup', formatAmount);
-
+        copyBtn.addEventListener('click', copyResult);
         ['from', 'to'].forEach(type => {
             const input = document.getElementById(`${type}-currency-input`);
             const dropdown = document.getElementById(`${type}-dropdown`);
-            
-            input.addEventListener('focus', () => {
-                input.value = '';
-                populateDropdown(dropdown);
-                dropdown.classList.add('show');
-            });
-            
-            input.addEventListener('keyup', () => {
-                populateDropdown(dropdown, input.value.toLowerCase());
-            });
-
+            input.addEventListener('focus', () => { input.value = ''; populateDropdown(dropdown); dropdown.classList.add('show'); });
+            input.addEventListener('keyup', () => populateDropdown(dropdown, input.value.toLowerCase()));
             document.addEventListener('click', (e) => {
                 if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.remove('show');
-                    if (input.value === '') updateCurrencyUI(type, state[type]);
+                    dropdown.classList.remove('show'); if (input.value === '') updateCurrencyUI(type, state[type]);
                 }
             });
         });
