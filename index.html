@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* ================== CSS ================== */
+        /* ================== CSS اصلی ================== */
         :root {
             --bg-color: #f4f7fc; --card-bg: #ffffff; --text-color: #34495e;
             --primary-color: #3498db; --primary-hover: #2980b9; --border-color: #e2e8f0;
@@ -73,7 +73,6 @@
         .watchlist-card { animation-delay: 0.3s; }
 
         .card h3 { margin-bottom: 20px; font-size: 20px; color: var(--primary-color); }
-
         .converter .input-group { margin-bottom: 20px; }
         .converter label { font-weight: 500; display: block; margin-bottom: 8px; }
         .currency-input-wrapper { position: relative; }
@@ -156,10 +155,59 @@
         ::-webkit-scrollbar-track { background: var(--bg-color); }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
         [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #555; }
+        
+        /* ================== استایل بنر اعلامیه ================== */
+        .announcement-banner {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(145deg, #1e3a5f, #102036);
+            color: #f1c40f; /* رنگ طلایی */
+            padding: 12px 20px; z-index: 1001; /* بالاتر از بقیه عناصر */
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            border-bottom: 3px solid #f1c40f;
+            transform: translateY(-150%); /* شروع از خارج صفحه */
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* انیمیشن جهشی */
+            font-weight: 700;
+        }
+        .announcement-banner.show {
+            transform: translateY(0);
+        }
+        .announcement-banner .fa-bullhorn {
+            margin-left: 15px; font-size: 20px;
+            animation: trumpet-shake 2.5s infinite;
+        }
+        @keyframes trumpet-shake {
+            0%, 50%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-10deg); }
+            20%, 40% { transform: rotate(10deg); }
+        }
+        #announcement-text {
+            flex-grow: 1; color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            font-size: 16px;
+        }
+        .announcement-close {
+            background: none; border: 2px solid #f1c40f; color: #f1c40f;
+            width: 28px; height: 28px; border-radius: 50%;
+            cursor: pointer; font-size: 20px; line-height: 24px;
+            margin-right: 15px; transition: all 0.3s;
+            font-family: Arial, sans-serif; /* برای نمایش بهتر × */
+        }
+        .announcement-close:hover {
+            background: #f1c40f; color: #102036;
+            transform: scale(1.1) rotate(90deg);
+        }
     </style>
 </head>
 <body>
 
+    <!-- =========== بنر اعلامیه =========== -->
+    <div id="announcement-banner" class="announcement-banner">
+        <i class="fas fa-bullhorn"></i>
+        <span id="announcement-text"></span>
+        <button id="announcement-close" class="announcement-close" title="بستن اعلامیه">&times;</button>
+    </div>
+    
     <div id="toast-container"></div>
 
     <main class="main-container">
@@ -236,6 +284,7 @@
 // ================== JavaScript ==================
 const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما
 const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
+const announcementUrl = 'https://litebase.ir/code/servers/ealan_arz_poll.json'; // <-- سرور اعلامیه شما
 
 // --- دریافت عناصر DOM ---
 const dom = {
@@ -260,6 +309,10 @@ const dom = {
     watchlistContent: document.getElementById('watchlist-content'),
     watchlistTitle: document.getElementById('watchlist-title'),
     toastContainer: document.getElementById('toast-container'),
+    // عناصر جدید برای اعلامیه
+    announcementBanner: document.getElementById('announcement-banner'),
+    announcementText: document.getElementById('announcement-text'),
+    announcementClose: document.getElementById('announcement-close'),
 };
 
 // --- وضعیت برنامه (State) ---
@@ -271,6 +324,7 @@ const state = {
     latestRates: null,
     previousRates: null, // برای تشخیص روند
     chartTimeRange: 7,
+    announcementMessage: null, // برای نگهداری آخرین پیام اعلامیه
 };
 let historyChart;
 let conversionDebounceTimer;
@@ -280,6 +334,11 @@ let conversionDebounceTimer;
 async function init() {
     loadPreferences();
     await fetchAllCurrencies();
+    
+    // اجرای اولیه سیستم اعلامیه و تنظیم بررسی دوره‌ای
+    await checkAnnouncements();
+    setInterval(checkAnnouncements, 10000); // بررسی سرور اعلامیه هر 10 ثانیه
+
     addEventListeners();
     updateCurrencyUI('from', state.from);
     updateCurrencyUI('to', state.to);
@@ -311,7 +370,6 @@ async function fetchAllCurrencies() {
 async function performConversion() {
     const amount = parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0;
     
-    // نمایش لودرها
     renderWatchlistSkeleton();
     dom.chartLoader.classList.add('show');
 
@@ -320,7 +378,6 @@ async function performConversion() {
         const data = await response.json();
 
         if (data.result === 'success') {
-            // ذخیره نرخ‌های قبلی برای مقایسه روند
             if(state.latestRates) {
                 state.previousRates = { ...state.latestRates.conversion_rates };
             }
@@ -357,6 +414,44 @@ function handleApiError(errorType) {
     showToast(message, 'error');
     dom.resultFinal.textContent = 'خطا';
     dom.resultRate.textContent = `(${errorType})`;
+}
+
+
+// --- توابع اعلامیه ---
+
+async function checkAnnouncements() {
+    try {
+        // افزودن پارامتر برای جلوگیری از کش شدن توسط مرورگر
+        const response = await fetch(`${announcementUrl}?t=${new Date().getTime()}`);
+        if (!response.ok) {
+            console.warn(`بررسی اعلامیه با خطا مواجه شد: ${response.status}`);
+            updateAnnouncementBanner(''); // پنهان کردن بنر در صورت خطا
+            return;
+        }
+        const data = await response.json();
+
+        // سرور یک آرایه برمی‌گرداند. ما اولین عنصر آن را به عنوان پیام در نظر می‌گیریم
+        const message = Array.isArray(data) && data.length > 0 && typeof data[0] === 'string' ? data[0].trim() : '';
+        
+        // فقط در صورتی که پیام جدید با پیام قبلی متفاوت باشد، بنر را آپدیت می‌کنیم
+        if (message !== state.announcementMessage) {
+            updateAnnouncementBanner(message);
+        }
+    } catch (error) {
+        console.error('خطا در دریافت اطلاعات اعلامیه:', error);
+        updateAnnouncementBanner(''); // پنهان کردن بنر در صورت خطا
+    }
+}
+
+function updateAnnouncementBanner(message) {
+    state.announcementMessage = message; // ذخیره آخرین پیام در وضعیت برنامه
+    
+    if (message) {
+        dom.announcementText.textContent = message;
+        dom.announcementBanner.classList.add('show');
+    } else {
+        dom.announcementBanner.classList.remove('show');
+    }
 }
 
 
@@ -442,15 +537,12 @@ function renderHistoryChart() {
     dom.chartLoader.classList.add('show');
 
     if (!state.latestRates || !state.latestRates.conversion_rates[state.to]) {
-        console.warn("No rate data to generate history chart.");
         if (historyChart) historyChart.destroy();
         dom.chartLoader.classList.remove('show');
         return;
     }
     
     const currentRate = state.latestRates.conversion_rates[state.to];
-    
-    // 1. تولید لیبل تاریخ‌ها
     const dates = [];
     for (let i = state.chartTimeRange - 1; i >= 0; i--) {
         const date = new Date();
@@ -458,17 +550,14 @@ function renderHistoryChart() {
         dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
     }
 
-    // 2. شبیه‌سازی داده‌ها با الگوریتم "گام تصادفی" (Random Walk) برای ظاهر واقعی‌تر
     let dailyRates = [currentRate];
     let lastRate = currentRate;
     for (let i = 0; i < state.chartTimeRange - 1; i++) {
-        // نوسان بین -2.5% تا +2.5% نسبت به روز قبل
         const fluctuation = (Math.random() - 0.5) * 0.05; 
         lastRate = lastRate * (1 + fluctuation);
         dailyRates.unshift(lastRate);
     }
 
-    // 3. محاسبه رنگ‌ها بر اساس تغییرات
     const backgroundColors = [];
     const successColor = getComputedStyle(document.documentElement).getPropertyValue('--success-color').trim();
     const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger-color').trim();
@@ -477,7 +566,6 @@ function renderHistoryChart() {
         backgroundColors.push(dailyRates[i] >= dailyRates[i-1] ? successColor + '80' : dangerColor + '80');
     }
     
-    // 4. ساخت یا به‌روزرسانی نمودار
     if (historyChart) historyChart.destroy();
     
     const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
@@ -618,7 +706,7 @@ function copyResult() {
 
 function debouncedConversion() {
     clearTimeout(conversionDebounceTimer);
-    conversionDebounceTimer = setTimeout(performConversion, 500); // 500ms تاخیر
+    conversionDebounceTimer = setTimeout(performConversion, 500);
 }
 
 function showToast(message, type = 'info') {
@@ -650,7 +738,7 @@ function toggleTheme() {
     dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
     localStorage.setItem('currency_theme', newTheme);
     if(historyChart) {
-        renderHistoryChart(); // بازрисовانی نمودار با رنگ‌های جدید
+        renderHistoryChart();
     }
 }
 
@@ -678,7 +766,6 @@ function loadPreferences() {
         state.favorites = prefs.favorites || ['EUR', 'GBP', 'JPY', 'AED', 'TRY'];
         state.chartTimeRange = prefs.chartTimeRange || 7;
 
-        // فعال کردن دکمه بازه زمانی ذخیره شده
         dom.chartControls.querySelector('.active')?.classList.remove('active');
         dom.chartControls.querySelector(`[data-range="${state.chartTimeRange}"]`)?.classList.add('active');
     }
@@ -692,7 +779,6 @@ function addEventListeners() {
     
     dom.amountInput.addEventListener('input', () => {
         formatAmount({target: dom.amountInput});
-        // به جای فراخوانی API، فقط نتیجه را با نرخ موجود آپدیت می‌کنیم
         updateConverterResult(parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0);
     });
 
@@ -708,7 +794,7 @@ function addEventListeners() {
         document.addEventListener('click', (e) => {
             if (!input.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.classList.remove('show');
-                updateCurrencyUI(type, state[type]); // بازگرداندن به مقدار قبلی اگر کاربر چیزی انتخاب نکند
+                updateCurrencyUI(type, state[type]);
             }
         });
     });
@@ -728,6 +814,11 @@ function addEventListeners() {
             const codeToRemove = e.target.dataset.code;
             toggleFavorite(codeToRemove, null);
         }
+    });
+    
+    // افزودن Event Listener برای دکمه بستن اعلامیه
+    dom.announcementClose.addEventListener('click', () => {
+        dom.announcementBanner.classList.remove('show');
     });
 }
 
