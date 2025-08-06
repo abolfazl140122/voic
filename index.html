@@ -82,7 +82,7 @@
             width: 100%; padding: 14px 50px 14px 15px; border-radius: 10px; border: 1px solid var(--border-color);
             background: var(--input-bg); color: var(--text-color); font-family: 'Vazirmatn', sans-serif; font-size: 16px; transition: all 0.3s;
         }
-        input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-color-trans, rgba(52, 152, 219, 0.2)); }
+        input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
         
         .conversion-flow { display: flex; align-items: center; margin: 25px 0; }
         .conversion-flow .currency-box { flex: 1; }
@@ -95,8 +95,8 @@
             border-radius: 10px; z-index: 10; margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         .currency-dropdown.show { display: block; }
-        .currency-dropdown-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; }
-        .currency-dropdown-item:hover { background: var(--primary-color); color: white; }
+        .currency-dropdown-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
+        .currency-dropdown-item:hover { background: var(--primary-hover); color: white; }
         .currency-dropdown-item .fav-star { color: #ccc; transition: color 0.2s, transform 0.2s; }
         .currency-dropdown-item .fav-star.favorited { color: #f1c40f; transform: scale(1.2); }
         
@@ -234,7 +234,7 @@
 
 <script>
 // ================== JavaScript ==================
-const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما
+const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما (این کلید ممکن است موقتی باشد)
 const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
 
 // --- دریافت عناصر DOM ---
@@ -450,7 +450,6 @@ function renderHistoryChart() {
     
     const currentRate = state.latestRates.conversion_rates[state.to];
     
-    // 1. تولید لیبل تاریخ‌ها
     const dates = [];
     for (let i = state.chartTimeRange - 1; i >= 0; i--) {
         const date = new Date();
@@ -458,17 +457,14 @@ function renderHistoryChart() {
         dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
     }
 
-    // 2. شبیه‌سازی داده‌ها با الگوریتم "گام تصادفی" (Random Walk) برای ظاهر واقعی‌تر
     let dailyRates = [currentRate];
     let lastRate = currentRate;
     for (let i = 0; i < state.chartTimeRange - 1; i++) {
-        // نوسان بین -2.5% تا +2.5% نسبت به روز قبل
         const fluctuation = (Math.random() - 0.5) * 0.05; 
         lastRate = lastRate * (1 + fluctuation);
         dailyRates.unshift(lastRate);
     }
 
-    // 3. محاسبه رنگ‌ها بر اساس تغییرات
     const backgroundColors = [];
     const successColor = getComputedStyle(document.documentElement).getPropertyValue('--success-color').trim();
     const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger-color').trim();
@@ -477,7 +473,6 @@ function renderHistoryChart() {
         backgroundColors.push(dailyRates[i] >= dailyRates[i-1] ? successColor + '80' : dangerColor + '80');
     }
     
-    // 4. ساخت یا به‌روزرسانی نمودار
     if (historyChart) historyChart.destroy();
     
     const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
@@ -511,7 +506,7 @@ function renderHistoryChart() {
         options: {
             responsive: true, maintainAspectRatio: false,
             scales: { 
-                y: { beginAtZero: false, ticks: { color: textColor, padding: 10 }, grid: { color: borderColor } }, 
+                y: { beginAtZero: false, ticks: { color: textColor, padding: 10, callback: function(value) { return value.toLocaleString('fa-IR'); } }, grid: { color: borderColor } }, 
                 x: { ticks: { color: textColor }, grid: { display: false } } 
             },
             plugins: { 
@@ -604,8 +599,11 @@ function handleSwap() {
 
 function formatAmount(e) {
     let value = e.target.value.replace(/,/g, '');
-    if (value === '' || isNaN(value)) return;
-    e.target.value = parseFloat(value).toLocaleString('en-US');
+    if (value === '' || isNaN(parseFloat(value))) {
+        e.target.value = '';
+        return;
+    }
+    e.target.value = parseFloat(value).toLocaleString('en-US', {maximumFractionDigits: 10});
 }
 
 function copyResult() {
@@ -618,7 +616,7 @@ function copyResult() {
 
 function debouncedConversion() {
     clearTimeout(conversionDebounceTimer);
-    conversionDebounceTimer = setTimeout(performConversion, 500); // 500ms تاخیر
+    conversionDebounceTimer = setTimeout(performConversion, 500);
 }
 
 function showToast(message, type = 'info') {
@@ -649,9 +647,8 @@ function toggleTheme() {
     document.documentElement.dataset.theme = newTheme;
     dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
     localStorage.setItem('currency_theme', newTheme);
-    if(historyChart) {
-        renderHistoryChart(); // بازрисовانی نمودار با رنگ‌های جدید
-    }
+    // بازрисовانی نمودار با رنگ‌های جدید
+    setTimeout(renderHistoryChart, 50); 
 }
 
 function savePreferences() {
@@ -678,7 +675,6 @@ function loadPreferences() {
         state.favorites = prefs.favorites || ['EUR', 'GBP', 'JPY', 'AED', 'TRY'];
         state.chartTimeRange = prefs.chartTimeRange || 7;
 
-        // فعال کردن دکمه بازه زمانی ذخیره شده
         dom.chartControls.querySelector('.active')?.classList.remove('active');
         dom.chartControls.querySelector(`[data-range="${state.chartTimeRange}"]`)?.classList.add('active');
     }
@@ -690,9 +686,8 @@ function addEventListeners() {
     dom.themeSwitcher.addEventListener('click', toggleTheme);
     dom.copyBtn.addEventListener('click', copyResult);
     
-    dom.amountInput.addEventListener('input', () => {
-        formatAmount({target: dom.amountInput});
-        // به جای فراخوانی API، فقط نتیجه را با نرخ موجود آپدیت می‌کنیم
+    dom.amountInput.addEventListener('input', (e) => {
+        formatAmount(e);
         updateConverterResult(parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0);
     });
 
@@ -706,9 +701,9 @@ function addEventListeners() {
         });
         input.addEventListener('keyup', () => populateDropdown(dropdown, input.value));
         document.addEventListener('click', (e) => {
-            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            if (!input.parentElement.contains(e.target)) {
                 dropdown.classList.remove('show');
-                updateCurrencyUI(type, state[type]); // بازگرداندن به مقدار قبلی اگر کاربر چیزی انتخاب نکند
+                updateCurrencyUI(type, state[type]);
             }
         });
     });
@@ -724,7 +719,7 @@ function addEventListeners() {
     });
 
     dom.watchlistContent.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-fav-btn')) {
+        if (e.target.matches('.remove-fav-btn')) {
             const codeToRemove = e.target.dataset.code;
             toggleFavorite(codeToRemove, null);
         }
@@ -732,907 +727,7 @@ function addEventListeners() {
 }
 
 // --- شروع برنامه ---
-init();
-</script>
-</body>
-</html>        }
-
-        .main-container { width: 100%; max-width: 1400px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .header h1 { font-size: 28px; }
-        .header-controls { display: flex; align-items: center; gap: 15px; }
-        .header-btn {
-            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50%;
-            padding: 5px; cursor: pointer; font-size: 18px; width: 40px; height: 40px;
-            display: flex; justify-content: center; align-items: center; transition: all 0.3s;
-        }
-        .header-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
-        .theme-switcher {
-            border-radius: 50px; width: 80px; display: flex; justify-content: space-between;
-        }
-        .theme-switcher i { padding: 5px; border-radius: 50%; flex: 1; text-align: center; }
-        .theme-switcher .active { background: var(--primary-color); color: white; }
-
-        .app-grid {
-            display: grid; gap: 25px;
-            grid-template-columns: 1fr;
-            grid-template-areas: "converter" "matrix" "chart" "watchlist";
-        }
-        @media (min-width: 1200px) {
-            .app-grid {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-areas: "converter matrix" "chart watchlist";
-            }
-        }
-
-        .converter-card { grid-area: converter; }
-        .chart-card { grid-area: chart; }
-        .watchlist-card { grid-area: watchlist; }
-        .matrix-card { grid-area: matrix; }
-
-        .card {
-            background: var(--card-bg); padding: 30px; border-radius: 20px; box-shadow: var(--shadow);
-            border: 1px solid var(--border-color); transition: all 0.3s;
-            opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s forwards;
-            display: flex; flex-direction: column;
-        }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        .header { animation-delay: 0s; }
-        .converter-card { animation-delay: 0.1s; }
-        .matrix-card { animation-delay: 0.2s; }
-        .chart-card { animation-delay: 0.3s; }
-        .watchlist-card { animation-delay: 0.4s; }
-
-        .card h3 { margin-bottom: 20px; font-size: 20px; color: var(--primary-color); }
-        
-        /* Converter Styles */
-        .converter .input-group { margin-bottom: 20px; }
-        .converter label { font-weight: 500; display: block; margin-bottom: 8px; }
-        .currency-input-wrapper { position: relative; }
-        .currency-input-wrapper .icon { position: absolute; top: 50%; transform: translateY(-50%); right: 15px; color: var(--neutral-color); font-size: 22px; }
-        input[type="text"] {
-            width: 100%; padding: 14px 50px 14px 15px; border-radius: 10px; border: 1px solid var(--border-color);
-            background: var(--input-bg); color: var(--text-color); font-family: 'Vazirmatn', sans-serif; font-size: 16px; transition: all 0.3s;
-        }
-        .currency-input { cursor: pointer; }
-        input[type="text"]:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-color-trans, rgba(52, 152, 219, 0.2)); }
-        
-        .conversion-flow { display: flex; align-items: center; margin: 25px 0; }
-        .conversion-flow .currency-box { flex: 1; }
-        #swap-btn { background: var(--card-bg); border: 2px solid var(--primary-color); color: var(--primary-color); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; margin: 0 15px; transition: all 0.3s; flex-shrink: 0;}
-        #swap-btn:hover { background: var(--primary-color); color: white; transform: rotate(180deg); }
-        
-        .result-box { margin-top: 25px; text-align: center; }
-        #result-final-wrapper { display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: var(--primary-color); min-height: 40px; }
-        #copy-btn { font-size: 16px; margin-right: 12px; cursor: pointer; color: var(--neutral-color); transition: color 0.2s; }
-        #copy-btn:hover { color: var(--primary-color); }
-        #result-rate, #result-rate-reverse { font-size: 14px; color: var(--neutral-color); min-height: 20px; margin-top: 5px; }
-        #last-updated { font-size: 12px; color: var(--neutral-color); margin-top: 15px; text-align: center; }
-        
-        /* Watchlist & Matrix Styles */
-        .watchlist-card, .matrix-card { flex-grow: 1; }
-        .watchlist-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid var(--border-color); font-size: 16px; cursor: pointer; transition: background-color 0.2s; }
-        .watchlist-item:hover { background-color: var(--danger-bg); }
-        .watchlist-item:last-child { border-bottom: none; }
-        .watchlist-item .currency-info { display: flex; align-items: center; }
-        .watchlist-item .currency-info .trend-arrow { width: 20px; text-align: center; margin-left: 8px; }
-        .watchlist-item .currency-info .trend-arrow.up { color: var(--success-color); }
-        .watchlist-item .currency-info .trend-arrow.down { color: var(--danger-color); }
-        .watchlist-item .rate { font-weight: 700; color: var(--text-color); direction: ltr; }
-        #watchlist-empty-msg { text-align: center; color: var(--neutral-color); padding: 20px 0; margin: auto; }
-
-        .rates-matrix-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .rates-matrix-table th, .rates-matrix-table td { text-align: center; padding: 12px 8px; font-size: 14px; }
-        .rates-matrix-table th { color: var(--primary-color); font-weight: 500; }
-        .rates-matrix-table td { color: var(--text-color); font-weight: 700; direction: ltr; }
-        .rates-matrix-table tr:not(:first-child) td:not(:first-child) { cursor: pointer; border-radius: 8px; transition: background-color 0.2s, color 0.2s; }
-        .rates-matrix-table tr:not(:first-child) td:not(:first-child):hover { background-color: var(--primary-color); color: white; }
-        .rates-matrix-table td.base-currency { background-color: var(--border-color); border-radius: 8px; }
-        
-        .skeleton { background-color: var(--border-color); border-radius: 5px; animation: pulse 1.5s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .skeleton-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; }
-        .skeleton-item .left { width: 120px; height: 20px; }
-        .skeleton-item .right { width: 80px; height: 20px; }
-
-        /* Chart Styles */
-        .chart-card { min-height: 400px; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; }
-        .chart-controls button { background: none; border: 1px solid var(--border-color); color: var(--neutral-color); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.3s; margin: 0 2px; }
-        .chart-controls button.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
-        .chart-container { position: relative; flex-grow: 1; min-height: 300px; margin-top: 20px; }
-        .chart-loader {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg);
-            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 5; border-radius: 15px;
-        }
-        .spinner { display: block; width: 50px; height: 50px; border: 5px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #chart-progress { margin-top: 15px; color: var(--text-color); font-size: 14px; }
-        .chart-loader.show { display: flex; }
-        
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--overlay-bg); z-index: 100;
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
-        }
-        .modal-overlay.show { opacity: 1; visibility: visible; }
-        .modal-content {
-            background-color: var(--modal-bg); border-radius: 20px;
-            width: 90%; max-width: 500px; max-height: 90vh;
-            display: flex; flex-direction: column;
-            transform: scale(0.9); transition: transform 0.3s;
-        }
-        .modal-overlay.show .modal-content { transform: scale(1); }
-        .modal-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h4 { font-size: 18px; color: var(--primary-color); }
-        .modal-close-btn { background: none; border: none; font-size: 24px; color: var(--neutral-color); cursor: pointer; transition: color 0.2s; }
-        .modal-close-btn:hover { color: var(--danger-color); }
-        .modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
-
-        #currency-select-modal .modal-search { width: 100%; margin-bottom: 15px; }
-        .currency-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; border-radius: 8px; }
-        .currency-list-item:hover { background: var(--primary-color); color: white; }
-        .currency-list-item .fav-star { color: #ccc; transition: color 0.2s, transform 0.2s; }
-        .currency-list-item .fav-star.favorited { color: #f1c40f; transform: scale(1.2); }
-        #settings-modal .settings-group { margin-bottom: 25px; }
-        #settings-modal label { display: block; margin-bottom: 10px; font-weight: 500; }
-        #settings-modal .fav-manage-list { display: flex; flex-wrap: wrap; gap: 10px; }
-        .fav-manage-item { background-color: var(--border-color); padding: 5px 10px; border-radius: 15px; display: flex; align-items: center; gap: 8px; font-size: 14px; }
-        .fav-manage-item button { background: none; border: none; color: var(--danger-color); cursor: pointer; font-size: 16px; }
-        #settings-modal .add-fav-group { display: flex; gap: 10px; }
-        #settings-modal select { flex-grow: 1; padding: 10px; background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; }
-        #settings-modal button { background-color: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
-        #settings-modal button:hover { background-color: var(--primary-hover); }
-        #settings-modal button.danger { background-color: var(--danger-color); }
-        #settings-modal button.danger:hover { background-color: #c0392b; }
-
-        /* Toast & Scrollbar */
-        #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-        .toast {
-            padding: 15px 20px; background-color: var(--card-bg); color: var(--text-color); border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15); border-left: 5px solid var(--primary-color);
-            display: flex; align-items: center; gap: 10px;
-            transform: translateX(-120%); animation: slideIn 0.5s forwards, slideOut 0.5s 4s forwards;
-        }
-        .toast.error { border-left-color: var(--danger-color); }
-        .toast.success { border-left-color: var(--success-color); }
-        @keyframes slideIn { to { transform: translateX(0); } }
-        @keyframes slideOut { to { transform: translateX(-120%); opacity: 0; } }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #555; }
-    </style>
-</head>
-<body>
-
-    <div id="toast-container"></div>
-
-    <main class="main-container">
-        <header class="header card">
-            <h1>داشبورد ارزی پیشرفته</h1>
-            <div class="header-controls">
-                <button class="header-btn" id="settings-btn" title="تنظیمات"><i class="fas fa-cog"></i></button>
-                <div class="theme-switcher header-btn" id="theme-switcher">
-                    <i class="fas fa-sun active"></i><i class="fas fa-moon"></i>
-                </div>
-            </div>
-        </header>
-
-        <div class="app-grid">
-            <div class="card converter-card converter">
-                <h3>مبدل آنی ارز</h3>
-                <div class="input-group">
-                    <label for="amount">مبلغ</label>
-                    <input type="text" id="amount" value="1,000" inputmode="decimal">
-                </div>
-                <div class="conversion-flow">
-                    <div class="currency-box input-group">
-                        <label for="from-currency-input">از</label>
-                        <div class="currency-input-wrapper">
-                            <span class="icon" id="from-icon"></span>
-                            <input type="text" id="from-currency-input" class="currency-input" readonly>
-                        </div>
-                    </div>
-                    <button id="swap-btn" title="جابجایی ارزها"><i class="fas fa-exchange-alt"></i></button>
-                    <div class="currency-box input-group">
-                        <label for="to-currency-input">به</label>
-                        <div class="currency-input-wrapper">
-                            <span class="icon" id="to-icon"></span>
-                            <input type="text" id="to-currency-input" class="currency-input" readonly>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="result-box">
-                    <div id="result-final-wrapper">
-                        <i id="copy-btn" class="far fa-copy" title="کپی کردن"></i>
-                        <span id="result-final"></span>
-                    </div>
-                    <div id="result-rate"></div>
-                    <div id="result-rate-reverse"></div>
-                </div>
-                <div id="last-updated"></div>
-            </div>
-
-            <div class="card watchlist-card">
-                <h3 id="watchlist-title">لیست پیگیری</h3>
-                <div id="watchlist-content"></div>
-            </div>
-            
-            <div class="card matrix-card">
-                <h3 id="matrix-title">ماتریس نرخ‌های متقاطع</h3>
-                <div id="matrix-content"></div>
-            </div>
-
-            <div class="card chart-card">
-                <div class="chart-header">
-                    <h3 id="chart-title">تاریخچه نرخ</h3>
-                    <div class="chart-controls" id="chart-controls">
-                        <button data-range="7" class="active">7 روز</button>
-                        <button data-range="15">15 روز</button>
-                        <button data-range="30">30 روز</button>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-loader" id="chart-loader">
-                        <div class="spinner"></div>
-                        <p id="chart-progress"></p>
-                    </div>
-                    <canvas id="history-chart"></canvas>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modals -->
-    <div class="modal-overlay" id="currency-select-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 id="modal-title">انتخاب ارز</h4>
-                <button class="modal-close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="currency-modal-search" class="modal-search" placeholder="جستجوی کد یا نام ارز...">
-                <div id="currency-modal-list"></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal-overlay" id="settings-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4>تنظیمات</h4>
-                <button class="modal-close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="settings-group">
-                    <label>مدیریت لیست پیگیری</label>
-                    <div class="fav-manage-list" id="fav-manage-list"></div>
-                </div>
-                <div class="settings-group">
-                    <label for="add-fav-select">افزودن ارز به لیست پیگیری</label>
-                    <div class="add-fav-group">
-                        <select id="add-fav-select"></select>
-                        <button id="add-fav-btn">افزودن</button>
-                    </div>
-                </div>
-                 <div class="settings-group">
-                    <label>عملیات</label>
-                    <button id="clear-data-btn" class="danger">پاک کردن تمام داده‌های محلی</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-<script>
-// ================== JavaScript ==================
-const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما
-const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
-
-// --- دریافت عناصر DOM ---
-const dom = {
-    // Main elements
-    amountInput: document.getElementById('amount'),
-    fromCurrencyInput: document.getElementById('from-currency-input'),
-    toCurrencyInput: document.getElementById('to-currency-input'),
-    fromIcon: document.getElementById('from-icon'),
-    toIcon: document.getElementById('to-icon'),
-    swapBtn: document.getElementById('swap-btn'),
-    copyBtn: document.getElementById('copy-btn'),
-    themeSwitcher: document.getElementById('theme-switcher'),
-    settingsBtn: document.getElementById('settings-btn'),
-    toastContainer: document.getElementById('toast-container'),
-
-    // Result & Update
-    resultFinal: document.getElementById('result-final'),
-    resultRate: document.getElementById('result-rate'),
-    resultRateReverse: document.getElementById('result-rate-reverse'),
-    lastUpdated: document.getElementById('last-updated'),
-
-    // Watchlist
-    watchlistContent: document.getElementById('watchlist-content'),
-    watchlistTitle: document.getElementById('watchlist-title'),
-
-    // Matrix
-    matrixContent: document.getElementById('matrix-content'),
-    matrixTitle: document.getElementById('matrix-title'),
-
-    // Chart
-    chartTitle: document.getElementById('chart-title'),
-    chartLoader: document.getElementById('chart-loader'),
-    chartProgress: document.getElementById('chart-progress'),
-    chartControls: document.getElementById('chart-controls'),
-    ctx: document.getElementById('history-chart').getContext('2d'),
-
-    // Modals
-    currencySelectModal: document.getElementById('currency-select-modal'),
-    currencyModalTitle: document.getElementById('modal-title'),
-    currencyModalSearch: document.getElementById('currency-modal-search'),
-    currencyModalList: document.getElementById('currency-modal-list'),
-    settingsModal: document.getElementById('settings-modal'),
-    favManageList: document.getElementById('fav-manage-list'),
-    addFavSelect: document.getElementById('add-fav-select'),
-    addFavBtn: document.getElementById('add-fav-btn'),
-    clearDataBtn: document.getElementById('clear-data-btn'),
-};
-
-// --- وضعیت برنامه (State) ---
-const state = {
-    from: 'USD',
-    to: 'IRR',
-    allCurrencies: [],
-    favorites: ['EUR', 'GBP', 'JPY', 'AED', 'TRY'],
-    matrixCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'CAD'],
-    latestRates: null,
-    previousRates: null,
-    chartTimeRange: 7,
-    activeModal: null,
-    currencySelectTarget: null, // 'from' or 'to'
-};
-let historyChart;
-let historyCache = {}; // کش برای داده‌های تاریخی
-
-// =======================
-// --- توابع اصلی برنامه ---
-// =======================
-
-async function init() {
-    loadPreferences();
-    if (apiKey.includes('YOUR_API_KEY') || apiKey.length < 16) {
-        showToast('کلید API نامعتبر است. لطفاً کد را ویرایش کنید.', 'error');
-        return;
-    }
-    await fetchAllCurrencies();
-    addEventListeners();
-    updateCurrencyUI('from', state.from);
-    updateCurrencyUI('to', state.to);
-    await performConversion();
-}
-
-async function fetchAllCurrencies() {
-    try {
-        const response = await fetch(`${apiUrl}/codes`);
-        const data = await response.json();
-        if (data.result === 'success') {
-            state.allCurrencies = data.supported_codes;
-        } else {
-            throw new Error(data['error-type'] || 'Failed to fetch currencies');
-        }
-    } catch (error) {
-        console.error('Error fetching currency codes:', error);
-        showToast('خطا در دریافت لیست ارزها', 'error');
-    }
-}
-
-async function performConversion(isSwap = false) {
-    const amount = parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0;
-    
-    renderSkeletons();
-    dom.chartLoader.classList.add('show');
-    dom.chartProgress.textContent = '';
-
-    try {
-        const response = await fetch(`${apiUrl}/latest/${state.from}`);
-        const data = await response.json();
-
-        if (data.result === 'success') {
-            if (!isSwap && state.latestRates) {
-                state.previousRates = { ...state.latestRates.conversion_rates };
-            }
-            state.latestRates = data;
-            
-            updateConverterResult(amount);
-            updateLastUpdated(data.time_last_update_utc);
-            renderWatchlist();
-            renderRatesMatrix();
-            renderHistoryChart();
-            
-            savePreferences();
-        } else {
-            handleApiError(data['error-type']);
-        }
-    } catch (error) {
-        console.error('Network or conversion error:', error);
-        showToast('خطای شبکه. لطفاً اتصال خود را بررسی کنید.', 'error');
-        dom.resultFinal.textContent = '-';
-    } finally {
-        // مخفی کردن لودر چارت توسط خود تابع چارت انجام می‌شود
-    }
-}
-
-
-// =============================
-// --- توابع رندر و به‌روزرسانی UI ---
-// =============================
-
-function updateConverterResult(amount) {
-    if (!state.latestRates) return;
-    const rate = state.latestRates.conversion_rates[state.to];
-
-    if (amount === 0 || !rate) {
-        dom.resultFinal.textContent = '0';
-        dom.resultRate.textContent = '';
-        dom.resultRateReverse.textContent = '';
-        return;
-    }
-    
-    const finalAmount = amount * rate;
-    dom.resultFinal.textContent = `${finalAmount.toLocaleString('fa-IR', {maximumFractionDigits: 2})}`;
-    dom.resultRate.textContent = `1 ${state.from} = ${rate.toLocaleString('fa-IR', {maximumFractionDigits: 4})} ${state.to}`;
-    dom.resultRateReverse.textContent = `1 ${state.to} = ${(1/rate).toLocaleString('fa-IR', {maximumFractionDigits: 8})} ${state.from}`;
-}
-
-function renderSkeletons() {
-    let skeletonHTML = '';
-    for (let i = 0; i < 5; i++) {
-        skeletonHTML += `<div class="skeleton-item"><div class="skeleton left"></div><div class="skeleton right"></div></div>`;
-    }
-    dom.watchlistContent.innerHTML = skeletonHTML;
-    dom.matrixContent.innerHTML = `<div style="display: flex; flex-direction: column; gap: 10px; padding: 10px;">
-        ${Array(5).fill('<div class="skeleton" style="width: 100%; height: 25px;"></div>').join('')}
-    </div>`;
-}
-
-function renderWatchlist() {
-    dom.watchlistTitle.textContent = `نرخ‌ها نسبت به 1 ${state.from}`;
-    dom.watchlistContent.innerHTML = '';
-
-    const favoritesToShow = state.favorites.filter(c => c !== state.from);
-
-    if (!favoritesToShow.length) {
-        dom.watchlistContent.innerHTML = `<div id="watchlist-empty-msg">ارزی را برای پیگیری در تنظیمات اضافه کنید.</div>`;
-        return;
-    }
-    if (!state.latestRates) return;
-
-    let content = '';
-    const rates = state.latestRates.conversion_rates;
-    
-    favoritesToShow.forEach(code => {
-        if (rates[code]) {
-            const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || code;
-            let trendIcon = '';
-            if (state.previousRates && state.previousRates[code]) {
-                if (rates[code] > state.previousRates[code]) trendIcon = `<i class="fas fa-arrow-up trend-arrow up"></i>`;
-                else if (rates[code] < state.previousRates[code]) trendIcon = `<i class="fas fa-arrow-down trend-arrow down"></i>`;
-            }
-
-            content += `<div class="watchlist-item" data-code="${code}">
-                    <div class="currency-info">
-                        ${trendIcon}<span><b>${code}</b> - ${currencyName}</span>
-                    </div>
-                    <span class="rate">${rates[code].toLocaleString('en-US', { maximumFractionDigits: 4 })}</span>
-                </div>`;
-        }
-    });
-    dom.watchlistContent.innerHTML = content;
-}
-
-function renderRatesMatrix() {
-    dom.matrixTitle.textContent = `نرخ متقاطع (پایه: ${state.from})`;
-    if (!state.latestRates) {
-        dom.matrixContent.innerHTML = ''; return;
-    }
-
-    const rates = state.latestRates.conversion_rates;
-    const matrixCurrencies = state.matrixCurrencies.includes(state.from) ? state.matrixCurrencies : [state.from, ...state.matrixCurrencies.slice(0, 4)];
-    
-    let table = `<table class="rates-matrix-table">`;
-    // Header Row
-    table += `<tr><th></th>${matrixCurrencies.map(c => `<th>${c}</th>`).join('')}</tr>`;
-
-    // Data Rows
-    for (const from_c of matrixCurrencies) {
-        table += `<tr><th>${from_c}</th>`;
-        for (const to_c of matrixCurrencies) {
-            if (from_c === to_c) {
-                table += `<td class="base-currency">-</td>`;
-            } else {
-                const rate = rates[to_c] / rates[from_c];
-                table += `<td data-from="${from_c}" data-to="${to_c}">${rate.toFixed(4)}</td>`;
-            }
-        }
-        table += `</tr>`;
-    }
-    table += `</table>`;
-    dom.matrixContent.innerHTML = table;
-}
-
-async function renderHistoryChart() {
-    dom.chartTitle.textContent = `تاریخچه ${state.from} به ${state.to}`;
-    dom.chartLoader.classList.add('show');
-    if (historyChart) historyChart.destroy();
-    
-    const dates = [];
-    const dateLabels = [];
-    for (let i = state.chartTimeRange - 1; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        dates.push(date);
-        dateLabels.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
-    }
-
-    const fetchPromises = dates.map((date, index) => {
-        const y = date.getFullYear();
-        const m = date.getMonth() + 1;
-        const d = date.getDate();
-        const cacheKey = `${state.from}-${y}-${m}-${d}`;
-
-        if (historyCache[cacheKey]) {
-            dom.chartProgress.textContent = `بارگذاری ${index + 1}/${state.chartTimeRange}... (از کش)`;
-            return Promise.resolve(historyCache[cacheKey]);
-        }
-        
-        return fetch(`${apiUrl}/history/${state.from}/${y}/${m}/${d}`)
-            .then(res => res.json())
-            .then(data => {
-                dom.chartProgress.textContent = `بارگذاری ${index + 1}/${state.chartTimeRange}...`;
-                if (data.result === 'success') {
-                    historyCache[cacheKey] = data; // ذخیره در کش
-                    return data;
-                }
-                return null;
-            });
-    });
-
-    try {
-        const results = await Promise.all(fetchPromises);
-        const dailyRates = results.map(data => data ? data.conversion_rates[state.to] : null);
-        
-        // جایگزینی مقادیر null با مقدار معتبر قبلی برای پیوستگی نمودار
-        for (let i = 1; i < dailyRates.length; i++) {
-            if (dailyRates[i] === null) dailyRates[i] = dailyRates[i-1];
-        }
-
-        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
-        const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
-        const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
-
-        historyChart = new Chart(dom.ctx, {
-            type: 'line',
-            data: { 
-                labels: dateLabels, 
-                datasets: [{
-                    label: `نرخ ${state.to}`, 
-                    data: dailyRates,
-                    borderColor: primaryColor,
-                    backgroundColor: primaryColor + '33', // 20% opacity
-                    borderWidth: 2.5,
-                    pointBackgroundColor: primaryColor,
-                    tension: 0.3,
-                    fill: true,
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { 
-                    y: { ticks: { color: textColor, padding: 10 }, grid: { color: borderColor } }, 
-                    x: { ticks: { color: textColor }, grid: { display: false } } 
-                },
-                plugins: { 
-                    legend: { display: false },
-                    tooltip: {
-                        rtl: true, titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' },
-                        backgroundColor: 'var(--card-bg)', titleColor: 'var(--primary-color)',
-                        bodyColor: 'var(--text-color)', borderColor: 'var(--border-color)', borderWidth: 1, padding: 10,
-                        callbacks: {
-                            label: (c) => `1 ${state.from} = ${c.parsed.y.toLocaleString('fa-IR', {maximumFractionDigits: 4})} ${state.to}`
-                        }
-                    }
-                },
-            }
-        });
-    } catch (error) {
-        console.error("Error fetching historical data:", error);
-        showToast("خطا در دریافت داده‌های تاریخی", "error");
-    } finally {
-        dom.chartLoader.classList.remove('show');
-    }
-}
-
-
-// ==================================
-// --- مدیریت مودال‌ها و توابع کمکی ---
-// ==================================
-
-function openModal(modalId, options = {}) {
-    state.activeModal = document.getElementById(modalId);
-    if (!state.activeModal) return;
-
-    if (modalId === 'currency-select-modal') {
-        state.currencySelectTarget = options.target; // 'from' or 'to'
-        dom.currencyModalTitle.textContent = `انتخاب ارز ${options.target === 'from' ? 'مبدا' : 'مقصد'}`;
-        populateCurrencyModalList();
-        dom.currencyModalSearch.value = '';
-    } else if (modalId === 'settings-modal') {
-        renderSettings();
-    }
-    
-    state.activeModal.classList.add('show');
-    document.documentElement.classList.add('modal-open');
-}
-
-function closeModal() {
-    if (!state.activeModal) return;
-    state.activeModal.classList.remove('show');
-    document.documentElement.classList.remove('modal-open');
-    state.activeModal = null;
-}
-
-function populateCurrencyModalList(filter = '') {
-    dom.currencyModalList.innerHTML = '';
-    const sorted = [...state.allCurrencies].sort((a, b) => {
-        const aIsFav = state.favorites.includes(a[0]);
-        const bIsFav = state.favorites.includes(b[0]);
-        if (aIsFav === bIsFav) return a[0].localeCompare(b[0]);
-        return aIsFav ? -1 : 1;
-    });
-
-    const filterLower = filter.toLowerCase();
-    const filtered = sorted.filter(([code, name]) => 
-        code.toLowerCase().includes(filterLower) || name.toLowerCase().includes(filterLower) || name.includes(filter)
-    );
-
-    filtered.forEach(([code, name]) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'currency-list-item';
-        itemDiv.dataset.code = code;
-        itemDiv.innerHTML = `<span><b>${code}</b> - ${name}</span><i class="fav-star ${state.favorites.includes(code) ? 'fas favorited' : 'far'} fa-star"></i>`;
-        dom.currencyModalList.appendChild(itemDiv);
-    });
-}
-
-function renderSettings() {
-    // Populate favorites management list
-    dom.favManageList.innerHTML = state.favorites.map(code => `
-        <div class="fav-manage-item" data-code="${code}">${code}<button class="remove-fav-btn">&times;</button></div>
-    `).join('');
-
-    // Populate "add favorite" dropdown
-    const nonFavorites = state.allCurrencies.filter(c => !state.favorites.includes(c[0])).sort((a,b) => a[0].localeCompare(b[0]));
-    dom.addFavSelect.innerHTML = nonFavorites.map(([code, name]) => `<option value="${code}">${code} - ${name}</option>`).join('');
-}
-
-function toggleFavorite(code) {
-    const index = state.favorites.indexOf(code);
-    if (index > -1) {
-        state.favorites.splice(index, 1);
-    } else {
-        state.favorites.push(code);
-        state.favorites.sort();
-    }
-    savePreferences();
-    renderWatchlist();
-    if(state.activeModal && state.activeModal.id === 'settings-modal') {
-        renderSettings();
-    }
-}
-
-function updateCurrencyUI(type, code) {
-    state[type] = code;
-    const input = (type === 'from') ? dom.fromCurrencyInput : dom.toCurrencyInput;
-    const icon = (type === 'from') ? dom.fromIcon : dom.toIcon;
-    const currencyData = state.allCurrencies.find(c => c[0] === code);
-    input.value = currencyData ? `${code} - ${currencyData[1]}` : code;
-    try { 
-        icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt(0) + 127397));
-    } catch(e) { 
-        icon.textContent = '🏳️';
-    }
-}
-
-function handleApiError(errorType) {
-    let message = 'یک خطای نامشخص رخ داد.';
-    switch (errorType) {
-        case 'invalid-key': message = 'کلید API نامعتبر است.'; break;
-        case 'inactive-account': message = 'حساب کاربری API غیرفعال است.'; break;
-        case 'quota-reached': message = 'محدودیت درخواست API به پایان رسیده است.'; break;
-        case 'unsupported-code': message = `ارز پایه ${state.from} پشتیبانی نمی‌شود.`; break;
-    }
-    showToast(message, 'error');
-    dom.resultFinal.textContent = 'خطا';
-    dom.resultRate.textContent = `(${errorType})`;
-}
-
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    let iconClass = 'fa-info-circle';
-    if (type === 'success') iconClass = 'fa-check-circle';
-    if (type === 'error') iconClass = 'fa-exclamation-circle';
-    toast.innerHTML = `<i class="fas ${iconClass}"></i><span>${message}</span>`;
-    dom.toastContainer.appendChild(toast);
-    setTimeout(() => toast.remove(), 4500);
-}
-
-function updateLastUpdated(utcTimestamp) {
-    const date = new Date(utcTimestamp);
-    dom.lastUpdated.textContent = `بروزرسانی در: ${date.toLocaleString('fa-IR', { timeZoneName: 'short' })}`;
-}
-
-
-// ======================================
-// --- مدیریت تم، ذخیره‌سازی و رویدادها ---
-// ======================================
-
-function toggleTheme() {
-    const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = newTheme;
-    dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
-    localStorage.setItem('currency_theme', newTheme);
-    if(historyChart) {
-        renderHistoryChart(); // Redraw chart with new theme colors
-    }
-}
-
-function savePreferences() {
-    const prefs = {
-        from: state.from, to: state.to,
-        favorites: state.favorites,
-        chartTimeRange: state.chartTimeRange,
-    };
-    localStorage.setItem('currency_prefs', JSON.stringify(prefs));
-}
-
-function loadPreferences() {
-    const theme = localStorage.getItem('currency_theme') || 'light';
-    if (theme === 'dark') {
-        document.documentElement.dataset.theme = 'dark';
-        dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
-    }
-    const prefs = JSON.parse(localStorage.getItem('currency_prefs'));
-    if (prefs) { 
-        state.from = prefs.from || 'USD'; 
-        state.to = prefs.to || 'IRR'; 
-        state.favorites = prefs.favorites || ['EUR', 'GBP', 'JPY', 'AED', 'TRY'];
-        state.chartTimeRange = prefs.chartTimeRange || 7;
-        dom.chartControls.querySelector('.active')?.classList.remove('active');
-        dom.chartControls.querySelector(`[data-range="${state.chartTimeRange}"]`)?.classList.add('active');
-    }
-}
-
-function addEventListeners() {
-    dom.swapBtn.addEventListener('click', () => {
-        [state.from, state.to] = [state.to, state.from];
-        updateCurrencyUI('from', state.from);
-        updateCurrencyUI('to', state.to);
-        performConversion(true);
-    });
-
-    dom.themeSwitcher.addEventListener('click', toggleTheme);
-    dom.copyBtn.addEventListener('click', () => {
-        if(!dom.resultFinal.textContent || dom.resultFinal.textContent === '-') return;
-        navigator.clipboard.writeText(dom.resultFinal.textContent.replace(/,/g, ''))
-            .then(() => showToast('مبلغ با موفقیت کپی شد', 'success'))
-            .catch(() => showToast('خطا در کپی کردن', 'error'));
-    });
-    
-    dom.amountInput.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/,/g, '');
-        if (value === '' || isNaN(value)) return;
-        e.target.value = parseFloat(value).toLocaleString('en-US');
-        updateConverterResult(parseFloat(value) || 0);
-    });
-
-    dom.fromCurrencyInput.addEventListener('click', () => openModal('currency-select-modal', { target: 'from' }));
-    dom.toCurrencyInput.addEventListener('click', () => openModal('currency-select-modal', { target: 'to' }));
-    dom.settingsBtn.addEventListener('click', () => openModal('settings-modal'));
-
-    // Modal Event Listeners
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.addEventListener('click', e => {
-            if (e.target.classList.contains('modal-overlay') || e.target.classList.contains('modal-close-btn')) {
-                closeModal();
-            }
-        });
-    });
-
-    dom.currencyModalSearch.addEventListener('input', e => populateCurrencyModalList(e.target.value));
-    dom.currencyModalList.addEventListener('click', e => {
-        const item = e.target.closest('.currency-list-item');
-        if (!item) return;
-
-        if (e.target.classList.contains('fav-star')) {
-            e.stopPropagation();
-            toggleFavorite(item.dataset.code);
-            e.target.classList.toggle('fas');
-            e.target.classList.toggle('far');
-            e.target.classList.toggle('favorited');
-        } else {
-            const code = item.dataset.code;
-            updateCurrencyUI(state.currencySelectTarget, code);
-            closeModal();
-            performConversion();
-        }
-    });
-
-    dom.chartControls.addEventListener('click', e => {
-        if (e.target.tagName === 'BUTTON') {
-            dom.chartControls.querySelector('.active').classList.remove('active');
-            e.target.classList.add('active');
-            state.chartTimeRange = parseInt(e.target.dataset.range);
-            savePreferences();
-            renderHistoryChart();
-        }
-    });
-
-    dom.watchlistContent.addEventListener('click', e => {
-        const item = e.target.closest('.watchlist-item');
-        if (item) {
-            state.to = item.dataset.code;
-            updateCurrencyUI('to', state.to);
-            performConversion();
-            showToast(`ارز مقصد به ${state.to} تغییر یافت`, 'info');
-        }
-    });
-    
-    dom.matrixContent.addEventListener('click', e => {
-        if (e.target.tagName === 'TD' && e.target.dataset.from) {
-            state.from = e.target.dataset.from;
-            state.to = e.target.dataset.to;
-            updateCurrencyUI('from', state.from);
-            updateCurrencyUI('to', state.to);
-            performConversion();
-            showToast(`مبدل به ${state.from}/${state.to} تغییر یافت`, 'info');
-        }
-    });
-
-    // Settings Modal Listeners
-    dom.addFavBtn.addEventListener('click', () => {
-        const codeToAdd = dom.addFavSelect.value;
-        if(codeToAdd && !state.favorites.includes(codeToAdd)) {
-            toggleFavorite(codeToAdd);
-            showToast(`${codeToAdd} به لیست پیگیری اضافه شد`, 'success');
-        }
-    });
-
-    dom.favManageList.addEventListener('click', e => {
-        if (e.target.classList.contains('remove-fav-btn')) {
-            const codeToRemove = e.target.parentElement.dataset.code;
-            toggleFavorite(codeToRemove);
-            showToast(`${codeToRemove} از لیست پیگیری حذف شد`, 'info');
-        }
-    });
-
-    dom.clearDataBtn.addEventListener('click', () => {
-        if (confirm('آیا از پاک کردن تمام تنظیمات و داده‌های ذخیره شده مطمئن هستید؟ این عمل غیرقابل بازگشت است.')) {
-            localStorage.removeItem('currency_prefs');
-            localStorage.removeItem('currency_theme');
-            historyCache = {};
-            showToast('تمام داده‌های محلی پاک شدند.', 'success');
-            // Reset to defaults
-            location.reload();
-        }
-    });
-}
-
-// --- شروع برنامه ---
-init();
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
