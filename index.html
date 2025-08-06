@@ -36,6 +36,7 @@
         .main-container { width: 100%; max-width: 1400px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 20px 30px; }
         .header h1 { font-size: 28px; }
+        .header-controls { display: flex; align-items: center; gap: 15px; }
         .theme-switcher {
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50px;
             padding: 5px; cursor: pointer; font-size: 18px; width: 80px; display: flex; justify-content: space-between; transition: all 0.3s;
@@ -156,6 +157,47 @@
         ::-webkit-scrollbar-track { background: var(--bg-color); }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
         [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #555; }
+
+        /* ================== Announcement CSS ================== */
+        .announcement-icon {
+            font-size: 22px; color: var(--neutral-color); cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .announcement-icon:hover { color: var(--primary-color); transform: scale(1.1); }
+        .announcement-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+            z-index: 2000; display: flex; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .announcement-overlay.show { opacity: 1; }
+        .announcement-modal {
+            background-color: var(--card-bg); border-radius: 20px; max-width: 450px;
+            width: 90%; text-align: center; position: relative;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transform: scale(0.8) translateY(20px); opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+            overflow: hidden;
+        }
+        .announcement-overlay.show .announcement-modal { transform: scale(1) translateY(0); opacity: 1; }
+        .announcement-image { width: 100%; height: 150px; object-fit: cover; }
+        .announcement-content { padding: 10px 30px 30px; }
+        .announcement-close-btn {
+            position: absolute; top: 10px; left: 10px; background: none; border: none;
+            font-size: 28px; color: var(--neutral-color); cursor: pointer;
+            width: 40px; height: 40px; line-height: 40px; border-radius: 50%;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .announcement-close-btn:hover { background-color: var(--border-color); color: var(--danger-color); }
+        .announcement-modal h2 { font-size: 24px; color: var(--primary-color); margin-bottom: 15px; }
+        .announcement-modal p { font-size: 16px; line-height: 1.8; margin-bottom: 25px; white-space: pre-wrap; }
+        .announcement-confirm-btn {
+            background-color: var(--primary-color); color: white; border: none;
+            padding: 12px 35px; border-radius: 50px; font-size: 18px; font-family: 'Vazirmatn';
+            cursor: pointer; transition: background-color 0.3s, transform 0.2s;
+            font-weight: 700;
+        }
+        .announcement-confirm-btn:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -165,12 +207,16 @@
     <main class="main-container">
         <header class="header card">
             <h1>داشبورد ارزی حرفه‌ای</h1>
-            <div class="theme-switcher" id="theme-switcher">
-                <i class="fas fa-sun active"></i><i class="fas fa-moon"></i>
+            <div class="header-controls">
+                <i class="fas fa-scroll announcement-icon" id="announcement-icon" title="مشاهده اعلامیه" style="display: none;"></i>
+                <div class="theme-switcher" id="theme-switcher">
+                    <i class="fas fa-sun active"></i><i class="fas fa-moon"></i>
+                </div>
             </div>
         </header>
 
         <div class="app-grid">
+            <!-- ... بقیه کارت های شما ... -->
             <div class="card converter-card">
                 <h3>مبدل آنی ارز</h3>
                 <div class="input-group">
@@ -232,13 +278,56 @@
         </div>
     </main>
 
+    <!-- ==== ساختار مودال اعلامیه ==== -->
+    <div id="announcement-overlay" class="announcement-overlay" style="display: none;">
+        <div id="announcement-modal" class="announcement-modal">
+            <img id="announcement-image" src="" alt="بنر اعلامیه" class="announcement-image">
+            <div class="announcement-content">
+                <h2 id="announcement-title"></h2>
+                <p id="announcement-text"></p>
+                <button id="announcement-confirm-btn" class="announcement-confirm-btn"></button>
+            </div>
+            <button id="announcement-close-btn" class="announcement-close-btn" title="بستن">&times;</button>
+        </div>
+    </div>
+
+
 <script>
+// ================== بخش تنظیمات اعلامیه ==================
+// **مهم:** برای نمایش یک اعلامیه جدید، مقادیر زیر را پر کنید.
+// برای غیرفعال کردن، کافی است مقدار text را برابر با "" (رشته خالی) قرار دهید.
+const ANNOUNCEMENT_CONFIG = {
+    // 🔽🔽🔽 اینجا را ویرایش کنید 🔽🔽🔽
+
+    // یک شناسه منحصر به فرد برای این اعلامیه. هر بار که متن را تغییر می‌دهید،
+    // این شناسه را هم عوض کنید (مثلاً تاریخ امروز: "v20240521").
+    // این کار باعث می‌شود اعلامیه جدید به کاربرانی که قبلی را دیده‌اند هم نمایش داده شود.
+    id: "v20240521-1",
+
+    // عنوان اعلامیه
+    title: "یک به‌روزرسانی مهم!",
+
+    // متن اصلی اعلامیه شما در اینجا قرار می‌گیرد.
+    // می‌توانید از \n برای رفتن به خط بعد استفاده کنید.
+    text: "ویژگی لیست پیگیری (Watchlist) اکنون دارای نشانگر روند صعودی و نزولی است! \nهمچنین می‌توانید ارزها را مستقیماً از لیست حذف کنید.",
+
+    // متن دکمه تأیید
+    buttonText: "فهمیدم!",
+
+    // آدرس تصویر بنر (اختیاری). می‌توانید آدرس تصویر خودتان را قرار دهید.
+    imageUrl: "https://cdn.imgurl.ir/uploads/g38962_.webp" // یک تصویر طومار به عنوان نمونه
+
+    // 🔼🔼🔼 پایان بخش ویرایش 🔼🔼🔼
+};
+
+
 // ================== JavaScript ==================
 const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما (این کلید ممکن است موقتی باشد)
 const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
 
 // --- دریافت عناصر DOM ---
 const dom = {
+    // ... (عناصر قبلی)
     amountInput: document.getElementById('amount'),
     fromCurrencyInput: document.getElementById('from-currency-input'),
     toCurrencyInput: document.getElementById('to-currency-input'),
@@ -260,9 +349,22 @@ const dom = {
     watchlistContent: document.getElementById('watchlist-content'),
     watchlistTitle: document.getElementById('watchlist-title'),
     toastContainer: document.getElementById('toast-container'),
+
+    // --- عناصر جدید برای اعلامیه ---
+    announcement: {
+        overlay: document.getElementById('announcement-overlay'),
+        modal: document.getElementById('announcement-modal'),
+        icon: document.getElementById('announcement-icon'),
+        title: document.getElementById('announcement-title'),
+        text: document.getElementById('announcement-text'),
+        image: document.getElementById('announcement-image'),
+        confirmBtn: document.getElementById('announcement-confirm-btn'),
+        closeBtn: document.getElementById('announcement-close-btn'),
+    }
 };
 
 // --- وضعیت برنامه (State) ---
+// ... (state قبلی)
 const state = {
     from: 'USD',
     to: 'IRR',
@@ -276,9 +378,9 @@ let historyChart;
 let conversionDebounceTimer;
 
 // --- توابع اصلی ---
-
 async function init() {
     loadPreferences();
+    handleAnnouncement(); // <<< اجرای منطق اعلامیه
     await fetchAllCurrencies();
     addEventListeners();
     updateCurrencyUI('from', state.from);
@@ -288,6 +390,8 @@ async function init() {
     });
     await performConversion();
 }
+
+// ... (بقیه توابع بدون تغییر باقی می‌مانند) ...
 
 async function fetchAllCurrencies() {
     if (apiKey.includes('YOUR_API_KEY') || apiKey.length < 16) {
@@ -311,7 +415,6 @@ async function fetchAllCurrencies() {
 async function performConversion() {
     const amount = parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0;
     
-    // نمایش لودرها
     renderWatchlistSkeleton();
     dom.chartLoader.classList.add('show');
 
@@ -320,7 +423,6 @@ async function performConversion() {
         const data = await response.json();
 
         if (data.result === 'success') {
-            // ذخیره نرخ‌های قبلی برای مقایسه روند
             if(state.latestRates) {
                 state.previousRates = { ...state.latestRates.conversion_rates };
             }
@@ -359,9 +461,7 @@ function handleApiError(errorType) {
     dom.resultRate.textContent = `(${errorType})`;
 }
 
-
-// --- توابع رندر و UI ---
-
+// --- توابع رندر و UI (بدون تغییر) ---
 function updateConverterResult(amount) {
     if (!state.latestRates) return;
     const rate = state.latestRates.conversion_rates[state.to];
@@ -423,7 +523,6 @@ function renderWatchlist() {
     });
     dom.watchlistContent.innerHTML = content;
 }
-
 function renderWatchlistSkeleton() {
     let skeletonHTML = '';
     for (let i = 0; i < 5; i++) {
@@ -442,7 +541,6 @@ function renderHistoryChart() {
     dom.chartLoader.classList.add('show');
 
     if (!state.latestRates || !state.latestRates.conversion_rates[state.to]) {
-        console.warn("No rate data to generate history chart.");
         if (historyChart) historyChart.destroy();
         dom.chartLoader.classList.remove('show');
         return;
@@ -526,7 +624,6 @@ function renderHistoryChart() {
     });
     dom.chartLoader.classList.remove('show');
 }
-
 function populateDropdown(dropdown, filter = '') {
     dropdown.innerHTML = '';
     const sortedCurrencies = [...state.allCurrencies].sort((a, b) => {
@@ -558,9 +655,7 @@ function populateDropdown(dropdown, filter = '') {
         dropdown.appendChild(itemDiv);
     });
 }
-
-// --- توابع کمکی ---
-
+// --- توابع کمکی (بدون تغییر) ---
 function toggleFavorite(code, starElement) {
     const index = state.favorites.indexOf(code);
     if (index > -1) {
@@ -576,7 +671,6 @@ function toggleFavorite(code, starElement) {
     savePreferences();
     renderWatchlist();
 }
-
 function updateCurrencyUI(type, code) {
     state[type] = code;
     const input = (type === 'from') ? dom.fromCurrencyInput : dom.toCurrencyInput;
@@ -589,14 +683,12 @@ function updateCurrencyUI(type, code) {
         icon.textContent = '🏳️';
     }
 }
-
 function handleSwap() {
     [state.from, state.to] = [state.to, state.from];
     updateCurrencyUI('from', state.from);
     updateCurrencyUI('to', state.to);
     debouncedConversion();
 }
-
 function formatAmount(e) {
     let value = e.target.value.replace(/,/g, '');
     if (value === '' || isNaN(parseFloat(value))) {
@@ -605,7 +697,6 @@ function formatAmount(e) {
     }
     e.target.value = parseFloat(value).toLocaleString('en-US', {maximumFractionDigits: 10});
 }
-
 function copyResult() {
     if(!dom.resultFinal.textContent || dom.resultFinal.textContent === '-') return;
     const textToCopy = dom.resultFinal.textContent.replace(/,/g, '');
@@ -613,12 +704,10 @@ function copyResult() {
         .then(() => showToast('مبلغ با موفقیت کپی شد', 'success'))
         .catch(() => showToast('خطا در کپی کردن', 'error'));
 }
-
 function debouncedConversion() {
     clearTimeout(conversionDebounceTimer);
     conversionDebounceTimer = setTimeout(performConversion, 500);
 }
-
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -632,7 +721,6 @@ function showToast(message, type = 'info') {
     
     setTimeout(() => toast.remove(), 4500);
 }
-
 function updateLastUpdated(utcTimestamp) {
     const date = new Date(utcTimestamp);
     dom.lastUpdated.textContent = `آخرین بروزرسانی: ${date.toLocaleString('fa-IR', {
@@ -641,16 +729,13 @@ function updateLastUpdated(utcTimestamp) {
 }
 
 // --- مدیریت تم و LocalStorage ---
-
 function toggleTheme() {
     const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = newTheme;
     dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
     localStorage.setItem('currency_theme', newTheme);
-    // بازрисовانی نمودار با رنگ‌های جدید
     setTimeout(renderHistoryChart, 50); 
 }
-
 function savePreferences() {
     const prefs = {
         from: state.from,
@@ -660,7 +745,6 @@ function savePreferences() {
     };
     localStorage.setItem('currency_prefs', JSON.stringify(prefs));
 }
-
 function loadPreferences() {
     const theme = localStorage.getItem('currency_theme') || 'light';
     if (theme === 'dark') {
@@ -679,6 +763,55 @@ function loadPreferences() {
         dom.chartControls.querySelector(`[data-range="${state.chartTimeRange}"]`)?.classList.add('active');
     }
 }
+
+
+// --- توابع جدید برای مدیریت اعلامیه ---
+function showAnnouncement() {
+    const { id, title, text, buttonText, imageUrl } = ANNOUNCEMENT_CONFIG;
+
+    if (!text || !id) return;
+
+    dom.announcement.title.textContent = title;
+    dom.announcement.text.textContent = text;
+    dom.announcement.confirmBtn.textContent = buttonText;
+    dom.announcement.image.src = imageUrl;
+
+    dom.announcement.image.style.display = imageUrl ? 'block' : 'none';
+
+    dom.announcement.overlay.style.display = 'flex';
+    setTimeout(() => dom.announcement.overlay.classList.add('show'), 10);
+}
+
+function hideAnnouncement() {
+    dom.announcement.overlay.classList.remove('show');
+    setTimeout(() => {
+        dom.announcement.overlay.style.display = 'none';
+    }, 300); // Wait for CSS transition
+}
+
+function handleAnnouncement() {
+    const { id, text } = ANNOUNCEMENT_CONFIG;
+    if (!text.trim() || !id) {
+        dom.announcement.icon.style.display = 'none';
+        return;
+    }
+
+    // همیشه آیکون را نشان بده اگر متنی وجود دارد
+    dom.announcement.icon.style.display = 'block';
+
+    const seenId = localStorage.getItem('seen_announcement_id');
+
+    // اگر این ID قبلاً دیده نشده، مودال را خودکار نشان بده
+    if (seenId !== id) {
+        showAnnouncement();
+    }
+}
+
+function markAnnouncementAsSeen() {
+    localStorage.setItem('seen_announcement_id', ANNOUNCEMENT_CONFIG.id);
+    hideAnnouncement();
+}
+
 
 // --- ثبت Event Listeners ---
 function addEventListeners() {
@@ -722,6 +855,16 @@ function addEventListeners() {
         if (e.target.matches('.remove-fav-btn')) {
             const codeToRemove = e.target.dataset.code;
             toggleFavorite(codeToRemove, null);
+        }
+    });
+
+    // --- Event Listeners جدید برای اعلامیه ---
+    dom.announcement.icon.addEventListener('click', showAnnouncement);
+    dom.announcement.closeBtn.addEventListener('click', markAnnouncementAsSeen);
+    dom.announcement.confirmBtn.addEventListener('click', markAnnouncementAsSeen);
+    dom.announcement.overlay.addEventListener('click', (e) => {
+        if (e.target === dom.announcement.overlay) {
+            markAnnouncementAsSeen();
         }
     });
 }
