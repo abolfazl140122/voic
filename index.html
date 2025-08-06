@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>داشبورد ارز دیجیتال نوبیتکس</title>
+    <title>داشبورد ارزی حرفه‌ای</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* ================== CSS (بدون تغییر) ================== */
+        /* ================== CSS ================== */
         :root {
             --bg-color: #f4f7fc; --card-bg: #ffffff; --text-color: #34495e;
             --primary-color: #3498db; --primary-hover: #2980b9; --border-color: #e2e8f0;
@@ -158,7 +158,7 @@
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
         [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #555; }
 
-        /* ================== Announcement CSS (بدون تغییر) ================== */
+        /* ================== Announcement CSS ================== */
         .announcement-icon {
             font-size: 22px; color: var(--neutral-color); cursor: pointer;
             transition: color 0.3s, transform 0.3s;
@@ -206,7 +206,7 @@
 
     <main class="main-container">
         <header class="header card">
-            <h1>داشبورد ارز دیجیتال</h1>
+            <h1>داشبورد ارزی حرفه‌ای</h1>
             <div class="header-controls">
                 <i class="fas fa-scroll announcement-icon" id="announcement-icon" title="مشاهده اعلامیه" style="display: none;"></i>
                 <div class="theme-switcher" id="theme-switcher">
@@ -217,10 +217,10 @@
 
         <div class="app-grid">
             <div class="card converter-card">
-                <h3>مبدل آنی ارز دیجیتال</h3>
+                <h3>مبدل آنی ارز</h3>
                 <div class="input-group">
                     <label for="amount">مبلغ</label>
-                    <input type="text" id="amount" value="1" inputmode="decimal">
+                    <input type="text" id="amount" value="1,000" inputmode="decimal">
                 </div>
                 <div class="conversion-flow">
                     <div class="currency-box input-group">
@@ -292,26 +292,38 @@
 
 
 <script>
-// ================== بخش تنظیمات اعلامیه (اختیاری) ==================
+// ================== بخش تنظیمات اعلامیه ==================
+// **مهم:** برای نمایش یک اعلامیه جدید، مقادیر زیر را پر کنید.
+// برای غیرفعال کردن، کافی است مقدار text را برابر با "" (رشته خالی) قرار دهید.
 const ANNOUNCEMENT_CONFIG = {
-    id: "v20240521-nobitex-launch",
-    title: "به داشبورد نوبیتکس خوش آمدید!",
-    text: "این داشبورد اکنون از API عمومی نوبیتکس برای نمایش قیمت‌های لحظه‌ای و تاریخچه واقعی ارزهای دیجیتال به تومان استفاده می‌کند.\nلذت ببرید!",
-    buttonText: "عالیه!",
-    imageUrl: "https://images.unsplash.com/photo-1621419799329-094c6f3703c0?q=80&w=1974&auto=format&fit=crop"
+    // 🔽🔽🔽 اینجا را ویرایش کنید 🔽🔽🔽
+
+    // یک شناسه منحصر به فرد برای این اعلامیه. هر بار که متن را تغییر می‌دهید،
+    // این شناسه را هم عوض کنید (مثلاً تاریخ امروز: "v20240521").
+    // این کار باعث می‌شود اعلامیه جدید به کاربرانی که قبلی را دیده‌اند هم نمایش داده شود.
+    id: "v20240521-ui-update",
+
+    // عنوان اعلامیه
+    title: "به‌روزرسانی جدید و هیجان‌انگیز!",
+
+    // متن اصلی اعلامیه شما در اینجا قرار می‌گیرد.
+    // می‌توانید از \n برای رفتن به خط بعد استفاده کنید.
+    text: "ما ظاهر و تجربه کاربری داشبورد را بهبود دادیم!\nحالا می‌توانید از نمودارهای بهتر، لیست پیگیری کارآمدتر و یک مبدل ارز هوشمندتر لذت ببرید.",
+
+    // متن دکمه تأیید
+    buttonText: "فهمیدم!",
+
+    // آدرس تصویر بنر (اختیاری). می‌توانید آدرس تصویر خودتان را قرار دهید.
+    // برای نمونه: "https://example.com/banner.jpg"
+    imageUrl: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1974&auto=format&fit=crop"
+
+    // 🔼🔼🔼 پایان بخش ویرایش 🔼🔼🔼
 };
 
 
-// ================== JavaScript (بازنویسی شده برای نوبیتکس) ==================
-const nobitexApiUrl = 'https://api.nobitex.ir';
-
-// --- دیکشنری برای نام کامل ارزها (اختیاری) ---
-const currencyNames = {
-    IRT: "تومان ایران", BTC: "بیت‌کوین", ETH: "اتریوم", USDT: "تتر",
-    LTC: "لایت‌کوین", XRP: "ریپل", BCH: "بیت‌کوین کش", BNB: "بایننس کوین",
-    EOS: "ایاس", XLM: "استلار", TRX: "ترون", ADA: "کاردانو", DOT: "پولکادات",
-    DOGE: "دوج‌کوین", SHIB: "شیبا اینو", LINK: "چین‌لینک", UNI: "یونی‌سواپ"
-};
+// ================== JavaScript ==================
+const apiKey = '0ff22125f8e20b66fc0f51ae';
+const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
 
 // --- دریافت عناصر DOM ---
 const dom = {
@@ -336,6 +348,8 @@ const dom = {
     watchlistContent: document.getElementById('watchlist-content'),
     watchlistTitle: document.getElementById('watchlist-title'),
     toastContainer: document.getElementById('toast-container'),
+
+    // --- عناصر جدید برای اعلامیه ---
     announcement: {
         overlay: document.getElementById('announcement-overlay'),
         modal: document.getElementById('announcement-modal'),
@@ -350,128 +364,119 @@ const dom = {
 
 // --- وضعیت برنامه (State) ---
 const state = {
-    from: 'BTC',
-    to: 'IRT',
+    from: 'USD',
+    to: 'IRR',
     allCurrencies: [],
-    favorites: ['USDT', 'ETH', 'DOGE', 'SHIB', 'XRP'],
-    latestRates: null, // حاوی آبجکت کامل از نوبیتکس
+    favorites: ['EUR', 'GBP', 'JPY', 'AED', 'TRY'],
+    latestRates: null,
     previousRates: null, // برای تشخیص روند
     chartTimeRange: 7,
 };
 let historyChart;
+let conversionDebounceTimer;
 
 // --- توابع اصلی ---
 async function init() {
     loadPreferences();
-    handleAnnouncement();
+    handleAnnouncement(); // <<< اجرای منطق اعلامیه
+    await fetchAllCurrencies();
     addEventListeners();
     updateCurrencyUI('from', state.from);
-    updateCurrencyUI('to', 'IRT');
-    await fetchNobitexData();
+    updateCurrencyUI('to', state.to);
+    document.querySelectorAll('.card').forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+    await performConversion();
 }
 
-async function fetchNobitexData() {
+async function fetchAllCurrencies() {
+    if (apiKey.includes('YOUR_API_KEY') || apiKey.length < 16) {
+        showToast('کلید API نامعتبر است. لطفاً کد را ویرایش کنید.', 'error');
+        return;
+    }
+    try {
+        const response = await fetch(`${apiUrl}/codes`);
+        const data = await response.json();
+        if (data.result === 'success') {
+            state.allCurrencies = data.supported_codes;
+        } else {
+            throw new Error(data['error-type'] || 'Failed to fetch currencies');
+        }
+    } catch (error) {
+        console.error('Error fetching currency codes:', error);
+        showToast('خطا در دریافت لیست ارزها', 'error');
+    }
+}
+
+async function performConversion() {
+    const amount = parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0;
+    
     renderWatchlistSkeleton();
     dom.chartLoader.classList.add('show');
-    dom.lastUpdated.textContent = 'در حال دریافت اطلاعات...';
 
     try {
-        // دریافت همزمان اطلاعات بازار و آمار ۲۴ ساعت گذشته
-        const [statsResponse, marketResponse] = await Promise.all([
-            fetch(`${nobitexApiUrl}/v2/stats`),
-            fetch(`${nobitexApiUrl}/v2/market/stats`)
-        ]);
+        const response = await fetch(`${apiUrl}/latest/${state.from}`);
+        const data = await response.json();
 
-        if (!statsResponse.ok || !marketResponse.ok) {
-            throw new Error(`خطا در ارتباط با سرور نوبیتکس`);
+        if (data.result === 'success') {
+            if(state.latestRates) {
+                state.previousRates = { ...state.latestRates.conversion_rates };
+            }
+            state.latestRates = data;
+            
+            updateConverterResult(amount);
+            updateLastUpdated(data.time_last_update_utc);
+            renderWatchlist();
+            renderHistoryChart();
+            
+            savePreferences();
+        } else {
+            handleApiError(data['error-type']);
         }
-        
-        const statsData = await statsResponse.json();
-        const marketData = await marketResponse.json();
-
-        if (statsData.status !== 'ok' || marketData.status !== 'ok') {
-            throw new Error('پاسخ دریافتی از نوبیتکس نامعتبر است.');
-        }
-
-        // ذخیره نرخ‌های قبلی برای مقایسه روند
-        if(state.latestRates) {
-            state.previousRates = { ...state.latestRates };
-        }
-        state.latestRates = { ...statsData.stats, ...marketData.stats };
-        
-        processAvailableCurrencies();
-        
-        // به‌روزرسانی تمام بخش‌های برنامه
-        updateConverterResult();
-        renderWatchlist();
-        renderHistoryChart();
-        updateLastUpdated();
-        savePreferences();
-
     } catch (error) {
-        console.error('Error fetching Nobitex data:', error);
-        showToast(error.message || 'خطا در دریافت اطلاعات از نوبیتکس', 'error');
+        console.error('Network or conversion error:', error);
+        showToast('خطای شبکه. لطفاً اتصال خود را بررسی کنید.', 'error');
         dom.resultFinal.textContent = '-';
         dom.resultRate.textContent = '';
         dom.resultRateReverse.textContent = '';
-        dom.watchlistContent.innerHTML = `<div id="watchlist-empty-msg">${error.message}</div>`;
     } finally {
         dom.chartLoader.classList.remove('show');
     }
 }
 
-function processAvailableCurrencies() {
-    if (!state.latestRates) return;
-    const currencyCodes = new Set(['IRT']);
-    Object.keys(state.latestRates).forEach(marketPair => {
-        const [src, dst] = marketPair.split('-');
-        if(dst === 'IRT') currencyCodes.add(src);
-    });
-
-    state.allCurrencies = Array.from(currencyCodes).map(code => {
-        return [code, currencyNames[code] || code];
-    });
-    // آپدیت UI برای اطمینان از صحت نام‌ها
-    updateCurrencyUI('from', state.from);
-    updateCurrencyUI('to', state.to);
+function handleApiError(errorType) {
+    let message = 'یک خطای نامشخص رخ داد.';
+    switch (errorType) {
+        case 'invalid-key': message = 'کلید API نامعتبر است.'; break;
+        case 'inactive-account': message = 'حساب کاربری API غیرفعال است.'; break;
+        case 'quota-reached': message = 'محدودیت درخواست API به پایان رسیده است.'; break;
+        case 'unsupported-code': message = `ارز ${state.from} پشتیبانی نمی‌شود.`; break;
+    }
+    showToast(message, 'error');
+    dom.resultFinal.textContent = 'خطا';
+    dom.resultRate.textContent = `(${errorType})`;
 }
 
 // --- توابع رندر و UI ---
-function updateConverterResult() {
-    const amount = parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0;
-    if (!state.latestRates || amount === 0) {
+function updateConverterResult(amount) {
+    if (!state.latestRates) return;
+    const rate = state.latestRates.conversion_rates[state.to];
+
+    if (amount === 0 || !rate) {
         dom.resultFinal.textContent = '0';
         dom.resultRate.textContent = '';
         dom.resultRateReverse.textContent = '';
         return;
     }
-
-    const fromRate = getRateInIRT(state.from);
-    const toRate = getRateInIRT(state.to);
-
-    if (fromRate === null || toRate === null) {
-        dom.resultFinal.textContent = '-';
-        showToast(`بازار تبدیل ${state.from} به ${state.to} یافت نشد.`, 'error');
-        return;
-    }
-
-    const finalRate = fromRate / toRate;
-    const finalAmount = amount * finalRate;
-
-    dom.resultFinal.textContent = `${finalAmount.toLocaleString('fa-IR', {maximumFractionDigits: state.to === 'IRT' ? 0 : 8})}`;
-    dom.resultRate.textContent = `1 ${state.from} = ${finalRate.toLocaleString('fa-IR', {maximumFractionDigits: 8})} ${state.to}`;
-    dom.resultRateReverse.textContent = `1 ${state.to} = ${(1/finalRate).toLocaleString('fa-IR', {maximumFractionDigits: 8})} ${state.from}`;
-}
-
-function getRateInIRT(currencyCode) {
-    if (currencyCode === 'IRT') return 1;
-    const market = state.latestRates[`${currencyCode}-IRT`];
-    return market ? parseFloat(market.latest) : null;
+    
+    const finalAmount = amount * rate;
+    dom.resultFinal.textContent = `${finalAmount.toLocaleString('fa-IR', {maximumFractionDigits: 2})}`;
+    dom.resultRate.textContent = `1 ${state.from} = ${rate.toLocaleString('fa-IR', {maximumFractionDigits: 4})} ${state.to}`;
+    dom.resultRateReverse.textContent = `1 ${state.to} = ${(1/rate).toLocaleString('fa-IR', {maximumFractionDigits: 8})} ${state.from}`;
 }
 
 function renderWatchlist() {
-    const baseCurrency = 'IRT'; // همیشه بر اساس تومان
-    dom.watchlistTitle.textContent = `نرخ‌ها نسبت به تومان (IRT)`;
+    dom.watchlistTitle.textContent = `نرخ‌ها نسبت به 1 ${state.from}`;
     dom.watchlistContent.innerHTML = '';
 
     if (!state.favorites.length) {
@@ -482,21 +487,18 @@ function renderWatchlist() {
     if (!state.latestRates) return;
 
     let content = '';
+    const rates = state.latestRates.conversion_rates;
+    
     state.favorites.forEach(code => {
-        if(code === baseCurrency) return;
-        const market = state.latestRates[`${code}-${baseCurrency}`];
-        
-        if (market) {
-            const rate = parseFloat(market.latest);
-            const currencyName = currencyNames[code] || code;
+        if (code === state.from) return;
+        if (rates[code]) {
+            const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || code;
             
             let trendIcon = '';
-            const previousMarket = state.previousRates ? state.previousRates[`${code}-${baseCurrency}`] : null;
-            if (previousMarket) {
-                const prevRate = parseFloat(previousMarket.latest);
-                if (rate > prevRate) {
+            if (state.previousRates && state.previousRates[code]) {
+                if (rates[code] > state.previousRates[code]) {
                     trendIcon = `<i class="fas fa-arrow-up trend-arrow up"></i>`;
-                } else if (rate < prevRate) {
+                } else if (rates[code] < state.previousRates[code]) {
                     trendIcon = `<i class="fas fa-arrow-down trend-arrow down"></i>`;
                 }
             }
@@ -508,7 +510,7 @@ function renderWatchlist() {
                         <span><b>${code}</b> - ${currencyName}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 15px;">
-                      <span class="rate">${rate.toLocaleString('fa-IR', { maximumFractionDigits: 0 })}</span>
+                      <span class="rate">${rates[code].toLocaleString('en-US', { maximumFractionDigits: 4 })}</span>
                       <button class="remove-fav-btn" data-code="${code}" title="حذف از لیست پیگیری">&times;</button>
                     </div>
                 </div>
@@ -517,7 +519,6 @@ function renderWatchlist() {
     });
     dom.watchlistContent.innerHTML = content;
 }
-
 function renderWatchlistSkeleton() {
     let skeletonHTML = '';
     for (let i = 0; i < 5; i++) {
@@ -531,104 +532,106 @@ function renderWatchlistSkeleton() {
     dom.watchlistContent.innerHTML = skeletonHTML;
 }
 
-async function renderHistoryChart() {
+function renderHistoryChart() {
+    dom.chartTitle.textContent = `تاریخچه شبیه‌سازی شده ${state.from} به ${state.to}`;
     dom.chartLoader.classList.add('show');
-    dom.chartTitle.textContent = `تاریخچه نرخ ${state.from} به ${state.to}`;
 
-    if (historyChart) historyChart.destroy();
-    
-    // پیدا کردن بازار مناسب برای نمودار
-    let symbol, invert = false;
-    if (state.latestRates[`${state.from}-${state.to}`]) {
-        symbol = `${state.from}-${state.to}`;
-    } else if (state.latestRates[`${state.to}-${state.from}`]) {
-        symbol = `${state.to}-${state.from}`;
-        invert = true;
-    } else {
+    if (!state.latestRates || !state.latestRates.conversion_rates[state.to]) {
+        if (historyChart) historyChart.destroy();
         dom.chartLoader.classList.remove('show');
-        showToast(`نمودار تاریخچه برای بازار ${state.from}-${state.to} موجود نیست.`, 'error');
         return;
     }
+    
+    const currentRate = state.latestRates.conversion_rates[state.to];
+    
+    const dates = [];
+    for (let i = state.chartTimeRange - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
+    }
 
-    try {
-        const to = Math.floor(Date.now() / 1000);
-        const from = to - (state.chartTimeRange * 24 * 3600);
-        
-        const response = await fetch(`${nobitexApiUrl}/v2/ohlc?symbol=${symbol}&resolution=D&from=${from}&to=${to}`);
-        const data = await response.json();
+    let dailyRates = [currentRate];
+    let lastRate = currentRate;
+    for (let i = 0; i < state.chartTimeRange - 1; i++) {
+        const fluctuation = (Math.random() - 0.5) * 0.05; 
+        lastRate = lastRate * (1 + fluctuation);
+        dailyRates.unshift(lastRate);
+    }
 
-        if (data.s !== 'ok') {
-            throw new Error(data.errmsg || 'خطا در دریافت تاریخچه قیمت');
-        }
+    const backgroundColors = [];
+    const successColor = getComputedStyle(document.documentElement).getPropertyValue('--success-color').trim();
+    const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger-color').trim();
 
-        const dates = data.t.map(ts => new Date(ts * 1000).toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
-        let prices = data.c; // Closing prices
-        if(invert) {
-            prices = prices.map(p => 1 / p);
-        }
+    for (let i = 1; i < dailyRates.length; i++) {
+        backgroundColors.push(dailyRates[i] >= dailyRates[i-1] ? successColor + '80' : dangerColor + '80');
+    }
+    
+    if (historyChart) historyChart.destroy();
+    
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+    const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
 
-        const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
-        const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
-        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
-
-        historyChart = new Chart(dom.ctx, {
-            type: 'line',
-            data: { 
-                labels: dates, 
-                datasets: [{
-                    label: `نرخ ${state.to}`, 
-                    data: prices,
+    historyChart = new Chart(dom.ctx, {
+        type: 'bar',
+        data: { 
+            labels: dates, 
+            datasets: [
+                {
+                    type: 'line',
+                    label: `روند نرخ ${state.to}`, 
+                    data: dailyRates,
                     borderColor: primaryColor,
-                    backgroundColor: primaryColor + '33', // شفافیت
                     borderWidth: 2.5,
                     pointBackgroundColor: primaryColor,
                     tension: 0.3,
-                    fill: true,
-                }]
+                    fill: false,
+                },
+                {
+                    type: 'bar',
+                    label: `نرخ روزانه ${state.to}`, 
+                    data: dailyRates,
+                    backgroundColor: backgroundColors, 
+                    borderRadius: 5,
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { 
+                y: { beginAtZero: false, ticks: { color: textColor, padding: 10, callback: function(value) { return value.toLocaleString('fa-IR'); } }, grid: { color: borderColor } }, 
+                x: { ticks: { color: textColor }, grid: { display: false } } 
             },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { 
-                    y: { ticks: { color: textColor, padding: 10, callback: value => value.toLocaleString('fa-IR', {maximumFractionDigits: invert ? 8: 2}) }, grid: { color: borderColor } }, 
-                    x: { ticks: { color: textColor }, grid: { display: false } } 
-                },
-                plugins: { 
-                    legend: { display: false },
-                    tooltip: {
-                        rtl: true,
-                        titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' },
-                        backgroundColor: 'var(--card-bg)', titleColor: 'var(--primary-color)',
-                        bodyColor: 'var(--text-color)', borderColor: 'var(--border-color)', borderWidth: 1, padding: 10,
-                        callbacks: {
-                            label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString('fa-IR', {maximumFractionDigits: 8})}`
-                        }
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    rtl: true,
+                    titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' },
+                    backgroundColor: 'var(--card-bg)', titleColor: 'var(--primary-color)',
+                    bodyColor: 'var(--text-color)', borderColor: 'var(--border-color)', borderWidth: 1, padding: 10,
+                    callbacks: {
+                        label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString('fa-IR', {maximumFractionDigits: 4})}`
                     }
-                },
-                interaction: { mode: 'index', intersect: false },
-            }
-        });
-    } catch (error) {
-        console.error('Chart rendering error:', error);
-        showToast(error.message, 'error');
-    } finally {
-        dom.chartLoader.classList.remove('show');
-    }
+                }
+            },
+            interaction: { mode: 'index', intersect: false },
+        }
+    });
+    dom.chartLoader.classList.remove('show');
 }
-
 function populateDropdown(dropdown, filter = '') {
     dropdown.innerHTML = '';
     const sortedCurrencies = [...state.allCurrencies].sort((a, b) => {
         const aIsFav = state.favorites.includes(a[0]);
         const bIsFav = state.favorites.includes(b[0]);
-        if (a[0] === 'IRT') return 1; // IRT always at the bottom
-        if (b[0] === 'IRT') return -1;
         if (aIsFav === bIsFav) return a[0].localeCompare(b[0]);
         return aIsFav ? -1 : 1;
     });
 
     const filterLower = filter.toLowerCase();
     const filtered = sortedCurrencies.filter(([code, name]) => 
-        code.toLowerCase().includes(filterLower) || name.toLowerCase().includes(filterLower)
+        code.toLowerCase().includes(filterLower) || name.toLowerCase().includes(filterLower) || name.includes(filter)
     );
 
     filtered.forEach(([code, name]) => {
@@ -640,24 +643,16 @@ function populateDropdown(dropdown, filter = '') {
             const type = dropdown.id.includes('from') ? 'from' : 'to';
             updateCurrencyUI(type, code);
             dropdown.classList.remove('show');
-            updateConverterResult();
-            renderHistoryChart();
+            debouncedConversion();
         });
-        
-        const star = itemDiv.querySelector('.fav-star');
-        if (code === 'IRT') star.style.display = 'none'; // Don't allow starring IRT
-        star.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleFavorite(code, e.target);
+        itemDiv.querySelector('.fav-star').addEventListener('click', (e) => {
+            e.stopPropagation(); toggleFavorite(code, e.target);
         });
-        
         dropdown.appendChild(itemDiv);
     });
 }
-
 // --- توابع کمکی ---
 function toggleFavorite(code, starElement) {
-    if (code === 'IRT') return;
     const index = state.favorites.indexOf(code);
     if (index > -1) {
         state.favorites.splice(index, 1);
@@ -672,29 +667,24 @@ function toggleFavorite(code, starElement) {
     savePreferences();
     renderWatchlist();
 }
-
 function updateCurrencyUI(type, code) {
     state[type] = code;
     const input = (type === 'from') ? dom.fromCurrencyInput : dom.toCurrencyInput;
     const icon = (type === 'from') ? dom.fromIcon : dom.toIcon;
-    const currencyName = currencyNames[code] || code;
-    input.value = `${code} - ${currencyName}`;
-    
+    const currencyData = state.allCurrencies.find(c => c[0] === code);
+    input.value = currencyData ? `${code} - ${currencyData[1]}` : code;
     try { 
         icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt(0) + 127397));
     } catch(e) { 
-        icon.textContent = '🪙'; // Coin icon for crypto
+        icon.textContent = '🏳️';
     }
 }
-
 function handleSwap() {
     [state.from, state.to] = [state.to, state.from];
     updateCurrencyUI('from', state.from);
     updateCurrencyUI('to', state.to);
-    updateConverterResult();
-    renderHistoryChart();
+    debouncedConversion();
 }
-
 function formatAmount(e) {
     let value = e.target.value.replace(/,/g, '');
     if (value === '' || isNaN(parseFloat(value))) {
@@ -703,7 +693,6 @@ function formatAmount(e) {
     }
     e.target.value = parseFloat(value).toLocaleString('en-US', {maximumFractionDigits: 10});
 }
-
 function copyResult() {
     if(!dom.resultFinal.textContent || dom.resultFinal.textContent === '-') return;
     const textToCopy = dom.resultFinal.textContent.replace(/,/g, '');
@@ -711,7 +700,10 @@ function copyResult() {
         .then(() => showToast('مبلغ با موفقیت کپی شد', 'success'))
         .catch(() => showToast('خطا در کپی کردن', 'error'));
 }
-
+function debouncedConversion() {
+    clearTimeout(conversionDebounceTimer);
+    conversionDebounceTimer = setTimeout(performConversion, 500);
+}
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -725,11 +717,10 @@ function showToast(message, type = 'info') {
     
     setTimeout(() => toast.remove(), 4500);
 }
-
-function updateLastUpdated() {
-    const date = new Date();
-    dom.lastUpdated.textContent = `نرخ‌ها از نوبیتکس - بروزرسانی: ${date.toLocaleString('fa-IR', {
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
+function updateLastUpdated(utcTimestamp) {
+    const date = new Date(utcTimestamp);
+    dom.lastUpdated.textContent = `آخرین بروزرسانی: ${date.toLocaleString('fa-IR', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
     })}`;
 }
 
@@ -741,16 +732,15 @@ function toggleTheme() {
     localStorage.setItem('currency_theme', newTheme);
     setTimeout(renderHistoryChart, 50); 
 }
-
 function savePreferences() {
     const prefs = {
-        from: state.from, to: state.to,
+        from: state.from,
+        to: state.to,
         favorites: state.favorites,
         chartTimeRange: state.chartTimeRange,
     };
     localStorage.setItem('currency_prefs', JSON.stringify(prefs));
 }
-
 function loadPreferences() {
     const theme = localStorage.getItem('currency_theme') || 'light';
     if (theme === 'dark') {
@@ -760,9 +750,9 @@ function loadPreferences() {
 
     const prefs = JSON.parse(localStorage.getItem('currency_prefs'));
     if (prefs) { 
-        state.from = prefs.from || 'BTC'; 
-        state.to = prefs.to || 'IRT'; 
-        state.favorites = prefs.favorites || ['USDT', 'ETH', 'DOGE', 'SHIB', 'XRP'];
+        state.from = prefs.from || 'USD'; 
+        state.to = prefs.to || 'IRR'; 
+        state.favorites = prefs.favorites || ['EUR', 'GBP', 'JPY', 'AED', 'TRY'];
         state.chartTimeRange = prefs.chartTimeRange || 7;
 
         dom.chartControls.querySelector('.active')?.classList.remove('active');
@@ -770,40 +760,58 @@ function loadPreferences() {
     }
 }
 
-// --- توابع مدیریت اعلامیه (بدون تغییر) ---
+
+// --- توابع جدید برای مدیریت اعلامیه ---
 function showAnnouncement() {
     const { id, title, text, buttonText, imageUrl } = ANNOUNCEMENT_CONFIG;
+
     if (!text || !id) return;
+
     dom.announcement.title.textContent = title;
     dom.announcement.text.textContent = text;
     dom.announcement.confirmBtn.textContent = buttonText;
+    
     if (imageUrl) {
         dom.announcement.image.src = imageUrl;
         dom.announcement.image.style.display = 'block';
     } else {
         dom.announcement.image.style.display = 'none';
     }
+
     dom.announcement.overlay.style.display = 'flex';
     setTimeout(() => dom.announcement.overlay.classList.add('show'), 10);
 }
+
 function hideAnnouncement() {
     dom.announcement.overlay.classList.remove('show');
-    setTimeout(() => dom.announcement.overlay.style.display = 'none', 400);
+    setTimeout(() => {
+        dom.announcement.overlay.style.display = 'none';
+    }, 400); // Wait for CSS transition
 }
+
 function handleAnnouncement() {
     const { id, text } = ANNOUNCEMENT_CONFIG;
     if (!text.trim() || !id) {
         dom.announcement.icon.style.display = 'none';
         return;
     }
+
+    // همیشه آیکون را نشان بده اگر متنی وجود دارد
     dom.announcement.icon.style.display = 'block';
+
     const seenId = localStorage.getItem('seen_announcement_id');
-    if (seenId !== id) showAnnouncement();
+
+    // اگر این ID قبلاً دیده نشده، مودال را خودکار نشان بده
+    if (seenId !== id) {
+        showAnnouncement();
+    }
 }
+
 function markAnnouncementAsSeen() {
     localStorage.setItem('seen_announcement_id', ANNOUNCEMENT_CONFIG.id);
     hideAnnouncement();
 }
+
 
 // --- ثبت Event Listeners ---
 function addEventListeners() {
@@ -813,7 +821,7 @@ function addEventListeners() {
     
     dom.amountInput.addEventListener('input', (e) => {
         formatAmount(e);
-        updateConverterResult();
+        updateConverterResult(parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0);
     });
 
     ['from', 'to'].forEach(type => {
@@ -850,11 +858,14 @@ function addEventListeners() {
         }
     });
 
+    // --- Event Listeners جدید برای اعلامیه ---
     dom.announcement.icon.addEventListener('click', showAnnouncement);
     dom.announcement.closeBtn.addEventListener('click', markAnnouncementAsSeen);
     dom.announcement.confirmBtn.addEventListener('click', markAnnouncementAsSeen);
     dom.announcement.overlay.addEventListener('click', (e) => {
-        if (e.target === dom.announcement.overlay) markAnnouncementAsSeen();
+        if (e.target === dom.announcement.overlay) {
+            markAnnouncementAsSeen();
+        }
     });
 }
 
