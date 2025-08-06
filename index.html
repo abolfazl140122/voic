@@ -216,7 +216,6 @@
         </header>
 
         <div class="app-grid">
-            <!-- ... بقیه کارت های شما ... -->
             <div class="card converter-card">
                 <h3>مبدل آنی ارز</h3>
                 <div class="input-group">
@@ -302,32 +301,32 @@ const ANNOUNCEMENT_CONFIG = {
     // یک شناسه منحصر به فرد برای این اعلامیه. هر بار که متن را تغییر می‌دهید،
     // این شناسه را هم عوض کنید (مثلاً تاریخ امروز: "v20240521").
     // این کار باعث می‌شود اعلامیه جدید به کاربرانی که قبلی را دیده‌اند هم نمایش داده شود.
-    id: "v20240521-2",
+    id: "v20240521-ui-update",
 
     // عنوان اعلامیه
-    title: "یک به‌روزرسانی مهم!",
+    title: "به‌روزرسانی جدید و هیجان‌انگیز!",
 
     // متن اصلی اعلامیه شما در اینجا قرار می‌گیرد.
     // می‌توانید از \n برای رفتن به خط بعد استفاده کنید.
-    text: "ما درحال بروزرسانی و تقویت کد نویسی و عناصر UI کاربری هستیم و لطفا تا پایان این بروزرسانی منتظر بمانید.",
+    text: "ما ظاهر و تجربه کاربری داشبورد را بهبود دادیم!\nحالا می‌توانید از نمودارهای بهتر، لیست پیگیری کارآمدتر و یک مبدل ارز هوشمندتر لذت ببرید.",
 
     // متن دکمه تأیید
-    buttonText: "اوکی!",
+    buttonText: "فهمیدم!",
 
     // آدرس تصویر بنر (اختیاری). می‌توانید آدرس تصویر خودتان را قرار دهید.
-    imageUrl: "" // یک تصویر طومار به عنوان نمونه
+    // برای نمونه: ""
+    imageUrl: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1974&auto=format&fit=crop"
 
     // 🔼🔼🔼 پایان بخش ویرایش 🔼🔼🔼
 };
 
 
 // ================== JavaScript ==================
-const apiKey = '0ff22125f8e20b66fc0f51ae'; // <-- کلید API شما (این کلید ممکن است موقتی باشد)
+const apiKey = '0ff22125f8e20b66fc0f51ae';
 const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
 
 // --- دریافت عناصر DOM ---
 const dom = {
-    // ... (عناصر قبلی)
     amountInput: document.getElementById('amount'),
     fromCurrencyInput: document.getElementById('from-currency-input'),
     toCurrencyInput: document.getElementById('to-currency-input'),
@@ -364,7 +363,6 @@ const dom = {
 };
 
 // --- وضعیت برنامه (State) ---
-// ... (state قبلی)
 const state = {
     from: 'USD',
     to: 'IRR',
@@ -390,8 +388,6 @@ async function init() {
     });
     await performConversion();
 }
-
-// ... (بقیه توابع بدون تغییر باقی می‌مانند) ...
 
 async function fetchAllCurrencies() {
     if (apiKey.includes('YOUR_API_KEY') || apiKey.length < 16) {
@@ -461,7 +457,7 @@ function handleApiError(errorType) {
     dom.resultRate.textContent = `(${errorType})`;
 }
 
-// --- توابع رندر و UI (بدون تغییر) ---
+// --- توابع رندر و UI ---
 function updateConverterResult(amount) {
     if (!state.latestRates) return;
     const rate = state.latestRates.conversion_rates[state.to];
@@ -655,7 +651,7 @@ function populateDropdown(dropdown, filter = '') {
         dropdown.appendChild(itemDiv);
     });
 }
-// --- توابع کمکی (بدون تغییر) ---
+// --- توابع کمکی ---
 function toggleFavorite(code, starElement) {
     const index = state.favorites.indexOf(code);
     if (index > -1) {
@@ -774,9 +770,13 @@ function showAnnouncement() {
     dom.announcement.title.textContent = title;
     dom.announcement.text.textContent = text;
     dom.announcement.confirmBtn.textContent = buttonText;
-    dom.announcement.image.src = imageUrl;
-
-    dom.announcement.image.style.display = imageUrl ? 'block' : 'none';
+    
+    if (imageUrl) {
+        dom.announcement.image.src = imageUrl;
+        dom.announcement.image.style.display = 'block';
+    } else {
+        dom.announcement.image.style.display = 'none';
+    }
 
     dom.announcement.overlay.style.display = 'flex';
     setTimeout(() => dom.announcement.overlay.classList.add('show'), 10);
@@ -786,7 +786,7 @@ function hideAnnouncement() {
     dom.announcement.overlay.classList.remove('show');
     setTimeout(() => {
         dom.announcement.overlay.style.display = 'none';
-    }, 300); // Wait for CSS transition
+    }, 400); // Wait for CSS transition
 }
 
 function handleAnnouncement() {
