@@ -47,20 +47,18 @@
         .app-grid {
             display: grid; gap: 25px;
             grid-template-columns: 1fr;
-            grid-template-areas: "converter" "chart" "watchlist" "trivia"; /* جدید: چینش موبایل */
+            grid-template-areas: "converter" "chart" "watchlist";
         }
         @media (min-width: 1024px) {
             .app-grid {
                 grid-template-columns: 1.2fr 1fr;
-                /* جدید: چینش دسکتاپ به 2x2 تغییر کرد */
-                grid-template-areas: "converter watchlist" "chart trivia";
+                grid-template-areas: "converter watchlist" "chart watchlist";
             }
         }
 
         .converter-card { grid-area: converter; }
         .chart-card { grid-area: chart; }
         .watchlist-card { grid-area: watchlist; }
-        .trivia-card { grid-area: trivia; } /* جدید */
 
         .card {
             background: var(--card-bg); padding: 30px; border-radius: 20px; box-shadow: var(--shadow);
@@ -73,7 +71,6 @@
         .converter-card { animation-delay: 0.1s; }
         .chart-card { animation-delay: 0.2s; }
         .watchlist-card { animation-delay: 0.3s; }
-        .trivia-card { animation-delay: 0.4s; } /* جدید */
 
         .card h3 { margin-bottom: 20px; font-size: 20px; color: var(--primary-color); }
 
@@ -142,42 +139,6 @@
         .spinner { display: block; width: 50px; height: 50px; border: 5px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .chart-loader.show { display: flex; }
-
-        /* ========= جدید: استایل‌های بخش سرگرمی ========= */
-        .trivia-card {
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        #trivia-question { font-size: 18px; text-align: center; margin-bottom: 20px; min-height: 50px; }
-        #trivia-options {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;
-        }
-        .trivia-option {
-            background-color: var(--bg-color); border: 2px solid var(--border-color);
-            padding: 15px; border-radius: 10px; cursor: pointer;
-            text-align: center; font-weight: 500; transition: all 0.2s ease-in-out;
-        }
-        .trivia-option:not([disabled]):hover {
-            border-color: var(--primary-color); background-color: var(--primary-hover); color: white;
-        }
-        .trivia-option.correct {
-            background-color: var(--success-bg); border-color: var(--success-color); color: var(--success-color); font-weight: 700;
-        }
-        .trivia-option.incorrect {
-            background-color: var(--danger-bg); border-color: var(--danger-color); color: var(--danger-color); opacity: 0.7;
-        }
-        #trivia-footer {
-            display: flex; justify-content: space-between; align-items: center; margin-top: auto;
-        }
-        #trivia-score { font-size: 16px; font-weight: 700; }
-        #trivia-next-btn {
-            background: var(--primary-color); color: white; border: none; border-radius: 8px;
-            padding: 10px 20px; font-size: 16px; cursor: pointer; transition: background-color 0.2s;
-        }
-        #trivia-next-btn:hover { background: var(--primary-hover); }
-        #trivia-loader-msg {
-            text-align: center; color: var(--neutral-color); margin: auto;
-        }
-        /* =============================================== */
         
         #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
         .toast {
@@ -268,23 +229,6 @@
                     <canvas id="history-chart"></canvas>
                 </div>
             </div>
-
-            <!-- ========= جدید: کارت بخش سرگرمی ========= -->
-            <div class="card trivia-card">
-                <h3>سرگرمی ارزی</h3>
-                <div id="trivia-content">
-                    <p id="trivia-question">کدام ارز متعلق به کشور ژاپن است؟</p>
-                    <div id="trivia-options">
-                        <!-- Options will be injected by JS -->
-                    </div>
-                </div>
-                <div id="trivia-footer">
-                    <span id="trivia-score">امتیاز: 0</span>
-                    <button id="trivia-next-btn">سوال بعدی</button>
-                </div>
-            </div>
-            <!-- ======================================= -->
-
         </div>
     </main>
 
@@ -316,12 +260,6 @@ const dom = {
     watchlistContent: document.getElementById('watchlist-content'),
     watchlistTitle: document.getElementById('watchlist-title'),
     toastContainer: document.getElementById('toast-container'),
-    // جدید: عناصر DOM برای بخش سرگرمی
-    triviaContent: document.getElementById('trivia-content'),
-    triviaQuestion: document.getElementById('trivia-question'),
-    triviaOptions: document.getElementById('trivia-options'),
-    triviaScore: document.getElementById('trivia-score'),
-    triviaNextBtn: document.getElementById('trivia-next-btn'),
 };
 
 // --- وضعیت برنامه (State) ---
@@ -333,13 +271,6 @@ const state = {
     latestRates: null,
     previousRates: null, // برای تشخیص روند
     chartTimeRange: 7,
-    // جدید: وضعیت برای بخش سرگرمی
-    triviaScore: 0,
-    currentTrivia: {
-        question: '',
-        options: [],
-        correctAnswer: '',
-    },
 };
 let historyChart;
 let conversionDebounceTimer;
@@ -355,8 +286,6 @@ async function init() {
     document.querySelectorAll('.card').forEach((card, index) => {
         card.style.animationDelay = `${index * 0.1}s`;
     });
-    // جدید: شروع بازی سرگرمی
-    startTriviaGame();
     await performConversion();
 }
 
@@ -365,16 +294,11 @@ async function fetchAllCurrencies() {
         showToast('کلید API نامعتبر است. لطفاً کد را ویرایش کنید.', 'error');
         return;
     }
-    // جدید: نمایش پیام لودینگ برای بازی
-    dom.triviaContent.innerHTML = `<div id="trivia-loader-msg">در حال آماده‌سازی بازی...</div>`;
     try {
         const response = await fetch(`${apiUrl}/codes`);
         const data = await response.json();
         if (data.result === 'success') {
-            // فیلتر کردن ارزهای نامناسب برای بازی
-            state.allCurrencies = data.supported_codes.filter(c => 
-                c[1].includes(' ') && !c[1].toLowerCase().includes('silver') && !c[1].toLowerCase().includes('gold')
-            );
+            state.allCurrencies = data.supported_codes;
         } else {
             throw new Error(data['error-type'] || 'Failed to fetch currencies');
         }
@@ -396,6 +320,7 @@ async function performConversion() {
         const data = await response.json();
 
         if (data.result === 'success') {
+            // ذخیره نرخ‌های قبلی برای مقایسه روند
             if(state.latestRates) {
                 state.previousRates = { ...state.latestRates.conversion_rates };
             }
@@ -434,6 +359,7 @@ function handleApiError(errorType) {
     dom.resultRate.textContent = `(${errorType})`;
 }
 
+
 // --- توابع رندر و UI ---
 
 function updateConverterResult(amount) {
@@ -470,8 +396,7 @@ function renderWatchlist() {
     state.favorites.forEach(code => {
         if (code === state.from) return;
         if (rates[code]) {
-            const currencyData = state.allCurrencies.find(c => c[0] === code);
-            const currencyName = currencyData ? currencyData[1] : code;
+            const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || code;
             
             let trendIcon = '';
             if (state.previousRates && state.previousRates[code]) {
@@ -634,88 +559,6 @@ function populateDropdown(dropdown, filter = '') {
     });
 }
 
-
-// --- جدید: توابع بخش سرگرمی (Trivia) ---
-
-function startTriviaGame() {
-    if (state.allCurrencies.length < 4) {
-        dom.triviaContent.innerHTML = `<div id="trivia-loader-msg">اطلاعات کافی برای شروع بازی وجود ندارد.</div>`;
-        dom.triviaNextBtn.style.display = 'none';
-        return;
-    }
-    state.triviaScore = 0;
-    updateTriviaScore();
-    generateTriviaQuestion();
-    renderTriviaQuestion();
-}
-
-function generateTriviaQuestion() {
-    // انتخاب 4 ارز تصادفی و غیر تکراری
-    const shuffled = [...state.allCurrencies].sort(() => 0.5 - Math.random());
-    const selectedCurrencies = shuffled.slice(0, 4);
-
-    const correctAnswer = selectedCurrencies[0];
-    const countryName = correctAnswer[1].split(' ').slice(1).join(' '); // استخراج نام کشور
-    
-    state.currentTrivia = {
-        question: `واحد پول کشور <strong>${countryName}</strong> چیست؟`,
-        options: selectedCurrencies.map(c => [c[0], c[1].split(' ')[0]]), // [کد, نام ارز]
-        correctAnswer: correctAnswer[0]
-    };
-
-    // بر زدن گزینه‌ها
-    state.currentTrivia.options.sort(() => 0.5 - Math.random());
-}
-
-function renderTriviaQuestion() {
-    dom.triviaQuestion.innerHTML = state.currentTrivia.question;
-    dom.triviaOptions.innerHTML = '';
-    
-    state.currentTrivia.options.forEach(([code, name]) => {
-        const optionBtn = document.createElement('button');
-        optionBtn.className = 'trivia-option';
-        optionBtn.textContent = name;
-        optionBtn.dataset.code = code;
-        dom.triviaOptions.appendChild(optionBtn);
-    });
-
-    dom.triviaNextBtn.textContent = 'سوال بعدی';
-}
-
-function handleTriviaAnswer(e) {
-    if (!e.target.matches('.trivia-option') || e.target.disabled) return;
-
-    const selectedCode = e.target.dataset.code;
-    const isCorrect = selectedCode === state.currentTrivia.correctAnswer;
-
-    if (isCorrect) {
-        state.triviaScore++;
-        showToast('پاسخ صحیح!', 'success');
-    } else {
-        showToast('پاسخ اشتباه بود!', 'error');
-    }
-    updateTriviaScore();
-
-    // نمایش بازخورد بصری
-    Array.from(dom.triviaOptions.children).forEach(button => {
-        button.disabled = true;
-        if (button.dataset.code === state.currentTrivia.correctAnswer) {
-            button.classList.add('correct');
-        } else if (button === e.target) {
-            button.classList.add('incorrect');
-        }
-    });
-}
-
-function nextTriviaQuestion() {
-    generateTriviaQuestion();
-    renderTriviaQuestion();
-}
-
-function updateTriviaScore() {
-    dom.triviaScore.textContent = `امتیاز: ${state.triviaScore}`;
-}
-
 // --- توابع کمکی ---
 
 function toggleFavorite(code, starElement) {
@@ -738,8 +581,8 @@ function updateCurrencyUI(type, code) {
     state[type] = code;
     const input = (type === 'from') ? dom.fromCurrencyInput : dom.toCurrencyInput;
     const icon = (type === 'from') ? dom.fromIcon : dom.toIcon;
-    const currencyData = state.allCurrencies.find(c => c[0] === code) || state.allCurrencies.find(c => c[0] === 'USD');
-    input.value = currencyData ? `${currencyData[0]} - ${currencyData[1]}` : code;
+    const currencyData = state.allCurrencies.find(c => c[0] === code);
+    input.value = currencyData ? `${code} - ${currencyData[1]}` : code;
     try { 
         icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt(0) + 127397));
     } catch(e) { 
@@ -804,6 +647,7 @@ function toggleTheme() {
     document.documentElement.dataset.theme = newTheme;
     dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
     localStorage.setItem('currency_theme', newTheme);
+    // بازрисовانی نمودار با رنگ‌های جدید
     setTimeout(renderHistoryChart, 50); 
 }
 
@@ -880,10 +724,6 @@ function addEventListeners() {
             toggleFavorite(codeToRemove, null);
         }
     });
-
-    // جدید: Event Listener برای بخش سرگرمی
-    dom.triviaOptions.addEventListener('click', handleTriviaAnswer);
-    dom.triviaNextBtn.addEventListener('click', nextTriviaQuestion);
 }
 
 // --- شروع برنامه ---
