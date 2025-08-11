@@ -3,876 +3,966 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>داشبورد ارزی حرفه‌ای</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <title>پیام‌رسان طلایی (آنلاین)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-storage-compat.js"></script>
     <style>
-        /* ================== CSS ================== */
-        :root {
-            --bg-color: #f4f7fc; --card-bg: #ffffff; --text-color: #34495e;
-            --primary-color: #3498db; --primary-hover: #2980b9; --border-color: #e2e8f0;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.07); --input-bg: #fdfdff;
-            --success-color: #2ecc71; --danger-color: #e74c3c; --neutral-color: #95a5a6;
-            --success-bg: rgba(46, 204, 113, 0.1); --danger-bg: rgba(231, 76, 60, 0.1);
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Vazirmatn', sans-serif;
         }
-        [data-theme="dark"] {
-            --bg-color: #1a202c; --card-bg: #2d3748; --text-color: #e2e8f0;
-            --primary-color: #4299e1; --primary-hover: #2b6cb0; --border-color: #4a5568;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.2); --input-bg: #1a202c;
-            --success-color: #27ae60; --danger-color: #c0392b; --neutral-color: #7f8c8d;
-            --success-bg: rgba(39, 174, 96, 0.15); --danger-bg: rgba(192, 57, 43, 0.15);
+        
+        .bg-primary { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); }
+        .bg-secondary { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); }
+        .text-gold { color: #ffd700; }
+        .bg-gold { background-color: #ffd700; }
+        .border-gold { border-color: #ffd700; }
+        .hover-gold:hover { background-color: #ffed4e; }
+        
+        .chat-bubble-sent {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a1a;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            position: relative;
+            transform: translateY(0);
+            transition: all 0.3s ease;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-color); color: var(--text-color);
-            display: flex; justify-content: center; align-items: flex-start;
-            min-height: 100vh; padding: 20px; transition: background-color 0.3s, color 0.3s;
+        
+        .chat-bubble-sent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
         }
-
-        .main-container { width: 100%; max-width: 1400px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 20px 30px; }
-        .header h1 { font-size: 28px; }
-        .header-controls { display: flex; align-items: center; gap: 15px; }
-        .theme-switcher {
-            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50px;
-            padding: 5px; cursor: pointer; font-size: 18px; width: 80px; display: flex; justify-content: space-between; transition: all 0.3s;
+        
+        .chat-bubble-received {
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transform: translateY(0);
+            transition: all 0.3s ease;
         }
-        .theme-switcher:hover { border-color: var(--primary-color); }
-        .theme-switcher i { padding: 5px; border-radius: 50%; }
-        .theme-switcher .active { background: var(--primary-color); color: white; }
-
-        .app-grid {
-            display: grid; gap: 25px;
-            grid-template-columns: 1fr;
-            grid-template-areas: "converter" "chart" "watchlist";
+        
+        .chat-bubble-received:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
         }
-        @media (min-width: 1024px) {
-            .app-grid {
-                grid-template-columns: 1.2fr 1fr;
-                grid-template-areas: "converter watchlist" "chart watchlist";
+        
+        .verified-badge {
+            background: #1da1f2;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+        
+        .typing-indicator {
+            animation: typing 1.5s infinite;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
-
-        .converter-card { grid-area: converter; }
-        .chart-card { grid-area: chart; }
-        .watchlist-card { grid-area: watchlist; }
-
-        .card {
-            background: var(--card-bg); padding: 30px; border-radius: 20px; box-shadow: var(--shadow);
-            border: 1px solid var(--border-color); transition: all 0.3s;
-            opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s forwards;
-            display: flex; flex-direction: column;
-        }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        .header { animation-delay: 0s; }
-        .converter-card { animation-delay: 0.1s; }
-        .chart-card { animation-delay: 0.2s; }
-        .watchlist-card { animation-delay: 0.3s; }
-
-        .card h3 { margin-bottom: 20px; font-size: 20px; color: var(--primary-color); }
-
-        .converter .input-group { margin-bottom: 20px; }
-        .converter label { font-weight: 500; display: block; margin-bottom: 8px; }
-        .currency-input-wrapper { position: relative; }
-        .currency-input-wrapper .icon { position: absolute; top: 50%; transform: translateY(-50%); right: 15px; color: var(--neutral-color); font-size: 22px; }
-        input {
-            width: 100%; padding: 14px 50px 14px 15px; border-radius: 10px; border: 1px solid var(--border-color);
-            background: var(--input-bg); color: var(--text-color); font-family: 'Vazirmatn', sans-serif; font-size: 16px; transition: all 0.3s;
-        }
-        input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
         
-        .conversion-flow { display: flex; align-items: center; margin: 25px 0; }
-        .conversion-flow .currency-box { flex: 1; }
-        #swap-btn { background: var(--card-bg); border: 2px solid var(--primary-color); color: var(--primary-color); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; margin: 0 15px; transition: all 0.3s; flex-shrink: 0;}
-        #swap-btn:hover { background: var(--primary-color); color: white; transform: rotate(180deg); }
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
         
-        .currency-dropdown {
-            display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 220px;
-            overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 10px; z-index: 10; margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        .currency-dropdown.show { display: block; }
-        .currency-dropdown-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
-        .currency-dropdown-item:hover { background: var(--primary-hover); color: white; }
-        .currency-dropdown-item .fav-star { color: #ccc; transition: color 0.2s, transform 0.2s; }
-        .currency-dropdown-item .fav-star.favorited { color: #f1c40f; transform: scale(1.2); }
         
-        .result-box { margin-top: 25px; text-align: center; }
-        #result-final-wrapper { display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: var(--primary-color); min-height: 40px; }
-        #copy-btn { font-size: 16px; margin-right: 12px; cursor: pointer; color: var(--neutral-color); transition: color 0.2s; }
-        #copy-btn:hover { color: var(--primary-color); }
-        #result-rate, #result-rate-reverse { font-size: 14px; color: var(--neutral-color); min-height: 20px; margin-top: 5px; }
-
-        #last-updated { font-size: 12px; color: var(--neutral-color); margin-top: 15px; text-align: center; }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
         
-        .watchlist-card { flex-grow: 1; }
-        .watchlist-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid var(--border-color); font-size: 16px; }
-        .watchlist-item:last-child { border-bottom: none; }
-        .watchlist-item .currency-info { display: flex; align-items: center; }
-        .watchlist-item .currency-info .trend-arrow { width: 20px; text-align: center; margin-left: 8px; }
-        .watchlist-item .currency-info .trend-arrow.up { color: var(--success-color); }
-        .watchlist-item .currency-info .trend-arrow.down { color: var(--danger-color); }
-        .watchlist-item .rate { font-weight: 700; color: var(--text-color); direction: ltr; }
-        .watchlist-item .remove-fav-btn { background: none; border: none; color: var(--neutral-color); cursor: pointer; font-size: 16px; transition: color 0.2s; }
-        .watchlist-item .remove-fav-btn:hover { color: var(--danger-color); }
-        #watchlist-empty-msg { text-align: center; color: var(--neutral-color); padding: 20px 0; margin: auto; }
-        .skeleton { background-color: var(--border-color); border-radius: 5px; animation: pulse 1.5s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .watchlist-skeleton-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; }
-        .watchlist-skeleton-item .left { width: 120px; height: 20px; }
-        .watchlist-skeleton-item .right { width: 80px; height: 20px; }
-
-        .chart-card { flex-grow: 1; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; }
-        .chart-controls button { background: none; border: 1px solid var(--border-color); color: var(--neutral-color); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.3s; margin: 0 2px; }
-        .chart-controls button.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
-        .chart-container { position: relative; flex-grow: 1; min-height: 300px; margin-top: 20px; }
-        .chart-loader {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card-bg-trans);
-            display: none; justify-content: center; align-items: center; z-index: 5; border-radius: 15px;
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
         }
-        :root { --card-bg-trans: rgba(255, 255, 255, 0.7); }
-        [data-theme="dark"] { --card-bg-trans: rgba(45, 55, 72, 0.7); }
-        .spinner { display: block; width: 50px; height: 50px; border: 5px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .chart-loader.show { display: flex; }
         
-        #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-        .toast {
-            padding: 15px 20px; background-color: var(--card-bg); color: var(--text-color); border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15); border-left: 5px solid var(--primary-color);
-            display: flex; align-items: center; gap: 10px;
-            transform: translateX(-120%); animation: slideIn 0.5s forwards, slideOut 0.5s 4s forwards;
+        .animate-slide-in-right { animation: slideInRight 0.3s ease-out; }
+        .animate-slide-in-left { animation: slideInLeft 0.3s ease-out; }
+        .animate-fade-in-up { animation: fadeInUp 0.4s ease-out; }
+        .animate-pulse-hover:hover { animation: pulse 0.6s ease-in-out; }
+        .animate-glow { animation: glow 2s ease-in-out infinite; }
+        
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        .toast.error { border-left-color: var(--danger-color); }
-        .toast.success { border-left-color: var(--success-color); }
-        @keyframes slideIn { to { transform: translateX(0); } }
-        @keyframes slideOut { to { transform: translateX(-120%); opacity: 0; } }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #555; }
-
-        /* ================== Announcement CSS ================== */
-        .announcement-icon {
-            font-size: 22px; color: var(--neutral-color); cursor: pointer;
-            transition: color 0.3s, transform 0.3s;
+        
+        @keyframes slideInFromBottom {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        .announcement-icon:hover { color: var(--primary-color); transform: scale(1.1); }
-        .announcement-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
-            z-index: 2000; display: flex; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.3s ease;
+        
+        @keyframes slideInFromRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
-        .announcement-overlay.show { opacity: 1; }
-        .announcement-modal {
-            background-color: var(--card-bg); border-radius: 20px; max-width: 450px;
-            width: 90%; text-align: center; position: relative;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            transform: scale(0.8) translateY(20px); opacity: 0;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+        
+        @keyframes slideInFromLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .animate-slide-in-top { animation: slideInFromTop 0.5s ease-out; }
+        .animate-slide-in-bottom { animation: slideInFromBottom 0.5s ease-out; }
+        .animate-slide-in-right-page { animation: slideInFromRight 0.4s ease-out; }
+        .animate-slide-in-left-page { animation: slideInFromLeft 0.4s ease-out; }
+        .animate-scale-in { animation: scaleIn 0.3s ease-out; }
+        .animate-bounce-in { animation: bounceIn 0.6s ease-out; }
+        
+        .page-transition {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .input-focus {
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+        
+        .input-focus:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .phone-input {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .chat-item {
+            transition: all 0.3s ease;
+            transform: translateX(0);
+        }
+        
+        .chat-item:hover {
+            transform: translateX(-5px);
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+        }
+        
+        .button-hover {
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
-        .announcement-overlay.show .announcement-modal { transform: scale(1) translateY(0); opacity: 1; }
-        .announcement-image { width: 100%; height: 150px; object-fit: cover; }
-        .announcement-content { padding: 10px 30px 30px; }
-        .announcement-close-btn {
-            position: absolute; top: 10px; left: 10px; background: none; border: none;
-            font-size: 28px; color: var(--neutral-color); cursor: pointer;
-            width: 40px; height: 40px; line-height: 40px; border-radius: 50%;
-            transition: background-color 0.2s, color 0.2s;
+        
+        .button-hover:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
         }
-        .announcement-close-btn:hover { background-color: var(--border-color); color: var(--danger-color); }
-        .announcement-modal h2 { font-size: 24px; color: var(--primary-color); margin-bottom: 15px; }
-        .announcement-modal p { font-size: 16px; line-height: 1.8; margin-bottom: 25px; white-space: pre-wrap; }
-        .announcement-confirm-btn {
-            background-color: var(--primary-color); color: white; border: none;
-            padding: 12px 35px; border-radius: 50px; font-size: 18px; font-family: 'Vazirmatn';
-            cursor: pointer; transition: background-color 0.3s, transform 0.2s;
-            font-weight: 700;
+        
+        .button-hover:hover:before {
+            left: 100%;
         }
-        .announcement-confirm-btn:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+        
+        /* Spinner for loading */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body>
+<body class="bg-primary text-white min-h-screen">
 
-    <div id="toast-container"></div>
+    <!-- Loading Spinner -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-primary bg-opacity-90 flex items-center justify-center z-50">
+        <div class="loader"></div>
+    </div>
 
-    <main class="main-container">
-        <header class="header card">
-            <h1>داشبورد ارزی حرفه‌ای</h1>
-            <div class="header-controls">
-                <i class="fas fa-scroll announcement-icon" id="announcement-icon" title="مشاهده اعلامیه" style="display: none;"></i>
-                <div class="theme-switcher" id="theme-switcher">
-                    <i class="fas fa-sun active"></i><i class="fas fa-moon"></i>
-                </div>
+    <!-- صفحه ثبت‌نام / ورود -->
+    <div id="authPage" class="hidden min-h-screen flex items-center justify-center p-4 page-transition">
+        <div class="bg-secondary rounded-2xl p-8 w-full max-w-md shadow-2xl animate-bounce-in">
+            <div class="text-center mb-8 animate-fade-in-up">
+                <div class="text-4xl mb-4 animate-bounce-in" style="animation-delay: 0.2s;">💬</div>
+                <h1 class="text-2xl font-bold text-gold mb-2 animate-slide-in-top" style="animation-delay: 0.4s;">پیام‌رسان طلایی</h1>
+                <p id="authModeDescription" class="text-gray-300 animate-fade-in-up" style="animation-delay: 0.6s;">به جمع ما بپیوندید</p>
             </div>
-        </header>
-
-        <div class="app-grid">
-            <div class="card converter-card">
-                <h3>مبدل آنی ارز</h3>
-                <div class="input-group">
-                    <label for="amount">مبلغ</label>
-                    <input type="text" id="amount" value="1,000" inputmode="decimal">
+            
+            <!-- فرم ورود -->
+            <div id="loginForm" class="space-y-4">
+                <div class="animate-slide-in-left">
+                    <label class="block text-sm font-medium mb-2 text-gold">ایمیل</label>
+                    <input type="email" id="loginEmail" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus">
                 </div>
-                <div class="conversion-flow">
-                    <div class="currency-box input-group">
-                        <label for="from-currency-input">از</label>
-                        <div class="currency-input-wrapper">
-                            <span class="icon" id="from-icon"></span>
-                            <input type="text" id="from-currency-input" placeholder="جستجو...">
-                            <div class="currency-dropdown" id="from-dropdown"></div>
-                        </div>
-                    </div>
-                    <button id="swap-btn" title="جابجایی ارزها"><i class="fas fa-exchange-alt"></i></button>
-                    <div class="currency-box input-group">
-                        <label for="to-currency-input">به</label>
-                        <div class="currency-input-wrapper">
-                            <span class="icon" id="to-icon"></span>
-                            <input type="text" id="to-currency-input" placeholder="جستجو...">
-                            <div class="currency-dropdown" id="to-dropdown"></div>
-                        </div>
-                    </div>
+                <div class="animate-slide-in-right">
+                    <label class="block text-sm font-medium mb-2 text-gold">رمز عبور</label>
+                    <input type="password" id="loginPassword" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus">
                 </div>
-                
-                <div class="result-box">
-                    <div id="result-final-wrapper">
-                        <i id="copy-btn" class="far fa-copy" title="کپی کردن"></i>
-                        <span id="result-final"></span>
-                    </div>
-                    <div id="result-rate"></div>
-                    <div id="result-rate-reverse"></div>
-                </div>
-                <div id="last-updated"></div>
+                <button onclick="loginUser()" class="w-full bg-gold text-black font-bold py-3 rounded-lg hover-gold button-hover animate-pulse-hover">ورود</button>
+                <p class="text-center text-sm text-gray-400">حساب کاربری ندارید؟ <button onclick="toggleAuthMode()" class="text-gold font-semibold">ثبت‌نام کنید</button></p>
             </div>
 
-            <div class="card watchlist-card">
-                <h3 id="watchlist-title">لیست پیگیری</h3>
-                <div id="watchlist-content">
-                    <!-- Watchlist items or skeleton loaders will be injected here -->
+            <!-- فرم ثبت‌نام -->
+            <div id="registerForm" class="hidden space-y-4">
+                 <div class="animate-slide-in-left">
+                    <label class="block text-sm font-medium mb-2 text-gold">نام *</label>
+                    <input type="text" id="firstNameInput" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" placeholder="نام شما">
                 </div>
-            </div>
-
-            <div class="card chart-card">
-                <div class="chart-header">
-                    <h3 id="chart-title">تاریخچه نرخ</h3>
-                    <div class="chart-controls" id="chart-controls">
-                        <button data-range="7" class="active">7 روز</button>
-                        <button data-range="15">15 روز</button>
-                        <button data-range="30">30 روز</button>
-                    </div>
+                 <div class="animate-slide-in-right">
+                    <label class="block text-sm font-medium mb-2 text-gold">شماره همراه *</label>
+                    <input type="tel" id="phoneInput" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus phone-input" placeholder="09123456789" maxlength="11">
                 </div>
-                <div class="chart-container">
-                    <div class="chart-loader" id="chart-loader"><div class="spinner"></div></div>
-                    <canvas id="history-chart"></canvas>
+                <div class="animate-slide-in-left">
+                    <label class="block text-sm font-medium mb-2 text-gold">ایمیل *</label>
+                    <input type="email" id="emailInput" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" placeholder="example@email.com">
                 </div>
+                 <div class="animate-slide-in-right">
+                    <label class="block text-sm font-medium mb-2 text-gold">رمز عبور *</label>
+                    <input type="password" id="passwordInput" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" placeholder="حداقل ۶ کاراکتر">
+                </div>
+                <button onclick="registerUser()" class="w-full bg-gold text-black font-bold py-3 rounded-lg hover-gold button-hover animate-pulse-hover">تکمیل ثبت‌نام</button>
+                <p class="text-center text-sm text-gray-400">قبلا ثبت‌نام کرده‌اید؟ <button onclick="toggleAuthMode()" class="text-gold font-semibold">وارد شوید</button></p>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- ==== ساختار مودال اعلامیه ==== -->
-    <div id="announcement-overlay" class="announcement-overlay" style="display: none;">
-        <div id="announcement-modal" class="announcement-modal">
-            <img id="announcement-image" src="" alt="بنر اعلامیه" class="announcement-image">
-            <div class="announcement-content">
-                <h2 id="announcement-title"></h2>
-                <p id="announcement-text"></p>
-                <button id="announcement-confirm-btn" class="announcement-confirm-btn"></button>
+    <!-- صفحه اصلی -->
+    <div id="mainPage" class="hidden min-h-screen page-transition">
+        <!-- هدر -->
+        <div class="bg-secondary p-4 flex items-center justify-between border-b border-gray-700 animate-slide-in-top">
+            <div class="flex items-center space-x-4 space-x-reverse">
+                <button onclick="showSettings()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors animate-pulse-hover">
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-bold text-gold animate-fade-in-up">پیام‌رسان طلایی</h1>
             </div>
-            <button id="announcement-close-btn" class="announcement-close-btn" title="بستن">&times;</button>
+            <button onclick="showSearch()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors animate-pulse-hover">
+                <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- لیست چت‌ها -->
+        <div id="chatListContainer" class="flex-1 animate-fade-in-up" style="animation-delay: 0.2s;">
+             <div id="chatList" class="p-4">
+                <!-- Chat items will be loaded here by JavaScript -->
+             </div>
+        </div>
+    </div>
+
+    <!-- صفحه جستجو -->
+    <div id="searchPage" class="hidden min-h-screen">
+        <div class="bg-secondary p-4 flex items-center border-b border-gray-700">
+            <button onclick="hideSearch()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <input type="text" id="searchInput" class="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none" placeholder="جستجوی کاربران بر اساس آیدی..." oninput="performSearch()">
+        </div>
+        <div id="searchResults" class="p-4">
+            <p class="text-gray-400 text-center">برای جستجو تایپ کنید...</p>
+        </div>
+    </div>
+    
+    <!-- صفحه چت -->
+    <div id="chatPage" class="hidden min-h-screen flex flex-col">
+        <!-- هدر چت -->
+        <div class="bg-secondary p-4 flex items-center border-b border-gray-700">
+            <button onclick="closeChatPage()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div class="flex items-center cursor-pointer flex-1">
+                <div id="chatAvatar" class="w-10 h-10 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3">
+                    <!-- Avatar Here -->
+                </div>
+                <div>
+                    <h3 id="chatName" class="font-semibold flex items-center">
+                        <!-- Name Here -->
+                    </h3>
+                    <p id="chatStatus" class="text-xs text-gray-400">آنلاین</p>
+                </div>
+            </div>
+            <button onclick="showChatOptions()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- پیام‌ها -->
+        <div id="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-4">
+            <!-- پیام‌ها اینجا اضافه می‌شوند -->
+        </div>
+
+        <!-- ورودی پیام -->
+        <div class="bg-secondary p-4 border-t border-gray-700">
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <input type="file" id="fileInput" accept="image/*,audio/*" class="hidden" onchange="handleFileUpload()">
+                <button onclick="document.getElementById('fileInput').click()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                    </svg>
+                </button>
+                <input type="text" id="messageInput" class="flex-1 p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none" placeholder="پیام خود را بنویسید..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()" class="p-3 bg-gold text-black rounded-lg hover-gold button-hover animate-pulse-hover">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- صفحه تنظیمات -->
+    <div id="settingsPage" class="hidden min-h-screen page-transition">
+        <div class="bg-secondary p-4 flex items-center border-b border-gray-700 animate-slide-in-top">
+            <button onclick="hideSettings()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3 animate-pulse-hover">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <h1 class="text-xl font-bold text-gold animate-fade-in-up">تنظیمات</h1>
+        </div>
+
+        <div class="p-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+            <div class="bg-secondary rounded-lg p-6 animate-scale-in" style="animation-delay: 0.4s;">
+                <div class="text-center mb-6 animate-bounce-in" style="animation-delay: 0.6s;">
+                    <div class="relative inline-block">
+                        <div id="profileAvatar" class="w-20 h-20 bg-gold rounded-full flex items-center justify-center text-black font-bold text-2xl mx-auto animate-glow">
+                            <!-- Avatar in settings -->
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="changeAvatar()">
+                        <button onclick="document.getElementById('avatarInput').click()" class="absolute -bottom-1 -right-1 w-8 h-8 bg-gold rounded-full flex items-center justify-center text-black text-sm animate-pulse-hover">
+                            📷
+                        </button>
+                    </div>
+                    <h3 id="profileName" class="font-semibold text-xl mt-3 text-gold animate-fade-in-up" style="animation-delay: 0.8s;">کاربر جدید</h3>
+                    <p id="profileUsername" class="text-gray-400 animate-fade-in-up" style="animation-delay: 1s;">@username</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="animate-slide-in-left" style="animation-delay: 1.2s;">
+                        <label class="block text-sm font-medium mb-2 text-gold">نام</label>
+                        <input type="text" id="editFirstName" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus">
+                    </div>
+                    <div class="animate-slide-in-right" style="animation-delay: 1.4s;">
+                        <label class="block text-sm font-medium mb-2 text-gold">نام خانوادگی</label>
+                        <input type="text" id="editLastName" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus">
+                    </div>
+                    <div class="animate-slide-in-left" style="animation-delay: 1.6s;">
+                        <label class="block text-sm font-medium mb-2 text-gold">آیدی (غیرقابل تغییر)</label>
+                        <input type="text" id="editUsername" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" readonly>
+                    </div>
+                    <button onclick="saveProfile()" class="w-full bg-gold text-black font-bold py-3 rounded-lg hover-gold button-hover animate-pulse-hover mt-6 animate-bounce-in" style="animation-delay: 2.4s;">ذخیره تغییرات</button>
+                    <button onclick="logout()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 button-hover animate-pulse-hover mt-3 animate-bounce-in" style="animation-delay: 2.6s;">🚪 خروج از حساب</button>
+                </div>
+            </div>
         </div>
     </div>
 
 
-<script>
-// ================== بخش تنظیمات اعلامیه ==================
-// **مهم:** برای نمایش یک اعلامیه جدید، مقادیر زیر را پر کنید.
-// برای غیرفعال کردن، کافی است مقدار text را برابر با "" (رشته خالی) قرار دهید.
-const ANNOUNCEMENT_CONFIG = {
-    // 🔽🔽🔽 اینجا را ویرایش کنید 🔽🔽🔽
-    id: "v20240521-ui-update",
-    title: "به‌روزرسانی جدید و هیجان‌انگیز!",
-    text: "ما ظاهر و تجربه کاربری داشبورد را بهبود دادیم!\nحالا می‌توانید از نمودارهای بهتر، لیست پیگیری کارآمدتر و یک مبدل ارز هوشمندتر لذت ببرید.",
-    buttonText: "فهمیدم!",
-    imageUrl: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1974&auto=format&fit=crop"
-    // 🔼🔼🔼 پایان بخش ویرایش 🔼🔼🔼
-};
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzPn97aWhJ8tjVdn133_6u1FcUmXGamFk",
+            authDomain: "payamresan-c4fa2.firebaseapp.com",
+            projectId: "payamresan-c4fa2",
+            storageBucket: "payamresan-c4fa2.firebasestorage.app",
+            messagingSenderId: "725565444638",
+            appId: "1:725565444638:web:fb81c1702b62c64c24d40f",
+            measurementId: "G-CHEN9CJDZT"
+        };
 
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-// ================== JavaScript ==================
-const apiKey = '0ff22125f8e20b66fc0f51ae';
-const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}`;
-
-// --- دریافت عناصر DOM ---
-const dom = {
-    amountInput: document.getElementById('amount'),
-    fromCurrencyInput: document.getElementById('from-currency-input'),
-    toCurrencyInput: document.getElementById('to-currency-input'),
-    fromDropdown: document.getElementById('from-dropdown'),
-    toDropdown: document.getElementById('to-dropdown'),
-    fromIcon: document.getElementById('from-icon'),
-    toIcon: document.getElementById('to-icon'),
-    swapBtn: document.getElementById('swap-btn'),
-    resultFinal: document.getElementById('result-final'),
-    copyBtn: document.getElementById('copy-btn'),
-    resultRate: document.getElementById('result-rate'),
-    resultRateReverse: document.getElementById('result-rate-reverse'),
-    themeSwitcher: document.getElementById('theme-switcher'),
-    chartTitle: document.getElementById('chart-title'),
-    chartLoader: document.getElementById('chart-loader'),
-    chartControls: document.getElementById('chart-controls'),
-    ctx: document.getElementById('history-chart').getContext('2d'),
-    lastUpdated: document.getElementById('last-updated'),
-    watchlistContent: document.getElementById('watchlist-content'),
-    watchlistTitle: document.getElementById('watchlist-title'),
-    toastContainer: document.getElementById('toast-container'),
-    announcement: {
-        overlay: document.getElementById('announcement-overlay'),
-        modal: document.getElementById('announcement-modal'),
-        icon: document.getElementById('announcement-icon'),
-        title: document.getElementById('announcement-title'),
-        text: document.getElementById('announcement-text'),
-        image: document.getElementById('announcement-image'),
-        confirmBtn: document.getElementById('announcement-confirm-btn'),
-        closeBtn: document.getElementById('announcement-close-btn'),
-    }
-};
-
-// --- وضعیت برنامه (State) ---
-const state = {
-    from: 'USD',
-    to: 'IRR',
-    allCurrencies: [],
-    favorites: ['EUR', 'GBP', 'JPY', 'AED', 'TRY'],
-    latestRates: null,
-    previousRates: null, // برای تشخیص روند
-    chartTimeRange: 7,
-};
-let historyChart;
-let conversionDebounceTimer;
-
-// --- توابع اصلی ---
-async function init() {
-    loadPreferences();
-    handleAnnouncement();
-    await fetchAllCurrencies();
-    validateStateCurrencies(); // <<< [FIX] اعتبارسنجی ارزهای ذخیره شده
-    addEventListeners();
-    updateCurrencyUI('from', state.from);
-    updateCurrencyUI('to', state.to);
-    document.querySelectorAll('.card').forEach((card, index) => {
-        card.style.animationDelay = `${index * 0.1}s`;
-    });
-    await performConversion();
-}
-
-async function fetchAllCurrencies() {
-    if (apiKey.includes('YOUR_API_KEY') || apiKey.length < 16) {
-        showToast('کلید API نامعتبر است. لطفاً کد را ویرایش کنید.', 'error');
-        return;
-    }
-    try {
-        const response = await fetch(`${apiUrl}/codes`);
-        const data = await response.json();
-        if (data.result === 'success') {
-            state.allCurrencies = data.supported_codes;
-        } else {
-            throw new Error(data['error-type'] || 'Failed to fetch currencies');
-        }
-    } catch (error) {
-        console.error('Error fetching currency codes:', error);
-        showToast('خطا در دریافت لیست ارزها', 'error');
-    }
-}
-
-async function performConversion() {
-    const amount = parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0;
-    
-    renderWatchlistSkeleton();
-    dom.chartLoader.classList.add('show');
-
-    try {
-        const response = await fetch(`${apiUrl}/latest/${state.from}`);
-        const data = await response.json();
-
-        if (data.result === 'success') {
-            if(state.latestRates) {
-                state.previousRates = { ...state.latestRates.conversion_rates };
-            }
-            state.latestRates = data;
-            
-            updateConverterResult(amount);
-            updateLastUpdated(data.time_last_update_utc);
-            renderWatchlist();
-            renderHistoryChart();
-            
-            savePreferences();
-        } else {
-            handleApiError(data['error-type']);
-        }
-    } catch (error) {
-        console.error('Network or conversion error:', error);
-        showToast('خطای شبکه. لطفاً اتصال خود را بررسی کنید.', 'error');
-        dom.resultFinal.textContent = '-';
-        dom.resultRate.textContent = '';
-        dom.resultRateReverse.textContent = '';
-    } finally {
-        dom.chartLoader.classList.remove('show');
-    }
-}
-
-function handleApiError(errorType) {
-    let message = 'یک خطای نامشخص رخ داد.';
-    switch (errorType) {
-        case 'invalid-key': message = 'کلید API نامعتبر است.'; break;
-        case 'inactive-account': message = 'حساب کاربری API غیرفعال است.'; break;
-        case 'quota-reached': message = 'محدودیت درخواست API به پایان رسیده است.'; break;
-        case 'unsupported-code': message = `ارز ${state.from} پشتیبانی نمی‌شود.`; break;
-    }
-    showToast(message, 'error');
-    dom.resultFinal.textContent = 'خطا';
-    dom.resultRate.textContent = `(${errorType})`;
-}
-
-// --- توابع رندر و UI ---
-function updateConverterResult(amount) {
-    if (!state.latestRates) return;
-    const rate = state.latestRates.conversion_rates[state.to];
-
-    // [FIX] اگر نرخ برای ارز مقصد موجود نباشد، نتیجه را صفر نمایش بده
-    if (amount === 0 || !rate) {
-        dom.resultFinal.textContent = '0';
-        dom.resultRate.textContent = `نرخی برای ${state.to} یافت نشد.`;
-        dom.resultRateReverse.textContent = '';
-        return;
-    }
-    
-    const finalAmount = amount * rate;
-    // [FIX] استفاده از форматирование مناسب برای اعداد بزرگ و کوچک
-    dom.resultFinal.textContent = `${finalAmount.toLocaleString('fa-IR', {maximumFractionDigits: 4})}`;
-    dom.resultRate.textContent = `1 ${state.from} = ${rate.toLocaleString('fa-IR', {maximumFractionDigits: 6})} ${state.to}`;
-    dom.resultRateReverse.textContent = `1 ${state.to} = ${(1/rate).toLocaleString('fa-IR', {maximumFractionDigits: 6})} ${state.from}`;
-}
-
-function renderWatchlist() {
-    // [FIX] تغییر عنوان برای درک بهتر
-    dom.watchlistTitle.textContent = `ارزش ارزها (1 واحد) بر حسب ${state.from}`;
-    dom.watchlistContent.innerHTML = '';
-
-    if (!state.favorites.length) {
-        dom.watchlistContent.innerHTML = `<div id="watchlist-empty-msg">ارزی را برای پیگیری ستاره‌دار کنید.</div>`;
-        return;
-    }
-
-    if (!state.latestRates) return;
-
-    let content = '';
-    const rates = state.latestRates.conversion_rates;
-    
-    state.favorites.forEach(code => {
-        if (code === state.from) return;
+        // --- GLOBAL STATE ---
+        let currentUser = null; // Will hold user profile data from Firestore
+        let currentChatId = null; // Will hold the ID of the open chat
+        let unsubscribeMessages = null; // To stop listening for messages when chat closes
+        let unsubscribeChats = null; // To stop listening for chat list updates
         
-        const directRate = rates[code];
-        if (directRate && directRate > 0) {
-            // [FIX] محاسبه نرخ معکوس برای نمایش کاربردی‌تر
-            const displayRate = 1 / directRate;
-            const currencyName = state.allCurrencies.find(c => c[0] === code)?.[1] || code;
-            
-            let trendIcon = '';
-            const prevDirectRate = state.previousRates ? state.previousRates[code] : null;
-            if (prevDirectRate && prevDirectRate > 0) {
-                const prevDisplayRate = 1 / prevDirectRate;
-                if (displayRate > prevDisplayRate) {
-                    trendIcon = `<i class="fas fa-arrow-up trend-arrow up"></i>`; // ارز گران‌تر شد
-                } else if (displayRate < prevDisplayRate) {
-                    trendIcon = `<i class="fas fa-arrow-down trend-arrow down"></i>`; // ارز ارزان‌تر شد
+        // --- AUTHENTICATION ---
+        auth.onAuthStateChanged(async (user) => {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            if (user) {
+                // User is signed in.
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    currentUser = { uid: user.uid, ...userDoc.data() };
+                    initializeAppUI();
+                } else {
+                    // This might happen if user is created but doc fails.
+                    // For simplicity, we log them out.
+                    logout();
                 }
+            } else {
+                // User is signed out.
+                currentUser = null;
+                showAuthPage();
+            }
+        });
+
+        function showAuthPage() {
+            document.getElementById('authPage').classList.remove('hidden');
+            document.getElementById('mainPage').classList.add('hidden');
+            document.getElementById('settingsPage').classList.add('hidden');
+            document.getElementById('chatPage').classList.add('hidden');
+            if (unsubscribeChats) unsubscribeChats(); // Stop listening to old user's chats
+        }
+        
+        function toggleAuthMode() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const desc = document.getElementById('authModeDescription');
+            
+            if (loginForm.classList.contains('hidden')) {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                desc.textContent = "به جمع ما بپیوندید";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                desc.textContent = "ایجاد حساب کاربری جدید";
+            }
+        }
+        
+        async function registerUser() {
+            const firstName = document.getElementById('firstNameInput').value.trim();
+            const phone = document.getElementById('phoneInput').value.trim();
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+
+            if (!firstName || !phone || !email || !password) {
+                alert('لطفاً تمام فیلدهای ستاره‌دار را پر کنید');
+                return;
+            }
+             if (password.length < 6) {
+                alert('رمز عبور باید حداقل ۶ کاراکتر باشد.');
+                return;
             }
 
-            content += `
-                <div class="watchlist-item">
-                    <div class="currency-info">
-                        ${trendIcon}
-                        <span><b>${code}</b> - ${currencyName}</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                      <span class="rate">${displayRate.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}</span>
-                      <button class="remove-fav-btn" data-code="${code}" title="حذف از لیست پیگیری">&times;</button>
-                    </div>
-                </div>
-            `;
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Create a unique username
+                const username = `${firstName.toLowerCase()}${Math.floor(1000 + Math.random() * 9000)}`;
+                
+                // Create user profile in Firestore
+                await db.collection('users').doc(user.uid).set({
+                    firstName: firstName,
+                    lastName: '', // can be edited later
+                    phone: phone,
+                    email: email,
+                    username: username,
+                    avatarUrl: '', // Default avatar
+                    isCreator: false, // Default value
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // The onAuthStateChanged listener will handle the UI transition
+                
+            } catch (error) {
+                alert(`خطا در ثبت‌نام: ${error.message}`);
+            }
         }
-    });
-    dom.watchlistContent.innerHTML = content;
-}
 
-function renderWatchlistSkeleton() {
-    let skeletonHTML = '';
-    for (let i = 0; i < 5; i++) {
-        skeletonHTML += `
-            <div class="watchlist-skeleton-item">
-                <div class="skeleton left"></div>
-                <div class="skeleton right"></div>
-            </div>
-        `;
-    }
-    dom.watchlistContent.innerHTML = skeletonHTML;
-}
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            if (!email || !password) {
+                alert('لطفا ایمیل و رمز عبور را وارد کنید.');
+                return;
+            }
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                // The onAuthStateChanged listener will handle the UI transition
+            } catch (error) {
+                alert(`خطا در ورود: ${error.message}`);
+            }
+        }
 
-function renderHistoryChart() {
-    dom.chartTitle.textContent = `تاریخچه نرخ ${state.from} به ${state.to}`;
-    dom.chartLoader.classList.add('show');
-    
-    // [FIX] این شرط باعث می‌شد نمودار با ارزهای نامعتبر رسم نشود
-    if (!state.latestRates || !state.latestRates.conversion_rates[state.to]) {
-        if (historyChart) historyChart.destroy();
-        dom.chartLoader.classList.remove('show');
-        dom.ctx.clearRect(0, 0, dom.ctx.canvas.width, dom.ctx.canvas.height); // پاک کردن نمودار قبلی
-        return;
-    }
-    
-    // شبیه‌سازی تاریخچه بر اساس نرخ فعلی
-    const currentRate = state.latestRates.conversion_rates[state.to];
-    
-    const dates = [];
-    for (let i = state.chartTimeRange - 1; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        dates.push(date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' }));
-    }
+        function logout() {
+            if (confirm('آیا مطمئن هستید که می‌خواهید از حساب خود خارج شوید؟')) {
+                auth.signOut();
+            }
+        }
+        
+        // --- UI INITIALIZATION ---
+        function initializeAppUI() {
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+            updateProfileDisplay();
+            loadChatList();
+        }
 
-    let dailyRates = [currentRate];
-    let lastRate = currentRate;
-    for (let i = 0; i < state.chartTimeRange - 1; i++) {
-        const fluctuation = (Math.random() - 0.5) * 0.05; 
-        lastRate = lastRate * (1 + fluctuation);
-        dailyRates.unshift(lastRate);
-    }
-
-    const backgroundColors = [];
-    const successColor = getComputedStyle(document.documentElement).getPropertyValue('--success-color').trim();
-    const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger-color').trim();
-
-    for (let i = 1; i < dailyRates.length; i++) {
-        backgroundColors.push(dailyRates[i] >= dailyRates[i-1] ? successColor + '80' : dangerColor + '80');
-    }
-    
-    if (historyChart) historyChart.destroy();
-    
-    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
-    const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
-    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
-
-    historyChart = new Chart(dom.ctx, {
-        type: 'bar',
-        data: { 
-            labels: dates, 
-            datasets: [
-                {
-                    type: 'line',
-                    label: `روند نرخ ${state.to}`, 
-                    data: dailyRates,
-                    borderColor: primaryColor,
-                    borderWidth: 2.5,
-                    pointBackgroundColor: primaryColor,
-                    tension: 0.3,
-                    fill: false,
-                },
-                {
-                    type: 'bar',
-                    label: `نرخ روزانه ${state.to}`, 
-                    data: dailyRates,
-                    backgroundColor: backgroundColors, 
-                    borderRadius: 5,
-                }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: { 
-                y: { beginAtZero: false, ticks: { color: textColor, padding: 10, callback: function(value) { return value.toLocaleString('fa-IR', { maximumFractionDigits: 4 }); } }, grid: { color: borderColor } }, 
-                x: { ticks: { color: textColor }, grid: { display: false } } 
-            },
-            plugins: { 
-                legend: { display: false },
-                tooltip: {
-                    rtl: true,
-                    titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' },
-                    backgroundColor: 'var(--card-bg)', titleColor: 'var(--primary-color)',
-                    bodyColor: 'var(--text-color)', borderColor: 'var(--border-color)', borderWidth: 1, padding: 10,
-                    callbacks: {
-                        label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString('fa-IR', {maximumFractionDigits: 6})}`
+        // --- CHAT LIST ---
+        function loadChatList() {
+            const chatListDiv = document.getElementById('chatList');
+            
+            // Listen for real-time updates to chats
+            unsubscribeChats = db.collection('chats')
+                .where('participants', 'array-contains', currentUser.uid)
+                .orderBy('lastMessage.timestamp', 'desc')
+                .onSnapshot(async (querySnapshot) => {
+                    chatListDiv.innerHTML = ''; // Clear old list
+                    if (querySnapshot.empty) {
+                        chatListDiv.innerHTML = `<p class="text-gray-400 text-center mt-8">هنوز چتی نداری. یک کاربر را جستجو کن و گفتگو را شروع کن!</p>`;
+                        return;
                     }
-                }
-            },
-            interaction: { mode: 'index', intersect: false },
+                    
+                    for (const doc of querySnapshot.docs) {
+                        const chat = { id: doc.id, ...doc.data() };
+                        const otherUserId = chat.participants.find(id => id !== currentUser.uid);
+
+                        if (otherUserId) {
+                            const userDoc = await db.collection('users').doc(otherUserId).get();
+                            const otherUser = { uid: userDoc.id, ...userDoc.data() };
+                            
+                            const chatItem = document.createElement('div');
+                            chatItem.className = 'chat-item flex items-center p-3 rounded-lg cursor-pointer mb-2 animate-fade-in-up animate-pulse-hover';
+                            chatItem.onclick = () => openChat(chat.id, otherUser);
+                            
+                            const lastMessageText = chat.lastMessage ? chat.lastMessage.text.substring(0, 30) + '...' : 'شروع گفتگو...';
+                            const lastMessageTime = chat.lastMessage ? new Date(chat.lastMessage.timestamp?.toDate()).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'}) : '';
+
+                            chatItem.innerHTML = `
+                                <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3 overflow-hidden">
+                                    ${otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover">` : otherUser.firstName.charAt(0)}
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-semibold flex items-center">
+                                        ${otherUser.firstName} ${otherUser.lastName}
+                                        ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}
+                                    </h3>
+                                    <p class="text-gray-400 text-sm">${lastMessageText}</p>
+                                </div>
+                                <div class="text-xs text-gray-500">${lastMessageTime}</div>
+                            `;
+                            chatListDiv.appendChild(chatItem);
+                        }
+                    }
+                });
         }
-    });
-    dom.chartLoader.classList.remove('show');
-}
-function populateDropdown(dropdown, filter = '') {
-    dropdown.innerHTML = '';
-    const sortedCurrencies = [...state.allCurrencies].sort((a, b) => {
-        const aIsFav = state.favorites.includes(a[0]);
-        const bIsFav = state.favorites.includes(b[0]);
-        if (aIsFav === bIsFav) return a[0].localeCompare(b[0]);
-        return aIsFav ? -1 : 1;
-    });
-
-    const filterLower = filter.toLowerCase();
-    const filtered = sortedCurrencies.filter(([code, name]) => 
-        code.toLowerCase().includes(filterLower) || name.toLowerCase().includes(filterLower) || name.includes(filter)
-    );
-
-    filtered.forEach(([code, name]) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'currency-dropdown-item';
-        itemDiv.innerHTML = `<span><b>${code}</b> - ${name}</span><i class="fav-star ${state.favorites.includes(code) ? 'fas favorited' : 'far'} fa-star"></i>`;
         
-        itemDiv.addEventListener('click', () => {
-            const type = dropdown.id.includes('from') ? 'from' : 'to';
-            updateCurrencyUI(type, code);
-            dropdown.classList.remove('show');
-            debouncedConversion();
-        });
-        itemDiv.querySelector('.fav-star').addEventListener('click', (e) => {
-            e.stopPropagation(); toggleFavorite(code, e.target);
-        });
-        dropdown.appendChild(itemDiv);
-    });
-}
-// --- توابع کمکی ---
-function toggleFavorite(code, starElement) {
-    const index = state.favorites.indexOf(code);
-    if (index > -1) {
-        state.favorites.splice(index, 1);
-    } else {
-        state.favorites.push(code);
-    }
-    if (starElement) {
-        starElement.classList.toggle('fas', index === -1);
-        starElement.classList.toggle('far', index > -1);
-        starElement.classList.toggle('favorited', index === -1);
-    }
-    savePreferences();
-    renderWatchlist();
-}
-function updateCurrencyUI(type, code) {
-    state[type] = code;
-    const input = (type === 'from') ? dom.fromCurrencyInput : dom.toCurrencyInput;
-    const icon = (type === 'from') ? dom.fromIcon : dom.toIcon;
-    const currencyData = state.allCurrencies.find(c => c[0] === code);
-    input.value = currencyData ? `${code} - ${currencyData[1]}` : code;
-    try { 
-        icon.textContent = String.fromCodePoint(...[...code.slice(0, 2)].map(c => c.charCodeAt(0) + 127397));
-    } catch(e) { 
-        icon.textContent = '🏳️';
-    }
-}
-function handleSwap() {
-    [state.from, state.to] = [state.to, state.from];
-    updateCurrencyUI('from', state.from);
-    updateCurrencyUI('to', state.to);
-    debouncedConversion();
-}
-function formatAmount(e) {
-    let value = e.target.value.replace(/,/g, '');
-    if (value === '' || isNaN(parseFloat(value))) {
-        e.target.value = '';
-        return;
-    }
-    e.target.value = parseFloat(value).toLocaleString('en-US', {maximumFractionDigits: 10});
-}
-function copyResult() {
-    if(!dom.resultFinal.textContent || dom.resultFinal.textContent === '-') return;
-    const textToCopy = dom.resultFinal.textContent.replace(/,/g, '');
-    navigator.clipboard.writeText(textToCopy)
-        .then(() => showToast('مبلغ با موفقیت کپی شد', 'success'))
-        .catch(() => showToast('خطا در کپی کردن', 'error'));
-}
-function debouncedConversion() {
-    clearTimeout(conversionDebounceTimer);
-    conversionDebounceTimer = setTimeout(performConversion, 500);
-}
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    let iconClass = 'fa-info-circle';
-    if (type === 'success') iconClass = 'fa-check-circle';
-    if (type === 'error') iconClass = 'fa-exclamation-circle';
-    
-    toast.innerHTML = `<i class="fas ${iconClass}"></i><span>${message}</span>`;
-    dom.toastContainer.appendChild(toast);
-    
-    setTimeout(() => toast.remove(), 4500);
-}
-function updateLastUpdated(utcTimestamp) {
-    const date = new Date(utcTimestamp);
-    dom.lastUpdated.textContent = `آخرین بروزرسانی: ${date.toLocaleString('fa-IR', {
-        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    })}`;
-}
-
-// --- مدیریت تم و LocalStorage ---
-function toggleTheme() {
-    const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = newTheme;
-    dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
-    localStorage.setItem('currency_theme', newTheme);
-    setTimeout(renderHistoryChart, 50); 
-}
-function savePreferences() {
-    const prefs = {
-        from: state.from,
-        to: state.to,
-        favorites: state.favorites,
-        chartTimeRange: state.chartTimeRange,
-    };
-    localStorage.setItem('currency_prefs', JSON.stringify(prefs));
-}
-function loadPreferences() {
-    const theme = localStorage.getItem('currency_theme') || 'light';
-    if (theme === 'dark') {
-        document.documentElement.dataset.theme = 'dark';
-        dom.themeSwitcher.querySelectorAll('i').forEach(i => i.classList.toggle('active'));
-    }
-
-    const prefs = JSON.parse(localStorage.getItem('currency_prefs'));
-    if (prefs) { 
-        state.from = prefs.from || 'USD'; 
-        state.to = prefs.to || 'IRR'; 
-        state.favorites = prefs.favorites || ['EUR', 'GBP', 'JPY', 'AED', 'TRY'];
-        state.chartTimeRange = prefs.chartTimeRange || 7;
-
-        dom.chartControls.querySelector('.active')?.classList.remove('active');
-        dom.chartControls.querySelector(`[data-range="${state.chartTimeRange}"]`)?.classList.add('active');
-    }
-}
-
-// [NEW] تابع برای اعتبارسنجی ارزهای ذخیره شده
-function validateStateCurrencies() {
-    if (!state.allCurrencies.length) return;
-
-    const isValidFrom = state.allCurrencies.some(c => c[0] === state.from);
-    if (!isValidFrom) {
-        showToast(`ارز مبدأ (${state.from}) نامعتبر بود و بازنشانی شد.`, 'error');
-        state.from = 'USD';
-    }
-
-    const isValidTo = state.allCurrencies.some(c => c[0] === state.to);
-    if (!isValidTo) {
-        showToast(`ارز مقصد (${state.to}) نامعتبر بود و بازنشانی شد.`, 'error');
-        state.to = 'IRR';
-    }
-}
-
-// --- توابع جدید برای مدیریت اعلامیه ---
-function showAnnouncement() {
-    const { id, title, text, buttonText, imageUrl } = ANNOUNCEMENT_CONFIG;
-    if (!text || !id) return;
-    dom.announcement.title.textContent = title;
-    dom.announcement.text.textContent = text;
-    dom.announcement.confirmBtn.textContent = buttonText;
-    if (imageUrl) {
-        dom.announcement.image.src = imageUrl;
-        dom.announcement.image.style.display = 'block';
-    } else {
-        dom.announcement.image.style.display = 'none';
-    }
-    dom.announcement.overlay.style.display = 'flex';
-    setTimeout(() => dom.announcement.overlay.classList.add('show'), 10);
-}
-
-function hideAnnouncement() {
-    dom.announcement.overlay.classList.remove('show');
-    setTimeout(() => {
-        dom.announcement.overlay.style.display = 'none';
-    }, 400);
-}
-
-function handleAnnouncement() {
-    const { id, text } = ANNOUNCEMENT_CONFIG;
-    if (!text.trim() || !id) {
-        dom.announcement.icon.style.display = 'none';
-        return;
-    }
-    dom.announcement.icon.style.display = 'block';
-    const seenId = localStorage.getItem('seen_announcement_id');
-    if (seenId !== id) {
-        showAnnouncement();
-    }
-}
-
-function markAnnouncementAsSeen() {
-    localStorage.setItem('seen_announcement_id', ANNOUNCEMENT_CONFIG.id);
-    hideAnnouncement();
-}
-
-// --- ثبت Event Listeners ---
-function addEventListeners() {
-    dom.swapBtn.addEventListener('click', handleSwap);
-    dom.themeSwitcher.addEventListener('click', toggleTheme);
-    dom.copyBtn.addEventListener('click', copyResult);
-    
-    dom.amountInput.addEventListener('input', (e) => {
-        formatAmount(e);
-        updateConverterResult(parseFloat(dom.amountInput.value.replace(/,/g, '')) || 0);
-    });
-
-    ['from', 'to'].forEach(type => {
-        const input = dom[`${type}CurrencyInput`];
-        const dropdown = dom[`${type}Dropdown`];
-        input.addEventListener('focus', () => { 
-            input.select();
-            populateDropdown(dropdown, ''); 
-            dropdown.classList.add('show'); 
-        });
-        input.addEventListener('keyup', () => populateDropdown(dropdown, input.value));
-        document.addEventListener('click', (e) => {
-            if (!input.parentElement.contains(e.target)) {
-                dropdown.classList.remove('show');
-                updateCurrencyUI(type, state[type]);
+        // --- SEARCH ---
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (!query) {
+                resultsDiv.innerHTML = '<p class="text-gray-400 text-center">برای جستجو تایپ کنید...</p>';
+                return;
             }
-        });
-    });
+            
+            const usersRef = db.collection('users');
+            // Firestore doesn't support case-insensitive or partial text search natively.
+            // This is a common workaround for "starts-with" search.
+            const snapshot = await usersRef
+                .where('username', '>=', query)
+                .where('username', '<=', query + '\uf8ff')
+                .get();
 
-    dom.chartControls.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            dom.chartControls.querySelector('.active').classList.remove('active');
-            e.target.classList.add('active');
-            state.chartTimeRange = parseInt(e.target.dataset.range);
-            savePreferences();
-            renderHistoryChart();
+            if (snapshot.empty) {
+                resultsDiv.innerHTML = '<p class="text-gray-400 text-center">کاربری با این آیدی یافت نشد</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '';
+            snapshot.forEach(doc => {
+                const user = { uid: doc.id, ...doc.data() };
+                // Don't show the current user in search results
+                if (user.uid === currentUser.uid) return;
+
+                const userDiv = document.createElement('div');
+                userDiv.className = 'flex items-center p-3 hover:bg-gray-700 rounded-lg cursor-pointer transition-colors mb-2';
+                userDiv.onclick = () => openChatFromSearch(user);
+
+                userDiv.innerHTML = `
+                    <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3 overflow-hidden">
+                        ${user.avatarUrl ? `<img src="${user.avatarUrl}" class="w-full h-full object-cover">` : user.firstName.charAt(0)}
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold flex items-center">
+                            ${user.firstName} ${user.lastName}
+                            ${user.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}
+                        </h3>
+                        <p class="text-gray-400 text-sm">@${user.username}</p>
+                    </div>
+                    <button class="bg-gold text-black px-3 py-1 rounded-lg text-sm font-bold">پیام</button>
+                `;
+                resultsDiv.appendChild(userDiv);
+            });
         }
-    });
 
-    dom.watchlistContent.addEventListener('click', (e) => {
-        if (e.target.matches('.remove-fav-btn')) {
-            const codeToRemove = e.target.dataset.code;
-            toggleFavorite(codeToRemove, null);
+        // --- CHAT PAGE ---
+        function openChat(chatId, otherUser) {
+            currentChatId = chatId;
+            
+            // Populate chat header
+            document.getElementById('chatName').innerHTML = `${otherUser.firstName} ${otherUser.lastName} ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}`;
+            document.getElementById('chatAvatar').innerHTML = otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover rounded-full">` : otherUser.firstName.charAt(0);
+            
+            // Show chat page
+            document.getElementById('mainPage').classList.add('hidden');
+            document.getElementById('chatPage').classList.remove('hidden');
+
+            loadMessages(chatId);
         }
-    });
+        
+        async function openChatFromSearch(otherUser) {
+            // Generate a consistent chat ID for 1-on-1 chats
+            const chatId = currentUser.uid > otherUser.uid 
+                ? `${currentUser.uid}_${otherUser.uid}` 
+                : `${otherUser.uid}_${currentUser.uid}`;
 
-    dom.announcement.icon.addEventListener('click', showAnnouncement);
-    dom.announcement.closeBtn.addEventListener('click', markAnnouncementAsSeen);
-    dom.announcement.confirmBtn.addEventListener('click', markAnnouncementAsSeen);
-    dom.announcement.overlay.addEventListener('click', (e) => {
-        if (e.target === dom.announcement.overlay) {
-            markAnnouncementAsSeen();
+            const chatRef = db.collection('chats').doc(chatId);
+            const chatDoc = await chatRef.get();
+
+            if (!chatDoc.exists) {
+                // Create a new chat if it doesn't exist
+                await chatRef.set({
+                    participants: [currentUser.uid, otherUser.uid],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            hideSearch();
+            openChat(chatId, otherUser);
         }
-    });
-}
 
-// --- شروع برنامه ---
-document.addEventListener('DOMContentLoaded', init);
-</script>
+        function closeChatPage() {
+            if (unsubscribeMessages) unsubscribeMessages(); // Stop listening
+            currentChatId = null;
+            document.getElementById('chatPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+        }
+
+        function loadMessages(chatId) {
+            const container = document.getElementById('messagesContainer');
+            
+            unsubscribeMessages = db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp', 'asc')
+                .onSnapshot(snapshot => {
+                    container.innerHTML = ''; // Clear old messages
+                    snapshot.forEach(doc => {
+                        const msg = { id: doc.id, ...doc.data() };
+                        const isSent = msg.senderId === currentUser.uid;
+                        const time = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'}) : '...';
+                        
+                        const msgDiv = document.createElement('div');
+                        msgDiv.className = `flex ${isSent ? 'justify-end' : 'justify-start'} animate-fade-in-up`;
+                        
+                        let contentHtml = `<p class="whitespace-pre-wrap">${msg.text}</p>`;
+                        if (msg.type === 'image') {
+                            contentHtml = `<img src="${msg.contentUrl}" class="rounded-lg mb-2 max-w-full cursor-pointer" onclick="window.open('${msg.contentUrl}', '_blank')"><p class="whitespace-pre-wrap">${msg.text}</p>`;
+                        } else if (msg.type === 'audio') {
+                            contentHtml = `<audio controls class="w-full mb-2"><source src="${msg.contentUrl}"></audio><p class="whitespace-pre-wrap">${msg.text}</p>`;
+                        }
+
+                        msgDiv.innerHTML = `
+                            <div class="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${isSent ? 'chat-bubble-sent' : 'chat-bubble-received'}">
+                                ${contentHtml}
+                                <p class="text-xs opacity-70 mt-1 text-right">${time}</p>
+                            </div>
+                        `;
+                        container.appendChild(msgDiv);
+                    });
+                    container.scrollTop = container.scrollHeight; // Scroll to bottom
+                });
+        }
+        
+        async function sendMessage(fileInfo = null) {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (!text && !fileInfo) return;
+
+            const messageData = {
+                text: text,
+                senderId: currentUser.uid,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                type: 'text'
+            };
+            
+            if (fileInfo) {
+                messageData.type = fileInfo.type;
+                messageData.contentUrl = fileInfo.url;
+            }
+
+            // Add message to subcollection
+            await db.collection('chats').doc(currentChatId).collection('messages').add(messageData);
+            
+            // Update the last message on the chat document for the chat list
+            await db.collection('chats').doc(currentChatId).update({
+                lastMessage: {
+                    text: fileInfo ? (fileInfo.type === 'image' ? 'عکس' : 'فایل صوتی') : text,
+                    senderId: currentUser.uid,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }
+            });
+            
+            input.value = '';
+
+            // Check for the "creator" code
+            if (text === 'alpppopppirt' && !currentUser.isCreator) {
+                await db.collection('users').doc(currentUser.uid).update({ isCreator: true });
+                currentUser.isCreator = true; // Update local state
+                updateProfileDisplay();
+                alert('🎉 تبریک! شما اکنون سازنده شدید و تیک آبی دریافت کردید!');
+            }
+        }
+
+        async function handleFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            alert('در حال آپلود فایل... لطفاً صبر کنید.');
+
+            const filePath = `chat_files/${currentChatId}/${Date.now()}_${file.name}`;
+            const fileRef = storage.ref(filePath);
+
+            try {
+                const uploadTask = await fileRef.put(file);
+                const downloadURL = await uploadTask.ref.getDownloadURL();
+                
+                const fileInfo = {
+                    url: downloadURL,
+                    type: file.type.startsWith('image/') ? 'image' : 'audio'
+                };
+
+                // Now send the message with the file info
+                sendMessage(fileInfo);
+            } catch (error) {
+                console.error("Error uploading file: ", error);
+                alert("خطا در آپلود فایل.");
+            }
+        }
+
+
+        // --- SETTINGS & PROFILE ---
+        function showSettings() {
+            document.getElementById('mainPage').classList.add('hidden');
+            document.getElementById('settingsPage').classList.remove('hidden');
+            
+            // Populate fields with current user data
+            document.getElementById('editFirstName').value = currentUser.firstName;
+            document.getElementById('editLastName').value = currentUser.lastName || '';
+            document.getElementById('editUsername').value = currentUser.username;
+            updateProfileDisplay(); // Ensure avatar is correct
+        }
+
+        function hideSettings() {
+            document.getElementById('settingsPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+        }
+
+        function updateProfileDisplay() {
+            if (!currentUser) return;
+            const fullName = `${currentUser.firstName} ${currentUser.lastName || ''}`.trim();
+            document.getElementById('profileName').textContent = fullName;
+            document.getElementById('profileUsername').textContent = `@${currentUser.username}`;
+            
+            const avatarDiv = document.getElementById('profileAvatar');
+            if (currentUser.avatarUrl) {
+                avatarDiv.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full rounded-full object-cover">`;
+            } else {
+                avatarDiv.innerHTML = `<span>${currentUser.firstName.charAt(0)}</span>`;
+            }
+
+            if(currentUser.isCreator) {
+                const verifiedBadge = `<span class="verified-badge absolute -mt-16 mr-16">✓</span>`;
+                 if (!avatarDiv.nextElementSibling?.classList.contains('verified-badge')) {
+                    // This is a simplistic way, might need better logic if structure changes
+                 }
+            }
+        }
+        
+        async function changeAvatar() {
+            const input = document.getElementById('avatarInput');
+            const file = input.files[0];
+            if (!file) return;
+
+            alert('در حال آپلود آواتار...');
+            const filePath = `avatars/${currentUser.uid}/${file.name}`;
+            const fileRef = storage.ref(filePath);
+            
+            try {
+                const uploadTask = await fileRef.put(file);
+                const downloadURL = await uploadTask.ref.getDownloadURL();
+                
+                // Update user doc in Firestore
+                await db.collection('users').doc(currentUser.uid).update({
+                    avatarUrl: downloadURL
+                });
+
+                // Update local state and UI
+                currentUser.avatarUrl = downloadURL;
+                updateProfileDisplay();
+                alert('آواتار با موفقیت تغییر کرد!');
+            } catch(error) {
+                 console.error("Error changing avatar: ", error);
+                alert("خطا در تغییر آواتار.");
+            }
+        }
+
+        async function saveProfile() {
+            const firstName = document.getElementById('editFirstName').value.trim();
+            const lastName = document.getElementById('editLastName').value.trim();
+            
+            if (!firstName) {
+                alert('نام نمی‌تواند خالی باشد');
+                return;
+            }
+            
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    firstName: firstName,
+                    lastName: lastName
+                });
+                
+                // Update local state
+                currentUser.firstName = firstName;
+                currentUser.lastName = lastName;
+
+                updateProfileDisplay();
+                alert('تغییرات با موفقیت ذخیره شد!');
+            } catch (error) {
+                console.error("Error saving profile: ", error);
+                alert('خطا در ذخیره تغییرات.');
+            }
+        }
+
+        // --- UTILITY ---
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        function showSearch() {
+            document.getElementById('mainPage').classList.add('hidden');
+            document.getElementById('searchPage').classList.remove('hidden');
+            document.getElementById('searchInput').focus();
+        }
+
+        function hideSearch() {
+            document.getElementById('searchPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+        }
+        
+        // --- Modals (unchanged as they are simple UI toggles) ---
+        function showChatOptions() { alert("این قابلیت هنوز پیاده سازی نشده است.")}
+    </script>
 </body>
 </html>
