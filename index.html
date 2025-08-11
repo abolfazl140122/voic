@@ -517,7 +517,6 @@
             document.getElementById('mainPage').classList.add('hidden');
             document.getElementById('settingsPage').classList.add('hidden');
             document.getElementById('chatPage').classList.add('hidden');
-            document.getElementById('searchPage').classList.add('hidden');
             if (unsubscribeChats) unsubscribeChats(); // Stop listening to old user's chats
         }
         
@@ -553,12 +552,11 @@
             }
 
             try {
-                document.getElementById('loadingOverlay').classList.remove('hidden');
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
 
                 // Create a unique username
-                const username = `${firstName.toLowerCase().replace(/\s/g, '')}${Math.floor(1000 + Math.random() * 9000)}`;
+                const username = `${firstName.toLowerCase()}${Math.floor(1000 + Math.random() * 9000)}`;
                 
                 // Create user profile in Firestore
                 await db.collection('users').doc(user.uid).set({
@@ -576,8 +574,6 @@
                 
             } catch (error) {
                 alert(`خطا در ثبت‌نام: ${error.message}`);
-            } finally {
-                document.getElementById('loadingOverlay').classList.add('hidden');
             }
         }
 
@@ -589,13 +585,10 @@
                 return;
             }
             try {
-                document.getElementById('loadingOverlay').classList.remove('hidden');
                 await auth.signInWithEmailAndPassword(email, password);
                 // The onAuthStateChanged listener will handle the UI transition
             } catch (error) {
                 alert(`خطا در ورود: ${error.message}`);
-            } finally {
-                document.getElementById('loadingOverlay').classList.add('hidden');
             }
         }
 
@@ -628,47 +621,37 @@
                         return;
                     }
                     
-                    const chatPromises = querySnapshot.docs.map(async (doc) => {
+                    for (const doc of querySnapshot.docs) {
                         const chat = { id: doc.id, ...doc.data() };
                         const otherUserId = chat.participants.find(id => id !== currentUser.uid);
 
-                        if (!otherUserId) return null;
+                        if (otherUserId) {
+                            const userDoc = await db.collection('users').doc(otherUserId).get();
+                            const otherUser = { uid: userDoc.id, ...userDoc.data() };
+                            
+                            const chatItem = document.createElement('div');
+                            chatItem.className = 'chat-item flex items-center p-3 rounded-lg cursor-pointer mb-2 animate-fade-in-up animate-pulse-hover';
+                            chatItem.onclick = () => openChat(chat.id, otherUser);
+                            
+                            const lastMessageText = chat.lastMessage ? chat.lastMessage.text.substring(0, 30) + '...' : 'شروع گفتگو...';
+                            const lastMessageTime = chat.lastMessage ? new Date(chat.lastMessage.timestamp?.toDate()).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'}) : '';
 
-                        const userDoc = await db.collection('users').doc(otherUserId).get();
-                        if (!userDoc.exists) return null;
-
-                        const otherUser = { uid: userDoc.id, ...userDoc.data() };
-                        
-                        const chatItem = document.createElement('div');
-                        chatItem.className = 'chat-item flex items-center p-3 rounded-lg cursor-pointer mb-2 animate-fade-in-up';
-                        chatItem.onclick = () => openChat(chat.id, otherUser);
-                        
-                        const lastMessage = chat.lastMessage;
-                        const lastMessageText = lastMessage ? (lastMessage.text.length > 30 ? lastMessage.text.substring(0, 30) + '...' : lastMessage.text) : 'شروع گفتگو...';
-                        const lastMessageTime = lastMessage?.timestamp ? new Date(lastMessage.timestamp.toDate()).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'}) : '';
-
-                        chatItem.innerHTML = `
-                            <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3 overflow-hidden">
-                                ${otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover">` : otherUser.firstName.charAt(0)}
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="font-semibold flex items-center">
-                                    ${otherUser.firstName} ${otherUser.lastName || ''}
-                                    ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}
-                                </h3>
-                                <p class="text-gray-400 text-sm">${lastMessageText}</p>
-                            </div>
-                            <div class="text-xs text-gray-500">${lastMessageTime}</div>
-                        `;
-                        return chatItem;
-                    });
-
-                    const chatItems = (await Promise.all(chatPromises)).filter(item => item !== null);
-                    chatItems.forEach(item => chatListDiv.appendChild(item));
-
-                }, error => {
-                    console.error("Error loading chat list: ", error);
-                    chatListDiv.innerHTML = `<p class="text-red-400 text-center mt-8">خطا در بارگذاری لیست چت‌ها.</p>`;
+                            chatItem.innerHTML = `
+                                <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3 overflow-hidden">
+                                    ${otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover">` : otherUser.firstName.charAt(0)}
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-semibold flex items-center">
+                                        ${otherUser.firstName} ${otherUser.lastName}
+                                        ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}
+                                    </h3>
+                                    <p class="text-gray-400 text-sm">${lastMessageText}</p>
+                                </div>
+                                <div class="text-xs text-gray-500">${lastMessageTime}</div>
+                            `;
+                            chatListDiv.appendChild(chatItem);
+                        }
+                    }
                 });
         }
         
@@ -683,6 +666,8 @@
             }
             
             const usersRef = db.collection('users');
+            // Firestore doesn't support case-insensitive or partial text search natively.
+            // This is a common workaround for "starts-with" search.
             const snapshot = await usersRef
                 .where('username', '>=', query)
                 .where('username', '<=', query + '\uf8ff')
@@ -696,11 +681,11 @@
             resultsDiv.innerHTML = '';
             snapshot.forEach(doc => {
                 const user = { uid: doc.id, ...doc.data() };
+                // Don't show the current user in search results
                 if (user.uid === currentUser.uid) return;
 
                 const userDiv = document.createElement('div');
                 userDiv.className = 'flex items-center p-3 hover:bg-gray-700 rounded-lg cursor-pointer transition-colors mb-2';
-                // THIS IS CRITICAL: The onclick calls the function to start or find a chat.
                 userDiv.onclick = () => openChatFromSearch(user);
 
                 userDiv.innerHTML = `
@@ -709,7 +694,7 @@
                     </div>
                     <div class="flex-1">
                         <h3 class="font-semibold flex items-center">
-                            ${user.firstName} ${user.lastName || ''}
+                            ${user.firstName} ${user.lastName}
                             ${user.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}
                         </h3>
                         <p class="text-gray-400 text-sm">@${user.username}</p>
@@ -724,57 +709,39 @@
         function openChat(chatId, otherUser) {
             currentChatId = chatId;
             
-            document.getElementById('chatName').innerHTML = `${otherUser.firstName} ${otherUser.lastName || ''} ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}`;
+            // Populate chat header
+            document.getElementById('chatName').innerHTML = `${otherUser.firstName} ${otherUser.lastName} ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}`;
             document.getElementById('chatAvatar').innerHTML = otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover rounded-full">` : otherUser.firstName.charAt(0);
             
+            // Show chat page
             document.getElementById('mainPage').classList.add('hidden');
             document.getElementById('chatPage').classList.remove('hidden');
 
             loadMessages(chatId);
         }
         
-        // =================================================================
-        // == THIS IS THE CORRECTED AND MOST IMPORTANT FUNCTION FOR THE FIX ==
-        // =================================================================
         async function openChatFromSearch(otherUser) {
-            // Generate a consistent, unique chat ID for any two users
+            // Generate a consistent chat ID for 1-on-1 chats
             const chatId = currentUser.uid > otherUser.uid 
                 ? `${currentUser.uid}_${otherUser.uid}` 
                 : `${otherUser.uid}_${currentUser.uid}`;
 
             const chatRef = db.collection('chats').doc(chatId);
-            
-            try {
-                const chatDoc = await chatRef.get();
+            const chatDoc = await chatRef.get();
 
-                if (!chatDoc.exists) {
-                    // Chat doesn't exist, so create it
-                    console.log(`Creating new chat with ID: ${chatId}`);
-                    await chatRef.set({
-                        participants: [currentUser.uid, otherUser.uid],
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        // IMPORTANT: Initialize the lastMessage object for consistency and for the chat list ordering
-                        lastMessage: {
-                            text: 'گفتگو شروع شد...',
-                            senderId: currentUser.uid,
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                        }
-                    });
-                }
-                
-                // Now that we're sure the chat exists, hide the search page and open the chat
-                hideSearch();
-                openChat(chatId, otherUser);
-
-            } catch (error) {
-                console.error("Error opening or creating chat: ", error);
-                alert("خطا در شروع گفتگو. لطفا دوباره امتحان کنید.");
+            if (!chatDoc.exists) {
+                // Create a new chat if it doesn't exist
+                await chatRef.set({
+                    participants: [currentUser.uid, otherUser.uid],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
             }
+            hideSearch();
+            openChat(chatId, otherUser);
         }
 
         function closeChatPage() {
-            if (unsubscribeMessages) unsubscribeMessages(); // Stop listening to messages
-            unsubscribeMessages = null;
+            if (unsubscribeMessages) unsubscribeMessages(); // Stop listening
             currentChatId = null;
             document.getElementById('chatPage').classList.add('hidden');
             document.getElementById('mainPage').classList.remove('hidden');
@@ -783,8 +750,6 @@
         function loadMessages(chatId) {
             const container = document.getElementById('messagesContainer');
             
-            if (unsubscribeMessages) unsubscribeMessages(); // Unsubscribe from any previous chat
-
             unsubscribeMessages = db.collection('chats').doc(chatId).collection('messages')
                 .orderBy('timestamp', 'asc')
                 .onSnapshot(snapshot => {
@@ -799,9 +764,9 @@
                         
                         let contentHtml = `<p class="whitespace-pre-wrap">${msg.text}</p>`;
                         if (msg.type === 'image') {
-                            contentHtml = `<img src="${msg.contentUrl}" class="rounded-lg mb-2 max-w-full cursor-pointer" onclick="window.open('${msg.contentUrl}', '_blank')"><p class="whitespace-pre-wrap">${msg.text || ''}</p>`;
+                            contentHtml = `<img src="${msg.contentUrl}" class="rounded-lg mb-2 max-w-full cursor-pointer" onclick="window.open('${msg.contentUrl}', '_blank')"><p class="whitespace-pre-wrap">${msg.text}</p>`;
                         } else if (msg.type === 'audio') {
-                            contentHtml = `<audio controls class="w-full mb-2"><source src="${msg.contentUrl}"></audio><p class="whitespace-pre-wrap">${msg.text || ''}</p>`;
+                            contentHtml = `<audio controls class="w-full mb-2"><source src="${msg.contentUrl}"></audio><p class="whitespace-pre-wrap">${msg.text}</p>`;
                         }
 
                         msgDiv.innerHTML = `
@@ -821,10 +786,6 @@
             const text = input.value.trim();
             
             if (!text && !fileInfo) return;
-            if (!currentChatId) {
-                alert("خطا: چت فعالی انتخاب نشده است.");
-                return;
-            }
 
             const messageData = {
                 text: text,
@@ -838,38 +799,26 @@
                 messageData.contentUrl = fileInfo.url;
             }
 
-            input.value = ''; // Clear input immediately for better UX
+            // Add message to subcollection
+            await db.collection('chats').doc(currentChatId).collection('messages').add(messageData);
             
-            try {
-                // Use a batch to ensure both operations succeed or fail together
-                const batch = db.batch();
-                
-                const messagesRef = db.collection('chats').doc(currentChatId).collection('messages').doc();
-                batch.set(messagesRef, messageData);
-                
-                const chatRef = db.collection('chats').doc(currentChatId);
-                const lastMessageText = fileInfo ? (fileInfo.type === 'image' ? '📷 عکس' : '🎵 فایل صوتی') : text;
-                batch.update(chatRef, {
-                    lastMessage: {
-                        text: lastMessageText,
-                        senderId: currentUser.uid,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    }
-                });
-
-                await batch.commit();
-
-                // Check for the "creator" code
-                if (text === 'alpppopppirt' && !currentUser.isCreator) {
-                    await db.collection('users').doc(currentUser.uid).update({ isCreator: true });
-                    currentUser.isCreator = true; // Update local state
-                    updateProfileDisplay();
-                    alert('🎉 تبریک! شما اکنون سازنده شدید و تیک آبی دریافت کردید!');
+            // Update the last message on the chat document for the chat list
+            await db.collection('chats').doc(currentChatId).update({
+                lastMessage: {
+                    text: fileInfo ? (fileInfo.type === 'image' ? 'عکس' : 'فایل صوتی') : text,
+                    senderId: currentUser.uid,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }
-            } catch (error) {
-                console.error("Error sending message: ", error);
-                alert("خطا در ارسال پیام.");
-                input.value = text; // Restore text if sending failed
+            });
+            
+            input.value = '';
+
+            // Check for the "creator" code
+            if (text === 'alpppopppirt' && !currentUser.isCreator) {
+                await db.collection('users').doc(currentUser.uid).update({ isCreator: true });
+                currentUser.isCreator = true; // Update local state
+                updateProfileDisplay();
+                alert('🎉 تبریک! شما اکنون سازنده شدید و تیک آبی دریافت کردید!');
             }
         }
 
@@ -879,7 +828,6 @@
             if (!file) return;
 
             alert('در حال آپلود فایل... لطفاً صبر کنید.');
-            document.getElementById('loadingOverlay').classList.remove('hidden');
 
             const filePath = `chat_files/${currentChatId}/${Date.now()}_${file.name}`;
             const fileRef = storage.ref(filePath);
@@ -892,15 +840,12 @@
                     url: downloadURL,
                     type: file.type.startsWith('image/') ? 'image' : 'audio'
                 };
-                
-                // Send message with file info and possibly a caption from the input field
-                await sendMessage(fileInfo);
+
+                // Now send the message with the file info
+                sendMessage(fileInfo);
             } catch (error) {
                 console.error("Error uploading file: ", error);
                 alert("خطا در آپلود فایل.");
-            } finally {
-                document.getElementById('loadingOverlay').classList.add('hidden');
-                fileInput.value = ''; // Reset file input
             }
         }
 
@@ -910,10 +855,11 @@
             document.getElementById('mainPage').classList.add('hidden');
             document.getElementById('settingsPage').classList.remove('hidden');
             
+            // Populate fields with current user data
             document.getElementById('editFirstName').value = currentUser.firstName;
             document.getElementById('editLastName').value = currentUser.lastName || '';
             document.getElementById('editUsername').value = currentUser.username;
-            updateProfileDisplay();
+            updateProfileDisplay(); // Ensure avatar is correct
         }
 
         function hideSettings() {
@@ -933,6 +879,13 @@
             } else {
                 avatarDiv.innerHTML = `<span>${currentUser.firstName.charAt(0)}</span>`;
             }
+
+            if(currentUser.isCreator) {
+                const verifiedBadge = `<span class="verified-badge absolute -mt-16 mr-16">✓</span>`;
+                 if (!avatarDiv.nextElementSibling?.classList.contains('verified-badge')) {
+                    // This is a simplistic way, might need better logic if structure changes
+                 }
+            }
         }
         
         async function changeAvatar() {
@@ -941,23 +894,25 @@
             if (!file) return;
 
             alert('در حال آپلود آواتار...');
-            document.getElementById('loadingOverlay').classList.remove('hidden');
-            const filePath = `avatars/${currentUser.uid}/${Date.now()}_${file.name}`;
+            const filePath = `avatars/${currentUser.uid}/${file.name}`;
             const fileRef = storage.ref(filePath);
             
             try {
                 const uploadTask = await fileRef.put(file);
                 const downloadURL = await uploadTask.ref.getDownloadURL();
                 
-                await db.collection('users').doc(currentUser.uid).update({ avatarUrl: downloadURL });
+                // Update user doc in Firestore
+                await db.collection('users').doc(currentUser.uid).update({
+                    avatarUrl: downloadURL
+                });
+
+                // Update local state and UI
                 currentUser.avatarUrl = downloadURL;
                 updateProfileDisplay();
                 alert('آواتار با موفقیت تغییر کرد!');
             } catch(error) {
                  console.error("Error changing avatar: ", error);
                 alert("خطا در تغییر آواتار.");
-            } finally {
-                document.getElementById('loadingOverlay').classList.add('hidden');
             }
         }
 
@@ -971,12 +926,12 @@
             }
             
             try {
-                document.getElementById('loadingOverlay').classList.remove('hidden');
                 await db.collection('users').doc(currentUser.uid).update({
                     firstName: firstName,
                     lastName: lastName
                 });
                 
+                // Update local state
                 currentUser.firstName = firstName;
                 currentUser.lastName = lastName;
 
@@ -985,15 +940,12 @@
             } catch (error) {
                 console.error("Error saving profile: ", error);
                 alert('خطا در ذخیره تغییرات.');
-            } finally {
-                document.getElementById('loadingOverlay').classList.add('hidden');
             }
         }
 
         // --- UTILITY ---
         function handleKeyPress(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault(); // Prevents new line on Enter
+            if (event.key === 'Enter') {
                 sendMessage();
             }
         }
@@ -1009,6 +961,7 @@
             document.getElementById('mainPage').classList.remove('hidden');
         }
         
+        // --- Modals (unchanged as they are simple UI toggles) ---
         function showChatOptions() { alert("این قابلیت هنوز پیاده سازی نشده است.")}
     </script>
 </body>
