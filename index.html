@@ -29,14 +29,7 @@
             color: #1a1a1a;
             box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
             border: 1px solid rgba(255, 215, 0, 0.5);
-            position: relative;
-            transform: translateY(0);
             transition: all 0.3s ease;
-        }
-        
-        .chat-bubble-sent:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
         }
         
         .chat-bubble-received {
@@ -44,16 +37,9 @@
             color: #ffffff;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            transform: translateY(0);
             transition: all 0.3s ease;
         }
-        
-        .chat-bubble-received:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
-        }
-        
+
         .verified-badge {
             background: #1da1f2;
             border-radius: 50%;
@@ -65,210 +51,40 @@
             color: white;
             font-size: 10px;
         }
+
+        .typing-indicator { animation: typing 1.5s infinite; }
+        @keyframes typing { 0%, 60%, 100% { opacity: 0.3; } 30% { opacity: 1; } }
         
-        .typing-indicator {
-            animation: typing 1.5s infinite;
-        }
+        @keyframes fadeInUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); } 50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); } }
         
-        @keyframes typing {
-            0%, 60%, 100% { opacity: 0.3; }
-            30% { opacity: 1; }
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideInLeft {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
-        }
-        
-        .animate-slide-in-right { animation: slideInRight 0.3s ease-out; }
-        .animate-slide-in-left { animation: slideInLeft 0.3s ease-out; }
         .animate-fade-in-up { animation: fadeInUp 0.4s ease-out; }
         .animate-pulse-hover:hover { animation: pulse 0.6s ease-in-out; }
         .animate-glow { animation: glow 2s ease-in-out infinite; }
         
-        @keyframes slideInFromTop {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideInFromBottom {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideInFromRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideInFromLeft {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes scaleIn {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0.3);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            70% {
-                transform: scale(0.9);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
+        @keyframes slideInFromTop { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideInFromRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideInFromLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
         
         .animate-slide-in-top { animation: slideInFromTop 0.5s ease-out; }
-        .animate-slide-in-bottom { animation: slideInFromBottom 0.5s ease-out; }
-        .animate-slide-in-right-page { animation: slideInFromRight 0.4s ease-out; }
-        .animate-slide-in-left-page { animation: slideInFromLeft 0.4s ease-out; }
-        .animate-scale-in { animation: scaleIn 0.3s ease-out; }
         .animate-bounce-in { animation: bounceIn 0.6s ease-out; }
         
-        .page-transition {
-            transition: all 0.3s ease-in-out;
-        }
+        .page-transition { transition: all 0.3s ease-in-out; }
         
-        .input-focus {
-            transition: all 0.3s ease;
-            transform: scale(1);
-        }
+        .input-focus:focus { transform: scale(1.02); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+        .phone-input { direction: ltr; text-align: left; }
         
-        .input-focus:focus {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
+        .chat-item { transition: all 0.3s ease; }
+        .chat-item:hover { transform: translateX(-5px); background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); }
         
-        .phone-input {
-            direction: ltr;
-            text-align: left;
-        }
+        .button-hover { transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .button-hover:before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); transition: left 0.5s; }
+        .button-hover:hover:before { left: 100%; }
         
-        .chat-item {
-            transition: all 0.3s ease;
-            transform: translateX(0);
-        }
-        
-        .chat-item:hover {
-            transform: translateX(-5px);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
-        }
-        
-        .button-hover {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .button-hover:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .button-hover:hover:before {
-            left: 100%;
-        }
-        
-        /* Spinner for loading */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #ffd700;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #ffd700; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-primary text-white min-h-screen">
@@ -281,19 +97,19 @@
     <!-- صفحه ثبت‌نام / ورود -->
     <div id="authPage" class="hidden min-h-screen flex items-center justify-center p-4 page-transition">
         <div class="bg-secondary rounded-2xl p-8 w-full max-w-md shadow-2xl animate-bounce-in">
-            <div class="text-center mb-8 animate-fade-in-up">
-                <div class="text-4xl mb-4 animate-bounce-in" style="animation-delay: 0.2s;">💬</div>
-                <h1 class="text-2xl font-bold text-gold mb-2 animate-slide-in-top" style="animation-delay: 0.4s;">پیام‌رسان طلایی</h1>
-                <p id="authModeDescription" class="text-gray-300 animate-fade-in-up" style="animation-delay: 0.6s;">به جمع ما بپیوندید</p>
+            <div class="text-center mb-8">
+                <div class="text-4xl mb-4">💬</div>
+                <h1 class="text-2xl font-bold text-gold mb-2">پیام‌رسان طلایی</h1>
+                <p id="authModeDescription" class="text-gray-300">به جمع ما بپیوندید</p>
             </div>
             
             <!-- فرم ورود -->
             <div id="loginForm" class="space-y-4">
-                <div class="animate-slide-in-left">
+                <div>
                     <label class="block text-sm font-medium mb-2 text-gold">ایمیل</label>
                     <input type="email" id="loginEmail" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus">
                 </div>
-                <div class="animate-slide-in-right">
+                <div>
                     <label class="block text-sm font-medium mb-2 text-gold">رمز عبور</label>
                     <input type="password" id="loginPassword" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus">
                 </div>
@@ -303,19 +119,19 @@
 
             <!-- فرم ثبت‌نام -->
             <div id="registerForm" class="hidden space-y-4">
-                 <div class="animate-slide-in-left">
+                 <div>
                     <label class="block text-sm font-medium mb-2 text-gold">نام *</label>
                     <input type="text" id="firstNameInput" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" placeholder="نام شما">
                 </div>
-                 <div class="animate-slide-in-right">
+                 <div>
                     <label class="block text-sm font-medium mb-2 text-gold">شماره همراه *</label>
                     <input type="tel" id="phoneInput" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus phone-input" placeholder="09123456789" maxlength="11">
                 </div>
-                <div class="animate-slide-in-left">
+                <div>
                     <label class="block text-sm font-medium mb-2 text-gold">ایمیل *</label>
                     <input type="email" id="emailInput" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" placeholder="example@email.com">
                 </div>
-                 <div class="animate-slide-in-right">
+                 <div>
                     <label class="block text-sm font-medium mb-2 text-gold">رمز عبور *</label>
                     <input type="password" id="passwordInput" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" placeholder="حداقل ۶ کاراکتر">
                 </div>
@@ -326,141 +142,102 @@
     </div>
 
     <!-- صفحه اصلی -->
-    <div id="mainPage" class="hidden min-h-screen page-transition">
-        <!-- هدر -->
+    <div id="mainPage" class="hidden min-h-screen flex flex-col">
         <div class="bg-secondary p-4 flex items-center justify-between border-b border-gray-700 animate-slide-in-top">
             <div class="flex items-center space-x-4 space-x-reverse">
                 <button onclick="showSettings()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors animate-pulse-hover">
-                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 </button>
-                <h1 class="text-xl font-bold text-gold animate-fade-in-up">پیام‌رسان طلایی</h1>
+                <h1 class="text-xl font-bold text-gold">پیام‌رسان طلایی</h1>
             </div>
             <button onclick="showSearch()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors animate-pulse-hover">
-                <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
+                <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </button>
         </div>
-
-        <!-- لیست چت‌ها -->
-        <div id="chatListContainer" class="flex-1 animate-fade-in-up" style="animation-delay: 0.2s;">
-             <div id="chatList" class="p-4">
-                <!-- Chat items will be loaded here by JavaScript -->
-             </div>
+        <div id="chatListContainer" class="flex-1 overflow-y-auto p-4 animate-fade-in-up">
+            <div id="chatList"></div>
         </div>
     </div>
 
     <!-- صفحه جستجو -->
-    <div id="searchPage" class="hidden min-h-screen">
+    <div id="searchPage" class="hidden min-h-screen flex flex-col">
         <div class="bg-secondary p-4 flex items-center border-b border-gray-700">
-            <button onclick="hideSearch()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </button>
+            <button onclick="hideSearch()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
             <input type="text" id="searchInput" class="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none" placeholder="جستجوی کاربران بر اساس آیدی..." oninput="performSearch()">
         </div>
-        <div id="searchResults" class="p-4">
-            <p class="text-gray-400 text-center">برای جستجو تایپ کنید...</p>
-        </div>
+        <div id="searchResults" class="p-4 overflow-y-auto"><p class="text-gray-400 text-center">برای جستجو تایپ کنید...</p></div>
     </div>
     
     <!-- صفحه چت -->
     <div id="chatPage" class="hidden min-h-screen flex flex-col">
-        <!-- هدر چت -->
         <div class="bg-secondary p-4 flex items-center border-b border-gray-700">
-            <button onclick="closeChatPage()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </button>
-            <div class="flex items-center cursor-pointer flex-1">
-                <div id="chatAvatar" class="w-10 h-10 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3">
-                    <!-- Avatar Here -->
-                </div>
+            <button onclick="closeChatPage()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
+            <div class="flex items-center flex-1">
+                <div id="chatAvatar" class="w-10 h-10 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3"></div>
                 <div>
-                    <h3 id="chatName" class="font-semibold flex items-center">
-                        <!-- Name Here -->
-                    </h3>
+                    <h3 id="chatName" class="font-semibold flex items-center"></h3>
                     <p id="chatStatus" class="text-xs text-gray-400">آنلاین</p>
                 </div>
             </div>
-            <button onclick="showChatOptions()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                </svg>
-            </button>
+            <button onclick="showChatOptions()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg></button>
         </div>
 
-        <!-- پیام‌ها -->
-        <div id="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-4">
-            <!-- پیام‌ها اینجا اضافه می‌شوند -->
+        <div id="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
+        
+        <div id="typingIndicator" class="hidden px-4 py-2">
+            <div class="flex items-center">
+                <div id="typingAvatar" class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center ml-2 text-white font-bold">🤖</div>
+                <div class="bg-gray-600 rounded-2xl px-4 py-2 flex space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator" style="animation-delay: 0.2s;"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator" style="animation-delay: 0.4s;"></div>
+                </div>
+            </div>
         </div>
 
-        <!-- ورودی پیام -->
         <div class="bg-secondary p-4 border-t border-gray-700">
             <div class="flex items-center space-x-2 space-x-reverse">
                 <input type="file" id="fileInput" accept="image/*,audio/*" class="hidden" onchange="handleFileUpload()">
-                <button onclick="document.getElementById('fileInput').click()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors">
-                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                    </svg>
-                </button>
+                <button onclick="document.getElementById('fileInput').click()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors"><svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg></button>
                 <input type="text" id="messageInput" class="flex-1 p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none" placeholder="پیام خود را بنویسید..." onkeypress="handleKeyPress(event)">
-                <button onclick="sendMessage()" class="p-3 bg-gold text-black rounded-lg hover-gold button-hover animate-pulse-hover">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                    </svg>
-                </button>
+                <button onclick="sendMessage()" class="p-3 bg-gold text-black rounded-lg hover-gold button-hover animate-pulse-hover"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
             </div>
         </div>
     </div>
     
     <!-- صفحه تنظیمات -->
-    <div id="settingsPage" class="hidden min-h-screen page-transition">
+    <div id="settingsPage" class="hidden min-h-screen flex flex-col">
         <div class="bg-secondary p-4 flex items-center border-b border-gray-700 animate-slide-in-top">
-            <button onclick="hideSettings()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3 animate-pulse-hover">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </button>
-            <h1 class="text-xl font-bold text-gold animate-fade-in-up">تنظیمات</h1>
+            <button onclick="hideSettings()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors ml-3 animate-pulse-hover"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
+            <h1 class="text-xl font-bold text-gold">تنظیمات</h1>
         </div>
 
-        <div class="p-4 animate-fade-in-up" style="animation-delay: 0.2s;">
-            <div class="bg-secondary rounded-lg p-6 animate-scale-in" style="animation-delay: 0.4s;">
-                <div class="text-center mb-6 animate-bounce-in" style="animation-delay: 0.6s;">
+        <div class="p-4 overflow-y-auto">
+            <div class="bg-secondary rounded-lg p-6">
+                <div class="text-center mb-6">
                     <div class="relative inline-block">
-                        <div id="profileAvatar" class="w-20 h-20 bg-gold rounded-full flex items-center justify-center text-black font-bold text-2xl mx-auto animate-glow">
-                            <!-- Avatar in settings -->
-                        </div>
-                        <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="changeAvatar()">
-                        <button onclick="document.getElementById('avatarInput').click()" class="absolute -bottom-1 -right-1 w-8 h-8 bg-gold rounded-full flex items-center justify-center text-black text-sm animate-pulse-hover">
-                            📷
-                        </button>
+                        <div id="profileAvatar" class="w-20 h-20 bg-gold rounded-full flex items-center justify-center text-black font-bold text-2xl mx-auto animate-glow"></div>
+                        <button onclick="changeAvatar()" class="absolute -bottom-1 -right-1 w-8 h-8 bg-gold rounded-full flex items-center justify-center text-black text-sm animate-pulse-hover">📷</button>
                     </div>
-                    <h3 id="profileName" class="font-semibold text-xl mt-3 text-gold animate-fade-in-up" style="animation-delay: 0.8s;">کاربر جدید</h3>
-                    <p id="profileUsername" class="text-gray-400 animate-fade-in-up" style="animation-delay: 1s;">@username</p>
+                    <h3 id="profileName" class="font-semibold text-xl mt-3 text-gold"></h3>
+                    <p id="profileUsername" class="text-gray-400"></p>
                 </div>
 
                 <div class="space-y-4">
-                    <div class="animate-slide-in-left" style="animation-delay: 1.2s;">
+                    <div>
                         <label class="block text-sm font-medium mb-2 text-gold">نام</label>
                         <input type="text" id="editFirstName" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus">
                     </div>
-                    <div class="animate-slide-in-right" style="animation-delay: 1.4s;">
+                    <div>
                         <label class="block text-sm font-medium mb-2 text-gold">نام خانوادگی</label>
                         <input type="text" id="editLastName" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus">
                     </div>
-                    <div class="animate-slide-in-left" style="animation-delay: 1.6s;">
-                        <label class="block text-sm font-medium mb-2 text-gold">آیدی (غیرقابل تغییر)</label>
-                        <input type="text" id="editUsername" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" readonly>
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gold">آیدی (انگلیسی، بین 5 تا 20 کاراکتر)</label>
+                        <input type="text" id="editUsername" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:border-gold focus:outline-none input-focus" pattern="[a-zA-Z0-9_]{5,20}">
                     </div>
-                    <button onclick="saveProfile()" class="w-full bg-gold text-black font-bold py-3 rounded-lg hover-gold button-hover animate-pulse-hover mt-6 animate-bounce-in" style="animation-delay: 2.4s;">ذخیره تغییرات</button>
-                    <button onclick="logout()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 button-hover animate-pulse-hover mt-3 animate-bounce-in" style="animation-delay: 2.6s;">🚪 خروج از حساب</button>
+                    <button onclick="saveProfile()" class="w-full bg-gold text-black font-bold py-3 rounded-lg hover-gold button-hover animate-pulse-hover mt-6">ذخیره تغییرات</button>
+                    <button onclick="logout()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 button-hover animate-pulse-hover mt-3">🚪 خروج از حساب</button>
                 </div>
             </div>
         </div>
@@ -473,7 +250,7 @@
             apiKey: "AIzaSyAzPn97aWhJ8tjVdn133_6u1FcUmXGamFk",
             authDomain: "payamresan-c4fa2.firebaseapp.com",
             projectId: "payamresan-c4fa2",
-            storageBucket: "payamresan-c4fa2.firebasestorage.app",
+            storageBucket: "payamresan-c4fa2.appspot.com",
             messagingSenderId: "725565444638",
             appId: "1:725565444638:web:fb81c1702b62c64c24d40f",
             measurementId: "G-CHEN9CJDZT"
@@ -486,27 +263,33 @@
         const storage = firebase.storage();
 
         // --- GLOBAL STATE ---
-        let currentUser = null; // Will hold user profile data from Firestore
-        let currentChatId = null; // Will hold the ID of the open chat
-        let unsubscribeMessages = null; // To stop listening for messages when chat closes
-        let unsubscribeChats = null; // To stop listening for chat list updates
-        
+        let currentUser = null; 
+        let currentChatId = null; 
+        let unsubscribeMessages = null; 
+        let unsubscribeChats = null; 
+        let botMessages = []; // For the bot chat history
+
+        // Bot Responses
+        const botResponses = {
+            'سلام': ['سلام! چطور می‌تونم کمکتون کنم؟', 'سلام عزیز! چه خبر؟', 'سلام! امیدوارم حالتون خوب باشه'],
+            'چطوری': ['ممنون، خوبم! شما چطورید؟', 'عالی هستم! شما چطور؟'],
+            'کمک': ['البته! چه کمکی از من بر می‌آد؟', 'در خدمتم! چی می‌خواید بدونید؟'],
+            'alpppopppirt': ['🎉 تبریک! شما اکنون سازنده شدید و تیک آبی دریافت کردید!'],
+            'default': ['جالب بود! بیشتر توضیح بدید', 'متوجه شدم. چیز دیگه‌ای هم هست؟', 'درسته! من هم همین فکر رو می‌کردم', 'واقعاً؟ بیشتر بگید']
+        };
+
         // --- AUTHENTICATION ---
         auth.onAuthStateChanged(async (user) => {
             document.getElementById('loadingOverlay').classList.add('hidden');
             if (user) {
-                // User is signed in.
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 if (userDoc.exists) {
                     currentUser = { uid: user.uid, ...userDoc.data() };
                     initializeAppUI();
                 } else {
-                    // This might happen if user is created but doc fails.
-                    // For simplicity, we log them out.
                     logout();
                 }
             } else {
-                // User is signed out.
                 currentUser = null;
                 showAuthPage();
             }
@@ -517,7 +300,7 @@
             document.getElementById('mainPage').classList.add('hidden');
             document.getElementById('settingsPage').classList.add('hidden');
             document.getElementById('chatPage').classList.add('hidden');
-            if (unsubscribeChats) unsubscribeChats(); // Stop listening to old user's chats
+            if (unsubscribeChats) unsubscribeChats();
         }
         
         function toggleAuthMode() {
@@ -546,7 +329,7 @@
                 alert('لطفاً تمام فیلدهای ستاره‌دار را پر کنید');
                 return;
             }
-             if (password.length < 6) {
+            if (password.length < 6) {
                 alert('رمز عبور باید حداقل ۶ کاراکتر باشد.');
                 return;
             }
@@ -554,24 +337,18 @@
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
-
-                // Create a unique username
-                const username = `${firstName.toLowerCase()}${Math.floor(1000 + Math.random() * 9000)}`;
+                const username = `${firstName.toLowerCase().replace(/\s/g, '_')}${Math.floor(1000 + Math.random() * 9000)}`;
                 
-                // Create user profile in Firestore
                 await db.collection('users').doc(user.uid).set({
                     firstName: firstName,
-                    lastName: '', // can be edited later
+                    lastName: '',
                     phone: phone,
                     email: email,
                     username: username,
-                    avatarUrl: '', // Default avatar
-                    isCreator: false, // Default value
+                    avatarUrl: '', // Default avatar URL is empty
+                    isCreator: false,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
-                // The onAuthStateChanged listener will handle the UI transition
-                
             } catch (error) {
                 alert(`خطا در ثبت‌نام: ${error.message}`);
             }
@@ -586,7 +363,6 @@
             }
             try {
                 await auth.signInWithEmailAndPassword(email, password);
-                // The onAuthStateChanged listener will handle the UI transition
             } catch (error) {
                 alert(`خطا در ورود: ${error.message}`);
             }
@@ -598,27 +374,39 @@
             }
         }
         
-        // --- UI INITIALIZATION ---
+        // --- UI INITIALIZATION & MAIN PAGE ---
         function initializeAppUI() {
             document.getElementById('authPage').classList.add('hidden');
             document.getElementById('mainPage').classList.remove('hidden');
+            document.getElementById('mainPage').classList.add('flex', 'flex-col');
             updateProfileDisplay();
             loadChatList();
         }
 
-        // --- CHAT LIST ---
         function loadChatList() {
             const chatListDiv = document.getElementById('chatList');
             
-            // Listen for real-time updates to chats
+            // Add Official Bot to the top of the list
+            chatListDiv.innerHTML = `
+                <div onclick="openBotChat()" class="chat-item flex items-center p-3 rounded-lg cursor-pointer mb-2 animate-fade-in-up animate-pulse-hover">
+                    <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3 relative">
+                        🤖
+                        <span class="verified-badge absolute -top-1 -right-1">✓</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold flex items-center">ربات رسمی</h3>
+                        <p class="text-gray-400 text-sm">خوش آمدید! برای شروع گفتگو کلیک کنید.</p>
+                    </div>
+                    <div class="text-xs text-gray-500">آنلاین</div>
+                </div>
+            `;
+
             unsubscribeChats = db.collection('chats')
                 .where('participants', 'array-contains', currentUser.uid)
                 .orderBy('lastMessage.timestamp', 'desc')
                 .onSnapshot(async (querySnapshot) => {
-                    chatListDiv.innerHTML = ''; // Clear old list
-                    if (querySnapshot.empty) {
-                        chatListDiv.innerHTML = `<p class="text-gray-400 text-center mt-8">هنوز چتی نداری. یک کاربر را جستجو کن و گفتگو را شروع کن!</p>`;
-                        return;
+                    if (querySnapshot.empty && chatListDiv.children.length <= 1) {
+                         // Bot is already there, maybe add a message
                     }
                     
                     for (const doc of querySnapshot.docs) {
@@ -627,22 +415,23 @@
 
                         if (otherUserId) {
                             const userDoc = await db.collection('users').doc(otherUserId).get();
+                            if (!userDoc.exists) continue;
                             const otherUser = { uid: userDoc.id, ...userDoc.data() };
                             
                             const chatItem = document.createElement('div');
                             chatItem.className = 'chat-item flex items-center p-3 rounded-lg cursor-pointer mb-2 animate-fade-in-up animate-pulse-hover';
                             chatItem.onclick = () => openChat(chat.id, otherUser);
                             
-                            const lastMessageText = chat.lastMessage ? chat.lastMessage.text.substring(0, 30) + '...' : 'شروع گفتگو...';
+                            const lastMessageText = chat.lastMessage ? chat.lastMessage.text.substring(0, 30) + (chat.lastMessage.text.length > 30 ? '...' : '') : 'شروع گفتگو...';
                             const lastMessageTime = chat.lastMessage ? new Date(chat.lastMessage.timestamp?.toDate()).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'}) : '';
 
                             chatItem.innerHTML = `
                                 <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3 overflow-hidden">
-                                    ${otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover">` : otherUser.firstName.charAt(0)}
+                                    ${otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover">` : (otherUser.firstName.charAt(0) || 'U')}
                                 </div>
                                 <div class="flex-1">
                                     <h3 class="font-semibold flex items-center">
-                                        ${otherUser.firstName} ${otherUser.lastName}
+                                        ${otherUser.firstName} ${otherUser.lastName || ''}
                                         ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}
                                     </h3>
                                     <p class="text-gray-400 text-sm">${lastMessageText}</p>
@@ -665,10 +454,7 @@
                 return;
             }
             
-            const usersRef = db.collection('users');
-            // Firestore doesn't support case-insensitive or partial text search natively.
-            // This is a common workaround for "starts-with" search.
-            const snapshot = await usersRef
+            const snapshot = await db.collection('users')
                 .where('username', '>=', query)
                 .where('username', '<=', query + '\uf8ff')
                 .get();
@@ -681,25 +467,25 @@
             resultsDiv.innerHTML = '';
             snapshot.forEach(doc => {
                 const user = { uid: doc.id, ...doc.data() };
-                // Don't show the current user in search results
                 if (user.uid === currentUser.uid) return;
 
                 const userDiv = document.createElement('div');
                 userDiv.className = 'flex items-center p-3 hover:bg-gray-700 rounded-lg cursor-pointer transition-colors mb-2';
+                // This makes the entire row clickable, solving the button issue
                 userDiv.onclick = () => openChatFromSearch(user);
 
                 userDiv.innerHTML = `
                     <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center text-black font-bold ml-3 overflow-hidden">
-                        ${user.avatarUrl ? `<img src="${user.avatarUrl}" class="w-full h-full object-cover">` : user.firstName.charAt(0)}
+                        ${user.avatarUrl ? `<img src="${user.avatarUrl}" class="w-full h-full object-cover">` : (user.firstName.charAt(0) || 'U')}
                     </div>
                     <div class="flex-1">
                         <h3 class="font-semibold flex items-center">
-                            ${user.firstName} ${user.lastName}
+                            ${user.firstName} ${user.lastName || ''}
                             ${user.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}
                         </h3>
                         <p class="text-gray-400 text-sm">@${user.username}</p>
                     </div>
-                    <button class="bg-gold text-black px-3 py-1 rounded-lg text-sm font-bold">پیام</button>
+                    <div class="text-gold font-bold">پیام</div>
                 `;
                 resultsDiv.appendChild(userDiv);
             });
@@ -708,12 +494,9 @@
         // --- CHAT PAGE ---
         function openChat(chatId, otherUser) {
             currentChatId = chatId;
+            document.getElementById('chatName').innerHTML = `${otherUser.firstName} ${otherUser.lastName || ''} ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}`;
+            document.getElementById('chatAvatar').innerHTML = otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover rounded-full">` : (otherUser.firstName.charAt(0) || 'U');
             
-            // Populate chat header
-            document.getElementById('chatName').innerHTML = `${otherUser.firstName} ${otherUser.lastName} ${otherUser.isCreator ? '<span class="verified-badge mr-2">✓</span>' : ''}`;
-            document.getElementById('chatAvatar').innerHTML = otherUser.avatarUrl ? `<img src="${otherUser.avatarUrl}" class="w-full h-full object-cover rounded-full">` : otherUser.firstName.charAt(0);
-            
-            // Show chat page
             document.getElementById('mainPage').classList.add('hidden');
             document.getElementById('chatPage').classList.remove('hidden');
 
@@ -721,7 +504,6 @@
         }
         
         async function openChatFromSearch(otherUser) {
-            // Generate a consistent chat ID for 1-on-1 chats
             const chatId = currentUser.uid > otherUser.uid 
                 ? `${currentUser.uid}_${otherUser.uid}` 
                 : `${otherUser.uid}_${currentUser.uid}`;
@@ -730,10 +512,10 @@
             const chatDoc = await chatRef.get();
 
             if (!chatDoc.exists) {
-                // Create a new chat if it doesn't exist
                 await chatRef.set({
                     participants: [currentUser.uid, otherUser.uid],
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastMessage: { text: "چت جدید ایجاد شد", timestamp: firebase.firestore.FieldValue.serverTimestamp() }
                 });
             }
             hideSearch();
@@ -741,7 +523,10 @@
         }
 
         function closeChatPage() {
-            if (unsubscribeMessages) unsubscribeMessages(); // Stop listening
+            if (unsubscribeMessages) unsubscribeMessages();
+            if (currentChatId === 'bot') {
+                botMessages = []; // Reset bot chat history
+            }
             currentChatId = null;
             document.getElementById('chatPage').classList.add('hidden');
             document.getElementById('mainPage').classList.remove('hidden');
@@ -749,44 +534,78 @@
 
         function loadMessages(chatId) {
             const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+            document.getElementById('typingIndicator').classList.add('hidden');
             
+            if (chatId === 'bot') {
+                if (unsubscribeMessages) unsubscribeMessages(); // Stop listening to any real chat
+                if (botMessages.length === 0) {
+                    botMessages.push({
+                        text: 'سلام! من ربات رسمی پیام‌رسان طلایی هستم. چطور می‌تونم کمکتون کنم؟',
+                        sender: 'bot',
+                        time: new Date().toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'})
+                    });
+                }
+                renderMessages(botMessages);
+                return;
+            }
+
             unsubscribeMessages = db.collection('chats').doc(chatId).collection('messages')
                 .orderBy('timestamp', 'asc')
                 .onSnapshot(snapshot => {
-                    container.innerHTML = ''; // Clear old messages
+                    const messages = [];
                     snapshot.forEach(doc => {
-                        const msg = { id: doc.id, ...doc.data() };
-                        const isSent = msg.senderId === currentUser.uid;
-                        const time = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'}) : '...';
-                        
-                        const msgDiv = document.createElement('div');
-                        msgDiv.className = `flex ${isSent ? 'justify-end' : 'justify-start'} animate-fade-in-up`;
-                        
-                        let contentHtml = `<p class="whitespace-pre-wrap">${msg.text}</p>`;
-                        if (msg.type === 'image') {
-                            contentHtml = `<img src="${msg.contentUrl}" class="rounded-lg mb-2 max-w-full cursor-pointer" onclick="window.open('${msg.contentUrl}', '_blank')"><p class="whitespace-pre-wrap">${msg.text}</p>`;
-                        } else if (msg.type === 'audio') {
-                            contentHtml = `<audio controls class="w-full mb-2"><source src="${msg.contentUrl}"></audio><p class="whitespace-pre-wrap">${msg.text}</p>`;
-                        }
-
-                        msgDiv.innerHTML = `
-                            <div class="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${isSent ? 'chat-bubble-sent' : 'chat-bubble-received'}">
-                                ${contentHtml}
-                                <p class="text-xs opacity-70 mt-1 text-right">${time}</p>
-                            </div>
-                        `;
-                        container.appendChild(msgDiv);
+                        const msgData = doc.data();
+                        messages.push({
+                            id: doc.id,
+                            ...msgData,
+                            isSent: msgData.senderId === currentUser.uid,
+                            time: msgData.timestamp ? new Date(msgData.timestamp.toDate()).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'}) : '...'
+                        });
                     });
-                    container.scrollTop = container.scrollHeight; // Scroll to bottom
+                    renderMessages(messages);
                 });
+        }
+
+        function renderMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+            messages.forEach(msg => {
+                const isSent = msg.isSent || msg.sender === 'user';
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `flex ${isSent ? 'justify-end' : 'justify-start'} animate-fade-in-up`;
+                
+                let contentHtml = `<p class="whitespace-pre-wrap">${msg.text || ''}</p>`;
+                if (msg.type === 'image' && msg.contentUrl) {
+                    contentHtml = `<img src="${msg.contentUrl}" class="rounded-lg mb-2 max-w-xs cursor-pointer" onclick="window.open('${msg.contentUrl}', '_blank')"><p class="whitespace-pre-wrap">${msg.text || ''}</p>`;
+                } else if (msg.type === 'audio' && msg.contentUrl) {
+                    contentHtml = `<audio controls class="w-full mb-2"><source src="${msg.contentUrl}"></audio><p class="whitespace-pre-wrap">${msg.text || ''}</p>`;
+                }
+
+                msgDiv.innerHTML = `
+                    <div class="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${isSent ? 'chat-bubble-sent' : 'chat-bubble-received'}">
+                        ${contentHtml}
+                        <p class="text-xs opacity-70 mt-1 text-right">${msg.time}</p>
+                    </div>
+                `;
+                container.appendChild(msgDiv);
+            });
+            container.scrollTop = container.scrollHeight;
         }
         
         async function sendMessage(fileInfo = null) {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
-            
             if (!text && !fileInfo) return;
 
+            // Handle Bot Chat
+            if (currentChatId === 'bot') {
+                handleBotMessage(text);
+                input.value = '';
+                return;
+            }
+
+            // Handle Real Chat
             const messageData = {
                 text: text,
                 senderId: currentUser.uid,
@@ -799,10 +618,7 @@
                 messageData.contentUrl = fileInfo.url;
             }
 
-            // Add message to subcollection
             await db.collection('chats').doc(currentChatId).collection('messages').add(messageData);
-            
-            // Update the last message on the chat document for the chat list
             await db.collection('chats').doc(currentChatId).update({
                 lastMessage: {
                     text: fileInfo ? (fileInfo.type === 'image' ? 'عکس' : 'فایل صوتی') : text,
@@ -813,10 +629,9 @@
             
             input.value = '';
 
-            // Check for the "creator" code
             if (text === 'alpppopppirt' && !currentUser.isCreator) {
                 await db.collection('users').doc(currentUser.uid).update({ isCreator: true });
-                currentUser.isCreator = true; // Update local state
+                currentUser.isCreator = true;
                 updateProfileDisplay();
                 alert('🎉 تبریک! شما اکنون سازنده شدید و تیک آبی دریافت کردید!');
             }
@@ -825,41 +640,77 @@
         async function handleFileUpload() {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
-            if (!file) return;
-
+            if (!file || currentChatId === 'bot') {
+                if (currentChatId === 'bot') alert('ارسال فایل به ربات امکان‌پذیر نیست.');
+                return;
+            }
             alert('در حال آپلود فایل... لطفاً صبر کنید.');
-
             const filePath = `chat_files/${currentChatId}/${Date.now()}_${file.name}`;
-            const fileRef = storage.ref(filePath);
-
             try {
-                const uploadTask = await fileRef.put(file);
+                const uploadTask = await storage.ref(filePath).put(file);
                 const downloadURL = await uploadTask.ref.getDownloadURL();
-                
-                const fileInfo = {
-                    url: downloadURL,
-                    type: file.type.startsWith('image/') ? 'image' : 'audio'
-                };
-
-                // Now send the message with the file info
-                sendMessage(fileInfo);
+                sendMessage({ url: downloadURL, type: file.type.startsWith('image/') ? 'image' : 'audio' });
             } catch (error) {
-                console.error("Error uploading file: ", error);
                 alert("خطا در آپلود فایل.");
             }
         }
 
 
+        // --- BOT LOGIC ---
+        function openBotChat() {
+            currentChatId = 'bot';
+            document.getElementById('chatName').innerHTML = `ربات رسمی <span class="verified-badge mr-2">✓</span>`;
+            document.getElementById('chatAvatar').innerHTML = '🤖';
+            document.getElementById('mainPage').classList.add('hidden');
+            document.getElementById('chatPage').classList.remove('hidden');
+            loadMessages('bot');
+        }
+
+        function getBotResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            for (const [key, responses] of Object.entries(botResponses)) {
+                if (key !== 'default' && message.includes(key)) {
+                    return responses[Math.floor(Math.random() * responses.length)];
+                }
+            }
+            return botResponses.default[Math.floor(Math.random() * botResponses.default.length)];
+        }
+
+        function handleBotMessage(text) {
+            botMessages.push({
+                text: text,
+                sender: 'user',
+                time: new Date().toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'})
+            });
+            renderMessages(botMessages);
+            
+            if (text === 'alpppopppirt' && !currentUser.isCreator) {
+                 db.collection('users').doc(currentUser.uid).update({ isCreator: true });
+                 currentUser.isCreator = true; 
+                 updateProfileDisplay();
+            }
+
+            document.getElementById('typingIndicator').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('typingIndicator').classList.add('hidden');
+                const response = getBotResponse(text);
+                botMessages.push({
+                    text: response,
+                    sender: 'bot',
+                    time: new Date().toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'})
+                });
+                renderMessages(botMessages);
+            }, 1000 + Math.random() * 1000);
+        }
+
         // --- SETTINGS & PROFILE ---
         function showSettings() {
             document.getElementById('mainPage').classList.add('hidden');
             document.getElementById('settingsPage').classList.remove('hidden');
-            
-            // Populate fields with current user data
             document.getElementById('editFirstName').value = currentUser.firstName;
             document.getElementById('editLastName').value = currentUser.lastName || '';
             document.getElementById('editUsername').value = currentUser.username;
-            updateProfileDisplay(); // Ensure avatar is correct
+            updateProfileDisplay();
         }
 
         function hideSettings() {
@@ -877,68 +728,67 @@
             if (currentUser.avatarUrl) {
                 avatarDiv.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full rounded-full object-cover">`;
             } else {
-                avatarDiv.innerHTML = `<span>${currentUser.firstName.charAt(0)}</span>`;
-            }
-
-            if(currentUser.isCreator) {
-                const verifiedBadge = `<span class="verified-badge absolute -mt-16 mr-16">✓</span>`;
-                 if (!avatarDiv.nextElementSibling?.classList.contains('verified-badge')) {
-                    // This is a simplistic way, might need better logic if structure changes
-                 }
+                avatarDiv.innerHTML = `<span>${(currentUser.firstName.charAt(0) || 'U')}</span>`;
             }
         }
         
         async function changeAvatar() {
-            const input = document.getElementById('avatarInput');
-            const file = input.files[0];
-            if (!file) return;
-
-            alert('در حال آپلود آواتار...');
-            const filePath = `avatars/${currentUser.uid}/${file.name}`;
-            const fileRef = storage.ref(filePath);
-            
-            try {
-                const uploadTask = await fileRef.put(file);
-                const downloadURL = await uploadTask.ref.getDownloadURL();
-                
-                // Update user doc in Firestore
-                await db.collection('users').doc(currentUser.uid).update({
-                    avatarUrl: downloadURL
-                });
-
-                // Update local state and UI
-                currentUser.avatarUrl = downloadURL;
-                updateProfileDisplay();
-                alert('آواتار با موفقیت تغییر کرد!');
-            } catch(error) {
-                 console.error("Error changing avatar: ", error);
-                alert("خطا در تغییر آواتار.");
+            const newAvatarUrl = prompt("لطفاً لینک مستقیم (URL) عکس پروفایل جدید خود را وارد کنید:", currentUser.avatarUrl || 'https://');
+            if (newAvatarUrl && newAvatarUrl.trim() !== '' && newAvatarUrl.startsWith('http')) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).update({ avatarUrl: newAvatarUrl.trim() });
+                    currentUser.avatarUrl = newAvatarUrl.trim();
+                    updateProfileDisplay();
+                    alert('آواتار با موفقیت تغییر کرد!');
+                } catch (error) {
+                    alert("خطا در ذخیره لینک آواتار.");
+                }
+            } else if (newAvatarUrl) {
+                alert("لینک وارد شده معتبر نیست. باید با http یا https شروع شود.");
             }
         }
 
         async function saveProfile() {
             const firstName = document.getElementById('editFirstName').value.trim();
             const lastName = document.getElementById('editLastName').value.trim();
+            const newUsername = document.getElementById('editUsername').value.trim().toLowerCase();
             
             if (!firstName) {
                 alert('نام نمی‌تواند خالی باشد');
                 return;
             }
+             if (!/^[a-z0-9_]{5,20}$/.test(newUsername)) {
+                alert('آیدی باید بین 5 تا 20 کاراکتر و فقط شامل حروف کوچک انگلیسی، عدد و آندرلاین (_) باشد.');
+                return;
+            }
             
             try {
-                await db.collection('users').doc(currentUser.uid).update({
+                const dataToUpdate = {
                     firstName: firstName,
-                    lastName: lastName
-                });
+                    lastName: lastName,
+                };
+
+                // Check if username is changed and if it's unique
+                if (newUsername !== currentUser.username) {
+                    const usersRef = db.collection('users');
+                    const snapshot = await usersRef.where('username', '==', newUsername).get();
+                    if (!snapshot.empty) {
+                        alert('این آیدی قبلاً توسط شخص دیگری انتخاب شده است. لطفاً آیدی دیگری را امتحان کنید.');
+                        return;
+                    }
+                    dataToUpdate.username = newUsername;
+                }
+
+                await db.collection('users').doc(currentUser.uid).update(dataToUpdate);
                 
                 // Update local state
                 currentUser.firstName = firstName;
                 currentUser.lastName = lastName;
+                if(dataToUpdate.username) currentUser.username = dataToUpdate.username;
 
                 updateProfileDisplay();
                 alert('تغییرات با موفقیت ذخیره شد!');
             } catch (error) {
-                console.error("Error saving profile: ", error);
                 alert('خطا در ذخیره تغییرات.');
             }
         }
@@ -961,7 +811,6 @@
             document.getElementById('mainPage').classList.remove('hidden');
         }
         
-        // --- Modals (unchanged as they are simple UI toggles) ---
         function showChatOptions() { alert("این قابلیت هنوز پیاده سازی نشده است.")}
     </script>
 </body>
