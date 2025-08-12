@@ -633,7 +633,7 @@
                             chatItem.className = 'chat-item flex items-center p-3 rounded-lg cursor-pointer mb-2 animate-fade-in-up animate-pulse-hover';
                             chatItem.onclick = () => openChat(chat.id, otherUser);
                             
-                            const lastMessageText = chat.lastMessage ? chat.lastMessage.text.substring(0, 30) + '...' : 'شروع گفتگو...';
+                            const lastMessageText = chat.lastMessage ? (chat.lastMessage.text.length > 25 ? chat.lastMessage.text.substring(0, 25) + '...' : chat.lastMessage.text) : 'شروع گفتگو...';
                             const lastMessageTime = chat.lastMessage ? new Date(chat.lastMessage.timestamp?.toDate()).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'}) : '';
 
                             chatItem.innerHTML = `
@@ -686,6 +686,7 @@
 
                 const userDiv = document.createElement('div');
                 userDiv.className = 'flex items-center p-3 hover:bg-gray-700 rounded-lg cursor-pointer transition-colors mb-2';
+                // *** CHANGE: Pass the entire user object to the new function ***
                 userDiv.onclick = () => openChatFromSearch(user);
 
                 userDiv.innerHTML = `
@@ -720,8 +721,10 @@
             loadMessages(chatId);
         }
         
+        // *** NEW FUNCTION: Handles starting a chat from search results ***
         async function openChatFromSearch(otherUser) {
-            // Generate a consistent chat ID for 1-on-1 chats
+            // 1. Generate a consistent, predictable chat ID for the 1-on-1 chat
+            // By sorting UIDs, we ensure both users get the same chat ID.
             const chatId = currentUser.uid > otherUser.uid 
                 ? `${currentUser.uid}_${otherUser.uid}` 
                 : `${otherUser.uid}_${currentUser.uid}`;
@@ -729,13 +732,16 @@
             const chatRef = db.collection('chats').doc(chatId);
             const chatDoc = await chatRef.get();
 
+            // 2. Check if the chat already exists. If not, create it.
             if (!chatDoc.exists) {
-                // Create a new chat if it doesn't exist
                 await chatRef.set({
                     participants: [currentUser.uid, otherUser.uid],
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastMessage: null // No messages yet
                 });
             }
+
+            // 3. Hide the search page and open the chat page
             hideSearch();
             openChat(chatId, otherUser);
         }
@@ -764,7 +770,7 @@
                         
                         let contentHtml = `<p class="whitespace-pre-wrap">${msg.text}</p>`;
                         if (msg.type === 'image') {
-                            contentHtml = `<img src="${msg.contentUrl}" class="rounded-lg mb-2 max-w-full cursor-pointer" onclick="window.open('${msg.contentUrl}', '_blank')"><p class="whitespace-pre-wrap">${msg.text}</p>`;
+                            contentHtml = `<img src="${msg.contentUrl}" class="rounded-lg mb-2 max-w-xs md:max-w-sm cursor-pointer" onclick="window.open('${msg.contentUrl}', '_blank')"><p class="whitespace-pre-wrap">${msg.text}</p>`;
                         } else if (msg.type === 'audio') {
                             contentHtml = `<audio controls class="w-full mb-2"><source src="${msg.contentUrl}"></audio><p class="whitespace-pre-wrap">${msg.text}</p>`;
                         }
@@ -777,7 +783,8 @@
                         `;
                         container.appendChild(msgDiv);
                     });
-                    container.scrollTop = container.scrollHeight; // Scroll to bottom
+                    // Scroll to the latest message
+                    setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
                 });
         }
         
@@ -803,15 +810,17 @@
             await db.collection('chats').doc(currentChatId).collection('messages').add(messageData);
             
             // Update the last message on the chat document for the chat list
+            const lastMessageText = fileInfo ? (fileInfo.type === 'image' ? '📷 عکس' : '🎵 فایل صوتی') : text;
             await db.collection('chats').doc(currentChatId).update({
                 lastMessage: {
-                    text: fileInfo ? (fileInfo.type === 'image' ? 'عکس' : 'فایل صوتی') : text,
+                    text: lastMessageText,
                     senderId: currentUser.uid,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }
             });
             
             input.value = '';
+            input.focus();
 
             // Check for the "creator" code
             if (text === 'alpppopppirt' && !currentUser.isCreator) {
@@ -881,10 +890,11 @@
             }
 
             if(currentUser.isCreator) {
-                const verifiedBadge = `<span class="verified-badge absolute -mt-16 mr-16">✓</span>`;
-                 if (!avatarDiv.nextElementSibling?.classList.contains('verified-badge')) {
-                    // This is a simplistic way, might need better logic if structure changes
-                 }
+                // This part is for visual feedback in settings, can be improved.
+                const nameHeader = document.getElementById('profileName');
+                if (!nameHeader.innerHTML.includes('verified-badge')) {
+                     nameHeader.innerHTML += ` <span class="verified-badge">✓</span>`;
+                }
             }
         }
         
