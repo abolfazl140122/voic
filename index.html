@@ -44,8 +44,16 @@
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
+    <!-- صفحه اولیه لودینگ -->
+    <div id="initialLoading" class="min-h-screen flex items-center justify-center p-4">
+        <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+            <h1 class="text-2xl font-bold text-yellow-400 mb-2">هوشیار</h1>
+            <p class="text-gray-300">در حال بارگذاری...</p>
+        </div>
+    </div>
     <!-- صفحه ثبت نام -->
-    <div id="registerPage" class="min-h-screen flex items-center justify-center p-4">
+    <div id="registerPage" class="hidden min-h-screen flex items-center justify-center p-4">
         <div class="black-card rounded-2xl shadow-2xl p-8 w-full max-w-md slide-in border border-yellow-500">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold text-yellow-400 mb-2">
@@ -491,7 +499,7 @@
     </div>
 
     <!-- صفحه لودینگ -->
-    <div id="loadingPage" class="min-h-screen flex items-center justify-center p-4">
+    <div id="loadingPage" class="hidden min-h-screen flex items-center justify-center p-4">
         <div class="text-center">
             <div class="mb-8 relative">
                 <!-- نور پشت تصویر -->
@@ -568,27 +576,37 @@
 
         // بارگذاری اطلاعات ذخیره شده
         function loadSavedData() {
-            const savedData = localStorage.getItem('hooshyarGame');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                gameState.player.name = data.name || '';
-                gameState.player.cups = data.cups || 0;
-                gameState.currentLevel = data.currentLevel || 1;
-                gameState.player.isDeveloper = data.isDeveloper || false;
-                return true;
+            try {
+                const savedData = localStorage.getItem('hooshyarGame');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    gameState.player.name = data.name || '';
+                    gameState.player.cups = data.cups || 0;
+                    gameState.currentLevel = data.currentLevel || 1;
+                    gameState.player.isDeveloper = data.isDeveloper || false;
+                    return true;
+                }
+            } catch (error) {
+                console.log('خطا در بارگذاری اطلاعات:', error);
+                // پاک کردن اطلاعات خراب
+                localStorage.removeItem('hooshyarGame');
             }
             return false;
         }
 
         // ذخیره اطلاعات
         function saveData() {
-            const dataToSave = {
-                name: gameState.player.name,
-                cups: gameState.player.cups,
-                currentLevel: gameState.currentLevel,
-                isDeveloper: gameState.player.isDeveloper
-            };
-            localStorage.setItem('hooshyarGame', JSON.stringify(dataToSave));
+            try {
+                const dataToSave = {
+                    name: gameState.player.name,
+                    cups: gameState.player.cups,
+                    currentLevel: gameState.currentLevel,
+                    isDeveloper: gameState.player.isDeveloper
+                };
+                localStorage.setItem('hooshyarGame', JSON.stringify(dataToSave));
+            } catch (error) {
+                console.log('خطا در ذخیره اطلاعات:', error);
+            }
         }
 
         // نمایش پنل کد هدیه
@@ -660,9 +678,58 @@
         }
 
         // شروع برنامه
-        window.onload = function() {
-            // نمایش صفحه لودینگ ابتدا
+        document.addEventListener('DOMContentLoaded', function() {
+            // نمایش صفحه لودینگ
             showPage('loadingPage');
+            
+            // شبیه‌سازی لودینگ
+            const loadingTexts = [
+                'در حال بارگذاری منابع...',
+                'بررسی اتصال اینترنت...',
+                'آماده‌سازی بازی...',
+                'بارگذاری سوالات...',
+                'تنظیم رابط کاربری...',
+                'تقریباً آماده است...',
+                'آماده!'
+            ];
+            
+            let currentTextIndex = 0;
+            const loadingTextElement = document.getElementById('loadingText');
+            
+            const textInterval = setInterval(() => {
+                if (currentTextIndex < loadingTexts.length - 1) {
+                    currentTextIndex++;
+                    if (loadingTextElement) {
+                        loadingTextElement.textContent = loadingTexts[currentTextIndex];
+                    }
+                }
+            }, 1000);
+            
+            // بررسی اتصال اینترنت در لودینگ
+            setTimeout(() => {
+                if (!navigator.onLine) {
+                    clearInterval(textInterval);
+                    document.getElementById('loadingInternetError').classList.remove('hidden');
+                    return;
+                }
+                
+                // پایان لودینگ
+                clearInterval(textInterval);
+                
+                // بررسی اطلاعات ذخیره شده
+                if (loadSavedData()) {
+                    // اگر اطلاعات وجود دارد، مستقیم به منو برو
+                    updatePlayerNameDisplay();
+                    const cupsElement = document.getElementById('playerCups');
+                    if (cupsElement) {
+                        cupsElement.textContent = gameState.player.cups;
+                    }
+                    showPage('mainMenu');
+                } else {
+                    // اگر اطلاعات وجود ندارد، صفحه ثبت نام نمایش بده
+                    showPage('registerPage');
+                }
+            }, 7000); // 7 ثانیه لودینگ
             
             // نظارت بر وضعیت اینترنت
             window.addEventListener('online', () => {
@@ -673,74 +740,27 @@
             window.addEventListener('offline', () => {
                 showInternetError();
             });
-            
-            // بررسی اتصال اینترنت در لودینگ
-            setTimeout(() => {
-                if (!checkInternetConnection()) {
-                    showLoadingInternetError();
-                } else {
-                    proceedWithLoading();
-                }
-            }, 3000);
-        };
-
-        // ادامه لودینگ
-        function proceedWithLoading() {
-            setTimeout(() => {
-                if (loadSavedData()) {
-                    updatePlayerNameDisplay();
-                    document.getElementById('playerCups').textContent = gameState.player.cups;
-                    showPage('mainMenu');
-                } else {
-                    showPage('registerPage');
-                }
-            }, 4000);
-        }
-
-        // نمایش خطای اینترنت در لودینگ
-        function showLoadingInternetError() {
-            document.getElementById('loadingProgress').classList.add('hidden');
-            document.getElementById('loadingDots').classList.add('hidden');
-            document.getElementById('loadingText').classList.add('hidden');
-            document.getElementById('loadingInternetError').classList.remove('hidden');
-        }
+        });
 
         // پنهان کردن خطای اینترنت در لودینگ
         function hideLoadingInternetError() {
-            document.getElementById('loadingProgress').classList.remove('hidden');
-            document.getElementById('loadingDots').classList.remove('hidden');
-            document.getElementById('loadingText').classList.remove('hidden');
             document.getElementById('loadingInternetError').classList.add('hidden');
         }
 
         // تلاش مجدد اتصال
         function retryConnection() {
-            hideLoadingInternetError();
-            document.getElementById('loadingText').textContent = 'در حال بررسی اتصال...';
-            
-            setTimeout(() => {
-                if (checkInternetConnection()) {
-                    document.getElementById('loadingText').textContent = 'در حال بارگذاری منابع...';
-                    proceedWithLoading();
-                } else {
-                    showLoadingInternetError();
-                }
-            }, 2000);
+            if (navigator.onLine) {
+                hideLoadingInternetError();
+                location.reload();
+            } else {
+                alert('هنوز اتصال اینترنت برقرار نیست. لطفاً اتصال خود را بررسی کنید.');
+            }
         }
 
         // خروج از برنامه
         function exitApp() {
-            if (confirm('آیا مطمئن هستید که می‌خواهید از برنامه خارج شوید؟')) {
+            if (confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
                 window.close();
-                // اگر window.close کار نکرد، صفحه خالی نمایش دهید
-                document.body.innerHTML = `
-                    <div class="min-h-screen flex items-center justify-center bg-black">
-                        <div class="text-center text-white">
-                            <h1 class="text-2xl mb-4">برنامه بسته شد</h1>
-                            <p class="text-gray-400">می‌توانید این تب را ببندید</p>
-                        </div>
-                    </div>
-                `;
             }
         }
 
@@ -865,34 +885,55 @@
 
         // ثبت نام
         function register() {
-            const username = document.getElementById('username').value;
-            const age = document.getElementById('age').value;
+            const username = document.getElementById('username').value.trim();
+            const age = document.getElementById('age').value.trim();
             const terms = document.getElementById('terms').checked;
 
-            if (!username || !age || !terms) {
-                alert('لطفاً تمام فیلدها را پر کنید و قوانین را بپذیرید');
+            if (!username) {
+                alert('لطفاً نام کاربری خود را وارد کنید');
                 return;
             }
 
+            if (!age || isNaN(age) || age < 1 || age > 120) {
+                alert('لطفاً سن معتبری وارد کنید (1-120)');
+                return;
+            }
+
+            if (!terms) {
+                alert('لطفاً قوانین را بپذیرید');
+                return;
+            }
+
+            // ذخیره اطلاعات
             gameState.player.name = username;
             gameState.player.cups = 0;
             gameState.currentLevel = 1;
             gameState.player.isDeveloper = false;
             
+            // به‌روزرسانی نمایش
             updatePlayerNameDisplay();
             document.getElementById('playerCups').textContent = '0';
             
+            // ذخیره در localStorage
             saveData();
+            
+            // رفتن به منوی اصلی
             showPage('mainMenu');
         }
 
         // نمایش صفحه
         function showPage(pageId) {
-            const pages = ['loadingPage', 'registerPage', 'mainMenu', 'settingsPage', 'developersPage', 'levelsPage', 'searchingPage', 'opponentPage', 'roundTopicPage', 'gamePage', 'gameEndPage'];
+            const pages = ['initialLoading', 'loadingPage', 'registerPage', 'mainMenu', 'settingsPage', 'developersPage', 'levelsPage', 'searchingPage', 'opponentPage', 'roundTopicPage', 'gamePage', 'gameEndPage'];
             pages.forEach(page => {
-                document.getElementById(page).classList.add('hidden');
+                const element = document.getElementById(page);
+                if (element) {
+                    element.classList.add('hidden');
+                }
             });
-            document.getElementById(pageId).classList.remove('hidden');
+            const targetElement = document.getElementById(pageId);
+            if (targetElement) {
+                targetElement.classList.remove('hidden');
+            }
         }
 
         // ویرایش نام
@@ -1468,5 +1509,5 @@
             showPage('mainMenu');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f7f519e3c782d7',t:'MTc1NTI1MzIwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fa000203cac936',t:'MTc1NTI3NDYyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
