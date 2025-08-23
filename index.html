@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بازی تستی با Appwrite</title>
+    <title>بازی تستی با Nhost</title>
     <style>
-        /* CSS یکپارچه */
+        /* CSS یکپارچه (بدون تغییر نسبت به نسخه قبل) */
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
 
         body {
@@ -52,7 +52,7 @@
             cursor: pointer;
             margin: 0 auto;
             transition: transform 0.1s ease, background-color 0.2s;
-            user-select: none; /* جلوگیری از انتخاب متن داخل جعبه */
+            user-select: none;
         }
 
         #click-box:active {
@@ -104,7 +104,7 @@
 <body>
 
     <div class="container">
-        <h1>بازی کلیکر Appwrite</h1>
+        <h1>بازی کلیکر Nhost</h1>
         <p>روی جعبه آبی کلیک کن تا امتیاز بگیری!</p>
 
         <div id="game-area">
@@ -121,22 +121,19 @@
         </div>
 
         <button id="save-score-btn" disabled>ذخیره امتیاز در سرور</button>
-        <p id="status-message">در حال اتصال به سرور Appwrite...</p>
+        <p id="status-message">در حال اتصال به سرور Nhost...</p>
     </div>
 
-    <!-- ایمپورت کردن کتابخانه Appwrite -->
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
+    <!-- ایمپورت کردن کتابخانه Nhost -->
+    <script src="https://cdn.jsdelivr.net/npm/@nhost/nhost-js@latest/dist/nhost.min.js"></script>
 
     <script>
         // JavaScript یکپارچه
         
-        // --- تنظیمات پروژه شما ---
-        const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-        const APPWRITE_PROJECT_ID = '68a9d52a0032bcdea75c'; // این Project ID شماست که دادید
-        
-        // این شناسه‌ها را بعد از ساخت دیتابیس و کالکشن در پنل Appwrite وارد کنید
-        const DATABASE_ID = 'game-db'; // شناسه‌ای که برای دیتابیس خود انتخاب می‌کنید
-        const COLLECTION_ID = 'highscores'; // شناسه‌ای که برای کالکشن خود انتخاب می‌کنید
+        // --- تنظیمات پروژه Nhost شما ---
+        // این مقادیر را از پنل Nhost خود بردارید
+        const NHOST_SUBDOMAIN = 'dlmibstjpdpdcfcigfpk'; // این همان مقداری است که دادید
+        const NHOST_REGION = 'eu-central-1'; // این مقدار را از پنل Nhost خود چک کنید!
 
         // --- گرفتن عناصر DOM ---
         const clickBox = document.getElementById('click-box');
@@ -149,17 +146,13 @@
         let currentScore = 0;
         let savedHighScore = 0;
         let userId = null;
-        let documentId = null; // برای ذخیره شناسه رکورد کاربر در دیتابیس
+        let scoreRecordId = null; // برای ذخیره شناسه رکورد کاربر در دیتابیس
 
-        // --- مقداردهی اولیه Appwrite SDK ---
-        const { Client, Account, Databases, ID, Query } = Appwrite;
-        const client = new Client();
-        client
-            .setEndpoint(APPWRITE_ENDPOINT)
-            .setProject(APPWRITE_PROJECT_ID);
-
-        const account = new Account(client);
-        const databases = new Databases(client);
+        // --- مقداردهی اولیه Nhost SDK ---
+        const nhost = new nhost.NhostClient({
+            subdomain: NHOST_SUBDOMAIN,
+            region: NHOST_REGION
+        });
 
         // --- توابع اصلی برنامه ---
 
@@ -167,10 +160,12 @@
         async function init() {
             try {
                 // تلاش برای ورود به صورت ناشناس
-                // اگر کاربر قبلا وارد شده باشد، همان جلسه را برمی‌گرداند
-                await account.createAnonymousSession();
-                const user = await account.get();
-                userId = user.$id;
+                await nhost.auth.signInAnonymously();
+                const user = nhost.auth.getUser();
+                if (!user) {
+                    throw new Error("ورود ناشناس با شکست مواجه شد.");
+                }
+                userId = user.id;
                 statusMessage.textContent = 'با موفقیت به عنوان کاربر ناشناس وارد شدید.';
                 
                 // بعد از ورود موفق، بالاترین امتیاز کاربر را بارگذاری کن
@@ -178,43 +173,46 @@
                 
             } catch (error) {
                 console.error("خطا در ورود ناشناس:", error);
-                statusMessage.textContent = 'خطا در اتصال به سرور. کنسول را چک کنید.';
+                statusMessage.textContent = 'خطا در اتصال به Nhost. مطمئن شوید ورود ناشناس فعال است.';
                 highScoreEl.textContent = 'خطا';
             }
         }
 
-        // 2. تابع بارگذاری بالاترین امتیاز از Appwrite
+        // 2. تابع بارگذاری بالاترین امتیاز از Nhost با GraphQL
         async function loadHighScore() {
-            try {
-                const response = await databases.listDocuments(
-                    DATABASE_ID,
-                    COLLECTION_ID,
-                    [
-                        Query.equal('userId', [userId]) // فقط رکوردی را پیدا کن که userId آن با کاربر فعلی یکی باشد
-                    ]
-                );
+            const GET_SCORE_QUERY = `
+                query GetHighScore($userId: uuid!) {
+                  highscores(where: {user_id: {_eq: $userId}}) {
+                    id
+                    score
+                  }
+                }
+            `;
 
-                if (response.documents.length > 0) {
+            try {
+                const response = await nhost.graphql.request(GET_SCORE_QUERY, { userId: userId });
+
+                if (response.data && response.data.highscores.length > 0) {
                     // اگر رکوردی برای این کاربر وجود داشت
-                    const userRecord = response.documents[0];
+                    const userRecord = response.data.highscores[0];
                     savedHighScore = userRecord.score;
-                    documentId = userRecord.$id; // شناسه رکورد را ذخیره می‌کنیم تا بعدا بتوانیم آن را آپدیت کنیم
+                    scoreRecordId = userRecord.id; // شناسه رکورد را ذخیره می‌کنیم تا بعدا آن را آپدیت کنیم
                     highScoreEl.textContent = savedHighScore;
                 } else {
-                    // اگر رکوردی وجود نداشت، یعنی کاربر بار اول است که بازی می‌کند
+                    // اگر رکوردی وجود نداشت
                     savedHighScore = 0;
                     highScoreEl.textContent = '0';
                     statusMessage.textContent = 'خوش آمدید! اولین امتیاز خود را ثبت کنید.';
                 }
             } catch (error) {
                 console.error("خطا در بارگذاری امتیاز:", error);
-                statusMessage.textContent = 'خطا در خواندن اطلاعات از دیتابیس. تنظیمات کالکشن را چک کنید.';
+                statusMessage.textContent = 'خطا در خواندن اطلاعات. دسترسی‌های جدول را چک کنید.';
                 highScoreEl.textContent = 'خطا';
             }
         }
 
-        // 3. تابع ذخیره یا به‌روزرسانی امتیاز در Appwrite
-        async function saveScoreToAppwrite() {
+        // 3. تابع ذخیره یا به‌روزرسانی امتیاز در Nhost
+        async function saveScoreToNhost() {
             if (currentScore <= savedHighScore) {
                 statusMessage.textContent = 'امتیاز جدید باید از بالاترین امتیاز بیشتر باشد.';
                 return;
@@ -223,19 +221,28 @@
             saveScoreBtn.disabled = true;
             statusMessage.textContent = 'در حال ذخیره امتیاز...';
 
-            const data = {
-                userId: userId,
-                score: currentScore
-            };
-
             try {
-                if (documentId) {
-                    // اگر documentId وجود دارد، یعنی رکورد از قبل بوده و باید آپدیت شود
-                    await databases.updateDocument(DATABASE_ID, COLLECTION_ID, documentId, data);
+                if (scoreRecordId) {
+                    // اگر scoreRecordId وجود دارد، رکورد را آپدیت کن
+                    const UPDATE_SCORE_MUTATION = `
+                        mutation UpdateScore($id: Int!, $score: Int!) {
+                          update_highscores_by_pk(pk_columns: {id: $id}, _set: {score: $score}) {
+                            id
+                          }
+                        }
+                    `;
+                    await nhost.graphql.request(UPDATE_SCORE_MUTATION, { id: scoreRecordId, score: currentScore });
                 } else {
-                    // اگر documentId وجود ندارد، یعنی رکورد جدید است و باید ساخته شود
-                    const response = await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), data);
-                    documentId = response.$id; // شناسه رکورد جدید را ذخیره می‌کنیم
+                    // اگر scoreRecordId وجود ندارد، رکورد جدید بساز
+                    const INSERT_SCORE_MUTATION = `
+                        mutation InsertScore($userId: uuid!, $score: Int!) {
+                          insert_highscores_one(object: {user_id: $userId, score: $score}) {
+                            id
+                          }
+                        }
+                    `;
+                    const response = await nhost.graphql.request(INSERT_SCORE_MUTATION, { userId: userId, score: currentScore });
+                    scoreRecordId = response.data.insert_highscores_one.id;
                 }
 
                 savedHighScore = currentScore;
@@ -243,7 +250,7 @@
                 statusMessage.textContent = 'امتیاز با موفقیت ذخیره شد!';
             } catch (error) {
                 console.error("خطا در ذخیره امتیاز:", error);
-                statusMessage.textContent = 'خطا در ذخیره اطلاعات. سطح دسترسی‌ها (Permissions) را چک کنید.';
+                statusMessage.textContent = 'خطا در ذخیره اطلاعات. دسترسی‌های جدول را چک کنید.';
             } finally {
                 saveScoreBtn.disabled = false;
             }
@@ -254,17 +261,15 @@
         clickBox.addEventListener('click', () => {
             currentScore++;
             currentScoreEl.textContent = currentScore;
-            // اگر امتیاز جدید از رکورد قبلی بیشتر شد، دکمه ذخیره را فعال کن
             if (currentScore > savedHighScore) {
                 saveScoreBtn.disabled = false;
             }
         });
 
-        saveScoreBtn.addEventListener('click', saveScoreToAppwrite);
+        saveScoreBtn.addEventListener('click', saveScoreToNhost);
 
         // --- شروع برنامه ---
         document.addEventListener('DOMContentLoaded', init);
-
     </script>
 </body>
 </html>
