@@ -3,1511 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هوشیار</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>بازی تستی با Appwrite</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-        * {
+        /* CSS یکپارچه */
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+
+        body {
             font-family: 'Vazirmatn', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
         }
-        .gradient-bg {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
         }
-        .profile-circle {
-            background: linear-gradient(90deg, #000 50%, #ffd700 50%);
+
+        h1 {
+            color: #1a237e;
+            margin-bottom: 20px;
         }
-        .gold-accent {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+
+        #game-area {
+            margin: 30px 0;
         }
-        .black-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+
+        #click-box {
+            width: 150px;
+            height: 150px;
+            background-color: #3f51b5;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 0 auto;
+            transition: transform 0.1s ease, background-color 0.2s;
+            user-select: none; /* جلوگیری از انتخاب متن داخل جعبه */
         }
-        .pulse-animation {
-            animation: pulse 2s infinite;
+
+        #click-box:active {
+            transform: scale(0.95);
+            background-color: #303f9f;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+        .scores {
+            font-size: 20px;
+            margin: 20px 0;
         }
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
+
+        .scores span {
+            font-weight: bold;
+            color: #d81b60;
+            margin: 0 5px;
+            min-width: 40px;
+            display: inline-block;
         }
-        @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+
+        #save-score-btn {
+            background-color: #43a047;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
-        @keyframes loadingBar {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
+
+        #save-score-btn:hover {
+            background-color: #388e3c;
+        }
+        
+        #save-score-btn:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        #status-message {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+            min-height: 20px;
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
-    <!-- صفحه اولیه لودینگ -->
-    <div id="initialLoading" class="min-h-screen flex items-center justify-center p-4">
-        <div class="text-center">
-            <div class="w-16 h-16 mx-auto mb-4 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-            <h1 class="text-2xl font-bold text-yellow-400 mb-2">هوشیار</h1>
-            <p class="text-gray-300">در حال بارگذاری...</p>
+<body>
+
+    <div class="container">
+        <h1>بازی کلیکر Appwrite</h1>
+        <p>روی جعبه آبی کلیک کن تا امتیاز بگیری!</p>
+
+        <div id="game-area">
+            <div id="click-box">کلیک کن!</div>
         </div>
-    </div>
-    <!-- صفحه ثبت نام -->
-    <div id="registerPage" class="hidden min-h-screen flex items-center justify-center p-4">
-        <div class="black-card rounded-2xl shadow-2xl p-8 w-full max-w-md slide-in border border-yellow-500">
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-yellow-400 mb-2">
-                    <svg class="w-10 h-10 inline-block mr-2" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20,5H4C2.89,5 2,5.89 2,7V17C2,18.11 2.89,19 4,19H20C21.11,19 22,18.11 22,17V7C22,5.89 21.11,5 20,5M20,17H4V7H20V17M9.5,8A1.5,1.5 0 0,0 8,9.5A1.5,1.5 0 0,0 9.5,11A1.5,1.5 0 0,0 11,9.5A1.5,1.5 0 0,0 9.5,8M14.5,13A1.5,1.5 0 0,0 13,14.5A1.5,1.5 0 0,0 14.5,16A1.5,1.5 0 0,0 16,14.5A1.5,1.5 0 0,0 14.5,13Z"/>
-                    </svg>
-                    هوشیار
-                </h1>
-                <p class="text-gray-300">به بازی هوشیار خوش آمدید</p>
-            </div>
-            
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-yellow-400 mb-2">نام کاربری</label>
-                    <input type="text" id="username" class="w-full px-4 py-3 bg-gray-800 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-white" placeholder="نام کاربری خود را وارد کنید">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-yellow-400 mb-2">سن</label>
-                    <input type="number" id="age" class="w-full px-4 py-3 bg-gray-800 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-white" placeholder="سن خود را وارد کنید">
-                </div>
-                
-                <div class="flex items-center">
-                    <input type="checkbox" id="terms" class="h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-yellow-500 rounded bg-gray-800">
-                    <label for="terms" class="mr-2 block text-sm text-gray-300">
-                        تمامی قوانین را می‌پذیرم
-                    </label>
-                </div>
-                
-                <button onclick="register()" class="w-full gold-accent hover:bg-yellow-600 text-black font-bold py-3 px-4 rounded-lg transition duration-200">
-                    ثبت نام
-                </button>
-            </div>
+
+        <div class="scores">
+            <span>امتیاز فعلی:</span>
+            <span id="current-score">0</span>
         </div>
+        <div class="scores">
+            <span>بالاترین امتیاز شما:</span>
+            <span id="high-score">...</span>
+        </div>
+
+        <button id="save-score-btn" disabled>ذخیره امتیاز در سرور</button>
+        <p id="status-message">در حال اتصال به سرور Appwrite...</p>
     </div>
 
-    <!-- منوی اصلی -->
-    <div id="mainMenu" class="hidden min-h-screen p-4">
-        <!-- هدر -->
-        <div class="flex justify-between items-center mb-8">
-            <!-- پروفایل -->
-            <div class="black-card rounded-xl p-4 shadow-lg flex items-center space-x-4 space-x-reverse border border-yellow-500">
-                <div class="profile-circle w-12 h-12 rounded-full"></div>
-                <div class="flex-1">
-                    <div class="flex items-center space-x-2 space-x-reverse">
-                        <div class="font-bold text-yellow-400" id="playerName">کاربر</div>
-                        <button onclick="editName()" class="text-gray-400 hover:text-yellow-400 transition duration-200">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="text-sm text-gray-300">
-                        <svg class="w-4 h-4 inline-block ml-1" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M5,16L3,5H1V3H4L6,14H18.5L20.5,7H8V5H22L19.5,16H5Z"/>
-                        </svg>
-                        <span id="playerCups">0</span> کاپ
-                    </div>
-                </div>
-            </div>
-            
-            <!-- تنظیمات -->
-            <button onclick="showSettings()" class="black-card p-3 rounded-xl shadow-lg hover:shadow-xl transition duration-200 border border-yellow-500">
-                <svg class="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
-                </svg>
-            </button>
-        </div>
-
-        <!-- دکمه‌های اصلی -->
-        <div class="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
-            <button onclick="startOnlineGame()" class="gold-accent hover:bg-yellow-600 text-black font-medium py-3 px-6 rounded-lg text-base shadow-lg hover:shadow-xl transition duration-300 w-48">
-                <svg class="w-5 h-5 inline-block ml-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17,3A2,2 0 0,1 19,5V15A2,2 0 0,1 17,17H13V19H14A1,1 0 0,1 15,20H22V22H15A1,1 0 0,1 14,23H10A1,1 0 0,1 9,22H2V20H9A1,1 0 0,1 10,19H11V17H7C5.89,17 5,16.1 5,15V5A2,2 0 0,1 7,3H17M17,5H7V15H17V5Z"/>
-                </svg>
-                بازی آنلاین
-            </button>
-            <button onclick="showLevels()" class="black-card hover:bg-gray-700 text-yellow-400 font-medium py-3 px-6 rounded-lg text-base shadow-lg hover:shadow-xl transition duration-300 w-48 border border-yellow-500">
-                <svg class="w-5 h-5 inline-block ml-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7.5,4A5.5,5.5 0 0,0 2,9.5C2,10 2.09,10.5 2.22,11H6.3L7.57,7.63C7.87,6.83 9.05,6.75 9.43,7.63L11.5,13L12.09,11.58C12.22,11.25 12.57,11 13,11H21.78C21.91,10.5 22,10 22,9.5A5.5,5.5 0 0,0 16.5,4C14.64,4 13.04,4.92 12,6.34C10.96,4.92 9.36,4 7.5,4M3,12.5A1,1 0 0,0 2,13.5A1,1 0 0,0 3,14.5H5.44L11,20C12,20.9 12,20.9 13,20L18.56,14.5H21A1,1 0 0,0 22,13.5A1,1 0 0,0 21,12.5H13.4L12.47,14.8C12.07,15.81 10.92,15.67 10.55,14.83L8.5,9.5L7.54,11.83C7.39,12.21 7.05,12.5 6.6,12.5H3Z"/>
-                </svg>
-                شروع بازی
-            </button>
-        </div>
-
-        <!-- پیام خطای اینترنت -->
-        <div id="internetError" class="hidden fixed top-4 left-4 right-4 z-50">
-            <div class="black-card rounded-xl p-4 mx-auto max-w-md border border-red-500 bg-red-900 bg-opacity-20">
-                <div class="flex items-center space-x-3 space-x-reverse">
-                    <svg class="w-6 h-6 text-red-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,17A1.5,1.5 0 0,1 10.5,15.5A1.5,1.5 0 0,1 12,14A1.5,1.5 0 0,1 13.5,15.5A1.5,1.5 0 0,1 12,17M12,10A1,1 0 0,1 13,11V14A1,1 0 0,1 11,14V11A1,1 0 0,1 12,10Z"/>
-                    </svg>
-                    <div class="flex-1">
-                        <div class="font-bold text-red-400 text-sm">خطای اتصال اینترنت</div>
-                        <div class="text-red-300 text-xs">برای ورود به بازی حتماً اینترنت خود را روشن کنید</div>
-                    </div>
-                    <button onclick="hideInternetError()" class="text-red-400 hover:text-red-300">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- دکمه‌های پایین -->
-        <div class="fixed bottom-4 left-4 right-4 flex justify-center space-x-4 space-x-reverse">
-            <button class="black-card p-3 rounded-xl shadow-lg hover:shadow-xl transition duration-200 flex-1 max-w-24 border border-yellow-500 text-yellow-400">
-                <svg class="w-6 h-6 mx-auto mb-1" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19,7H18V6A2,2 0 0,0 16,4H8A2,2 0 0,0 6,6V7H5A1,1 0 0,0 4,8V19A3,3 0 0,0 7,22H17A3,3 0 0,0 20,19V8A1,1 0 0,0 19,7M8,6H16V7H8V6M18,19A1,1 0 0,1 17,20H7A1,1 0 0,1 6,19V9H18V19Z"/>
-                </svg>
-                <span class="text-xs">فروشگاه</span>
-            </button>
-            <button class="black-card p-3 rounded-xl shadow-lg hover:shadow-xl transition duration-200 flex-1 max-w-24 border border-yellow-500 text-yellow-400">
-                <svg class="w-6 h-6 mx-auto mb-1" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z"/>
-                </svg>
-                <span class="text-xs">چالش‌ها</span>
-            </button>
-            <button class="black-card p-3 rounded-xl shadow-lg hover:shadow-xl transition duration-200 flex-1 max-w-24 border border-yellow-500 text-yellow-400">
-                <svg class="w-6 h-6 mx-auto mb-1" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z"/>
-                </svg>
-                <span class="text-xs">تاریخچه</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- صفحه تنظیمات -->
-    <div id="settingsPage" class="hidden min-h-screen p-4">
-        <div class="black-card rounded-2xl shadow-2xl p-6 max-w-md mx-auto border border-yellow-500">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-yellow-400">تنظیمات</h2>
-                <button onclick="hideSettings()" class="text-gray-400 hover:text-yellow-400">✕</button>
-            </div>
-            
-            <div class="space-y-4">
-                <button onclick="showGiftCodePanel()" class="w-full text-right p-4 hover:bg-gray-700 rounded-lg transition duration-200 text-gray-300 hover:text-yellow-400">
-                    <svg class="w-5 h-5 inline-block ml-2" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
-                    </svg>
-                    کد هدیه
-                </button>
-                <button onclick="showDevelopers()" class="w-full text-right p-4 hover:bg-gray-700 rounded-lg transition duration-200 text-gray-300 hover:text-yellow-400">
-                    <svg class="w-5 h-5 inline-block ml-2" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M16,4C16.88,4 17.67,4.5 18,5.26L19,7H20A2,2 0 0,1 22,9V20A2,2 0 0,1 20,22H4A2,2 0 0,1 2,20V9C2,7.89 2.9,7 4,7H5L6,5.26C6.33,4.5 7.12,4 8,4H16M16.5,9A1.5,1.5 0 0,0 15,10.5V11.5A1.5,1.5 0 0,0 16.5,13A1.5,1.5 0 0,0 18,11.5V10.5A1.5,1.5 0 0,0 16.5,9M12,9A4,4 0 0,0 8,13A4,4 0 0,0 12,17A4,4 0 0,0 16,13A4,4 0 0,0 12,9Z"/>
-                    </svg>
-                    سازندگان
-                </button>
-                <button class="w-full text-right p-4 hover:bg-gray-700 rounded-lg transition duration-200 text-gray-300 hover:text-yellow-400">
-                    <svg class="w-5 h-5 inline-block ml-2" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12,3C16.97,3 21,7.03 21,12C21,16.97 16.97,21 12,21A9,9 0 0,1 3,12A9,9 0 0,1 12,3M12,8.5A3.5,3.5 0 0,0 8.5,12A3.5,3.5 0 0,0 12,15.5A3.5,3.5 0 0,0 15.5,12A3.5,3.5 0 0,0 12,8.5M12,13.5A1.5,1.5 0 0,1 10.5,12A1.5,1.5 0 0,1 12,10.5A1.5,1.5 0 0,1 13.5,12A1.5,1.5 0 0,1 12,13.5Z"/>
-                    </svg>
-                    پشتیبانی
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- صفحه انتخاب مرحله -->
-    <div id="levelsPage" class="hidden min-h-screen p-4">
-        <div class="black-card rounded-2xl shadow-2xl p-6 max-w-2xl mx-auto border border-yellow-500">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-yellow-400">انتخاب مرحله</h2>
-                <button onclick="backToMenu()" class="text-gray-400 hover:text-yellow-400">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-5 gap-3" id="levelsGrid">
-                <!-- مراحل اینجا تولید می‌شوند -->
-            </div>
-        </div>
-    </div>
-
-    <!-- صفحه جستجوی بازیکن -->
-    <div id="searchingPage" class="hidden min-h-screen p-4">
-        <div class="max-w-lg mx-auto">
-            <!-- هدر -->
-            <div class="black-card rounded-xl p-4 mb-6 text-center border border-yellow-500">
-                <h2 class="text-2xl font-bold text-yellow-400 mb-2">جستجوی حریف</h2>
-                <p class="text-gray-300 text-sm">در حال یافتن بازیکن مناسب برای شما...</p>
-            </div>
-
-            <!-- انیمیشن جستجو -->
-            <div class="black-card rounded-xl p-8 mb-6 text-center border border-yellow-500">
-                <div class="relative mb-6">
-                    <div class="w-24 h-24 mx-auto relative">
-                        <!-- دایره‌های متحرک -->
-                        <div class="absolute inset-0 border-4 border-yellow-400 rounded-full animate-spin border-t-transparent"></div>
-                        <div class="absolute inset-2 border-4 border-yellow-600 rounded-full animate-spin border-b-transparent" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
-                        <div class="absolute inset-4 border-4 border-yellow-300 rounded-full animate-spin border-l-transparent" style="animation-duration: 2s;"></div>
-                        
-                        <!-- آیکون وسط -->
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <svg class="w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M15.5,12C18,12 20,14 20,16.5C20,17.38 19.75,18.21 19.31,18.9L22.39,22L21,23.39L17.88,20.32C17.19,20.75 16.37,21 15.5,21C13,21 11,19 11,16.5C11,14 13,12 15.5,12M15.5,14A2.5,2.5 0 0,0 13,16.5A2.5,2.5 0 0,0 15.5,19A2.5,2.5 0 0,0 18,16.5A2.5,2.5 0 0,0 15.5,14M10,4A4,4 0 0,1 14,8C14,8.91 13.69,9.75 13.18,10.43C12.32,10.75 11.55,11.26 10.91,11.9L10,12A4,4 0 0,1 6,8A4,4 0 0,1 10,4M2,20V18C2,15.88 5.31,14.14 9.5,14C9.18,14.78 9,15.62 9,16.5C9,17.79 9.38,19 10,20H2Z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-3">
-                    <div class="flex items-center justify-center space-x-2 space-x-reverse">
-                        <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
-                        <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                        <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                        <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
-                        <div class="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-                    </div>
-                    <p class="text-yellow-400 font-medium" id="searchStatus">جستجوی بازیکنان آنلاین...</p>
-                </div>
-            </div>
-
-            <!-- آمار جستجو -->
-            <div class="black-card rounded-xl p-4 mb-6 border border-yellow-500">
-                <div class="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                        <div class="text-2xl font-bold text-green-400" id="searchTime">12</div>
-                        <div class="text-xs text-gray-400">ثانیه</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-blue-400" id="foundCount">3</div>
-                        <div class="text-xs text-gray-400">یافت شده</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- دکمه لغو -->
-            <button onclick="backToMenu()" class="w-full black-card hover:bg-gray-700 text-yellow-400 font-medium py-3 px-4 rounded-xl transition duration-200 border border-yellow-500">
-                <svg class="w-5 h-5 inline-block ml-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
-                </svg>
-                لغو جستجو
-            </button>
-        </div>
-    </div>
-
-    <!-- صفحه نمایش حریف -->
-    <div id="opponentPage" class="hidden min-h-screen flex items-center justify-center p-4">
-        <div class="black-card rounded-2xl shadow-2xl p-8 text-center max-w-md w-full slide-in border border-yellow-500">
-            <h2 class="text-2xl font-bold text-yellow-400 mb-6">حریف پیدا شد!</h2>
-            
-            <div class="bg-gray-800 rounded-xl p-6 mb-6 border border-gray-600">
-                <div class="profile-circle w-16 h-16 rounded-full mx-auto mb-4"></div>
-                <div class="font-bold text-lg text-white" id="opponentName">فاطمه</div>
-                <div class="text-gray-300">
-                    <svg class="w-4 h-4 inline-block ml-1" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M5,16L3,5H1V3H4L6,14H18.5L20.5,7H8V5H22L19.5,16H5Z"/>
-                    </svg>
-                    <span id="opponentCups">1180</span> کاپ
-                </div>
-            </div>
-            
-            <button onclick="startBattle()" class="w-full gold-accent hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-xl transition duration-200">
-                <svg class="w-6 h-6 inline-block ml-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6.92,5H5L6.5,6.5C5.88,7.24 5.24,8.56 5.24,9.5C5.24,11.69 7.05,13.5 9.24,13.5C11.43,13.5 13.24,11.69 13.24,9.5C13.24,8.56 12.6,7.24 12,6.5L13.5,5H11.58L10.24,6.34L8.9,5H6.92M9.24,8.5C9.78,8.5 10.24,8.94 10.24,9.5C10.24,10.06 9.78,10.5 9.24,10.5C8.68,10.5 8.24,10.06 8.24,9.5C8.24,8.94 8.68,8.5 9.24,8.5M14.73,13.5C16.92,13.5 18.73,15.31 18.73,17.5C18.73,19.69 16.92,21.5 14.73,21.5C12.54,21.5 10.73,19.69 10.73,17.5C10.73,15.31 12.54,13.5 14.73,13.5M14.73,16.5C14.17,16.5 13.73,16.94 13.73,17.5C13.73,18.06 14.17,18.5 14.73,18.5C15.29,18.5 15.73,18.06 15.73,17.5C15.73,16.94 15.29,16.5 14.73,16.5Z"/>
-                </svg>
-                شروع نبرد!
-            </button>
-        </div>
-    </div>
-
-    <!-- صفحه نمایش موضوع راند -->
-    <div id="roundTopicPage" class="hidden min-h-screen flex items-center justify-center p-4">
-        <div class="black-card rounded-2xl shadow-2xl p-8 text-center max-w-md w-full slide-in border border-yellow-500">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-4">راند <span id="currentRoundNum">1</span></h2>
-            <div class="text-6xl mb-4" id="topicEmoji">🎬</div>
-            <h3 class="text-2xl font-bold text-yellow-400 mb-6" id="topicName">سینما</h3>
-            <div class="text-lg text-gray-300">شروع در <span id="countdown">3</span> ثانیه...</div>
-        </div>
-    </div>
-
-    <!-- صفحه بازی -->
-    <div id="gamePage" class="hidden min-h-screen p-4">
-        <!-- هدر بازی -->
-        <div class="black-card rounded-xl p-4 mb-4 shadow-lg border border-yellow-500">
-            <div class="flex justify-between items-center mb-2">
-                <div class="text-center">
-                    <div class="profile-circle w-8 h-8 rounded-full mx-auto mb-1"></div>
-                    <div class="text-sm font-bold text-yellow-400" id="gamePlayerName">شما</div>
-                    <div class="text-xs text-green-400" id="playerScore">0 ✓</div>
-                </div>
-                
-                <div class="text-center">
-                    <div class="text-2xl font-bold text-red-400" id="timer">40</div>
-                    <div class="text-xs text-gray-300">ثانیه</div>
-                </div>
-                
-                <div class="text-center">
-                    <div class="profile-circle w-8 h-8 rounded-full mx-auto mb-1"></div>
-                    <div class="text-sm font-bold text-yellow-400" id="gameOpponentName">حریف</div>
-                    <div class="text-xs text-green-400" id="opponentScore">0 ✓</div>
-                </div>
-            </div>
-            
-            <div class="text-center">
-                <span class="bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-medium" id="gameTopicName">سینما</span>
-                <span class="text-gray-300 text-sm mr-2">راند <span id="gameRoundNum">1</span> از 3</span>
-            </div>
-        </div>
-
-        <!-- سوال -->
-        <div class="black-card rounded-xl p-6 mb-4 shadow-lg border border-yellow-500">
-            <h3 class="text-xl font-bold text-yellow-400 mb-4 text-center" id="questionText">در حال بارگذاری سوال...</h3>
-            
-            <div class="grid grid-cols-2 gap-3" id="answersGrid">
-                <!-- گزینه‌ها اینجا تولید می‌شوند -->
-            </div>
-        </div>
-
-        <!-- نمایش وضعیت -->
-        <div class="black-card rounded-xl p-4 shadow-lg border border-yellow-500">
-            <div class="text-center text-sm text-gray-300" id="gameStatus">منتظر پاسخ شما...</div>
-        </div>
-
-        <!-- تایمر سوال بعدی -->
-        <div id="nextQuestionTimer" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="black-card rounded-2xl p-8 text-center border border-blue-500">
-                <div class="text-6xl mb-4">⏰</div>
-                <h3 class="text-2xl font-bold text-blue-400 mb-4">سوال بعدی</h3>
-                <div class="text-4xl font-bold text-blue-400 mb-2" id="nextQuestionCountdown">5</div>
-                <div class="text-blue-300">ثانیه دیگر</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- صفحه پایان بازی -->
-    <div id="gameEndPage" class="hidden min-h-screen flex items-center justify-center p-4">
-        <div class="black-card rounded-2xl shadow-2xl p-8 text-center max-w-md w-full slide-in border border-yellow-500">
-            <div class="text-6xl mb-4" id="resultEmoji">🏆</div>
-            <h2 class="text-3xl font-bold mb-6 text-yellow-400" id="resultTitle">پیروزی!</h2>
-            
-            <div class="bg-gray-800 rounded-xl p-6 mb-6 border border-gray-600">
-                <div class="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                        <div class="font-bold text-lg text-yellow-400" id="finalPlayerName">شما</div>
-                        <div class="text-green-400" id="finalPlayerCorrect">5 ✓</div>
-                        <div class="text-red-400" id="finalPlayerWrong">2 ✗</div>
-                    </div>
-                    <div>
-                        <div class="font-bold text-lg text-yellow-400" id="finalOpponentName">حریف</div>
-                        <div class="text-green-400" id="finalOpponentCorrect">3 ✓</div>
-                        <div class="text-red-400" id="finalOpponentWrong">4 ✗</div>
-                    </div>
-                </div>
-            </div>
-            
-            <button onclick="backToMenuFromResults()" class="w-full gold-accent hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-xl transition duration-200">
-                بازگشت به منو
-            </button>
-        </div>
-    </div>
-
-    <!-- صفحه سازندگان -->
-    <div id="developersPage" class="hidden min-h-screen p-4">
-        <div class="black-card rounded-2xl shadow-2xl p-6 max-w-md mx-auto border border-yellow-500">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-yellow-400">سازندگان</h2>
-                <button onclick="hideSettings()" class="text-gray-400 hover:text-yellow-400">✕</button>
-            </div>
-            
-            <div class="space-y-4 mb-6">
-                <div class="bg-gray-800 rounded-lg p-4 border border-gray-600">
-                    <div class="font-bold text-yellow-400 mb-1">Ali.k</div>
-                    <div class="text-sm text-gray-300">برنامه نویس ارشد</div>
-                </div>
-                
-                <div class="bg-gray-800 rounded-lg p-4 border border-gray-600">
-                    <div class="font-bold text-yellow-400 mb-1">Abolfazl1401</div>
-                    <div class="text-sm text-gray-300">برنامه نویس دوم</div>
-                </div>
-                
-                <div class="bg-gray-800 rounded-lg p-4 border border-gray-600">
-                    <div class="font-bold text-yellow-400 mb-1">Vahid</div>
-                    <div class="text-sm text-gray-300">طراح رابط کاربری</div>
-                </div>
-                
-                <div class="bg-gray-800 rounded-lg p-4 border border-gray-600">
-                    <div class="font-bold text-green-400 mb-1">تشکر ویژه</div>
-                    <div class="text-sm text-gray-300">Hussein</div>
-                </div>
-            </div>
-            
-            <div class="text-center text-xs text-gray-400 border-t border-gray-600 pt-4">
-                تمامی حقوق این اپلیکیشن متعلق به تیم اسکورت گیم است
-            </div>
-        </div>
-    </div>
-
-    <!-- پنل ویرایش نام -->
-    <div id="editNamePanel" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="black-card rounded-2xl shadow-2xl p-6 w-full max-w-md slide-in border border-yellow-500">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-yellow-400">ویرایش نام</h2>
-                <button onclick="hideEditNamePanel()" class="text-gray-400 hover:text-yellow-400">✕</button>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-yellow-400 mb-2">نام جدید</label>
-                    <input type="text" id="newNameInput" class="w-full px-4 py-3 bg-gray-800 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-white" placeholder="نام جدید خود را وارد کنید">
-                </div>
-                
-                <div class="flex space-x-3 space-x-reverse">
-                    <button onclick="saveNewName()" class="flex-1 gold-accent hover:bg-yellow-600 text-black font-bold py-3 px-4 rounded-lg transition duration-200">
-                        ذخیره
-                    </button>
-                    <button onclick="hideEditNamePanel()" class="flex-1 black-card hover:bg-gray-700 text-yellow-400 font-medium py-3 px-4 rounded-lg transition duration-200 border border-yellow-500">
-                        لغو
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- پنل کد هدیه -->
-    <div id="giftCodePanel" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="black-card rounded-2xl shadow-2xl p-6 w-full max-w-md slide-in border border-yellow-500">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-yellow-400">کد هدیه</h2>
-                <button onclick="hideGiftCodePanel()" class="text-gray-400 hover:text-yellow-400">✕</button>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-yellow-400 mb-2">کد هدیه خود را وارد کنید</label>
-                    <input type="text" id="giftCodeInput" class="w-full px-4 py-3 bg-gray-800 border border-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-white" placeholder="کد هدیه را اینجا وارد کنید">
-                </div>
-                
-                <div class="flex space-x-3 space-x-reverse">
-                    <button onclick="applyGiftCode()" class="flex-1 gold-accent hover:bg-yellow-600 text-black font-bold py-3 px-4 rounded-lg transition duration-200">
-                        اعمال کد
-                    </button>
-                    <button onclick="hideGiftCodePanel()" class="flex-1 black-card hover:bg-gray-700 text-yellow-400 font-medium py-3 px-4 rounded-lg transition duration-200 border border-yellow-500">
-                        لغو
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- صفحه لودینگ -->
-    <div id="loadingPage" class="hidden min-h-screen flex items-center justify-center p-4">
-        <div class="text-center">
-            <div class="mb-8 relative">
-                <!-- نور پشت تصویر -->
-                <div class="absolute inset-0 w-40 h-40 mx-auto bg-yellow-400 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-                <div class="absolute inset-0 w-32 h-32 mx-auto bg-yellow-300 rounded-full opacity-30 blur-2xl animate-pulse" style="animation-delay: 0.5s"></div>
-                
-                <!-- تصویر بدون کادر -->
-                <img src="https://s6.uupload.ir/files/img_20250813_002913_529_p11m.jpg" alt="هوشیار" class="w-32 h-32 mx-auto rounded-2xl shadow-2xl relative z-10">
-                
-                <!-- حلقه‌های متحرک دور تصویر -->
-                <div class="absolute inset-0 w-40 h-40 mx-auto border-2 border-yellow-400 rounded-full animate-spin opacity-60" style="animation-duration: 3s;"></div>
-                <div class="absolute inset-0 w-36 h-36 mx-auto border-2 border-yellow-300 rounded-full animate-spin opacity-40" style="animation-duration: 2s; animation-direction: reverse;"></div>
-            </div>
-            
-            <h1 class="text-4xl font-bold text-yellow-400 mb-2 animate-pulse">هوشیار</h1>
-            <p class="text-yellow-300 text-lg mb-6 animate-pulse">تست هوش و دانش</p>
-            
-            <!-- انیمیشن لودینگ پیشرفته -->
-            <div class="mb-4" id="loadingProgress">
-                <div class="w-64 h-2 bg-gray-700 rounded-full mx-auto overflow-hidden">
-                    <div class="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full animate-pulse" style="width: 0%; animation: loadingBar 7s ease-in-out infinite;"></div>
-                </div>
-            </div>
-            
-            <div class="flex justify-center items-center space-x-2 space-x-reverse mb-4" id="loadingDots">
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.6s"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.8s"></div>
-            </div>
-            
-            <p class="text-gray-300 text-sm animate-pulse" id="loadingText">در حال بارگذاری منابع...</p>
-            
-            <!-- پیام خطای اینترنت در لودینگ -->
-            <div id="loadingInternetError" class="hidden mt-6">
-                <div class="black-card rounded-xl p-4 mx-auto max-w-md border border-red-500 bg-red-900 bg-opacity-20">
-                    <div class="flex items-center space-x-3 space-x-reverse mb-4">
-                        <svg class="w-6 h-6 text-red-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,17A1.5,1.5 0 0,1 10.5,15.5A1.5,1.5 0 0,1 12,14A1.5,1.5 0 0,1 13.5,15.5A1.5,1.5 0 0,1 12,17M12,10A1,1 0 0,1 13,11V14A1,1 0 0,1 11,14V11A1,1 0 0,1 12,10Z"/>
-                        </svg>
-                        <div class="flex-1">
-                            <div class="font-bold text-red-400 text-sm">خطای اتصال اینترنت</div>
-                            <div class="text-red-300 text-xs">لطفاً اتصال اینترنت خود را بررسی کنید</div>
-                        </div>
-                    </div>
-                    <div class="flex space-x-3 space-x-reverse">
-                        <button onclick="retryConnection()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
-                            تلاش مجدد
-                        </button>
-                        <button onclick="exitApp()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
-                            خروج
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- ایمپورت کردن کتابخانه Appwrite -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
 
     <script>
-        // متغیرهای بازی
-        let gameState = {
-            player: { name: '', cups: 0, score: 0, correct: 0, wrong: 0, isDeveloper: false },
-            opponent: { name: '', cups: 0, score: 0, correct: 0, wrong: 0 },
-            currentRound: 1,
-            currentQuestion: 0,
-            timer: 40,
-            gameTimer: null,
-            questionTimer: null,
-            isOnlineGame: false,
-            currentLevel: 1,
-            playerAnswered: false
-        };
+        // JavaScript یکپارچه
+        
+        // --- تنظیمات پروژه شما ---
+        const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+        const APPWRITE_PROJECT_ID = '68a9d52a0032bcdea75c'; // این Project ID شماست که دادید
+        
+        // این شناسه‌ها را بعد از ساخت دیتابیس و کالکشن در پنل Appwrite وارد کنید
+        const DATABASE_ID = 'game-db'; // شناسه‌ای که برای دیتابیس خود انتخاب می‌کنید
+        const COLLECTION_ID = 'highscores'; // شناسه‌ای که برای کالکشن خود انتخاب می‌کنید
 
-        // بارگذاری اطلاعات ذخیره شده
-        function loadSavedData() {
+        // --- گرفتن عناصر DOM ---
+        const clickBox = document.getElementById('click-box');
+        const currentScoreEl = document.getElementById('current-score');
+        const highScoreEl = document.getElementById('high-score');
+        const saveScoreBtn = document.getElementById('save-score-btn');
+        const statusMessage = document.getElementById('status-message');
+
+        // --- متغیرهای وضعیت بازی ---
+        let currentScore = 0;
+        let savedHighScore = 0;
+        let userId = null;
+        let documentId = null; // برای ذخیره شناسه رکورد کاربر در دیتابیس
+
+        // --- مقداردهی اولیه Appwrite SDK ---
+        const { Client, Account, Databases, ID, Query } = Appwrite;
+        const client = new Client();
+        client
+            .setEndpoint(APPWRITE_ENDPOINT)
+            .setProject(APPWRITE_PROJECT_ID);
+
+        const account = new Account(client);
+        const databases = new Databases(client);
+
+        // --- توابع اصلی برنامه ---
+
+        // 1. تابع ورود به صورت ناشناس و بارگذاری امتیازات
+        async function init() {
             try {
-                const savedData = localStorage.getItem('hooshyarGame');
-                if (savedData) {
-                    const data = JSON.parse(savedData);
-                    gameState.player.name = data.name || '';
-                    gameState.player.cups = data.cups || 0;
-                    gameState.currentLevel = data.currentLevel || 1;
-                    gameState.player.isDeveloper = data.isDeveloper || false;
-                    return true;
+                // تلاش برای ورود به صورت ناشناس
+                // اگر کاربر قبلا وارد شده باشد، همان جلسه را برمی‌گرداند
+                await account.createAnonymousSession();
+                const user = await account.get();
+                userId = user.$id;
+                statusMessage.textContent = 'با موفقیت به عنوان کاربر ناشناس وارد شدید.';
+                
+                // بعد از ورود موفق، بالاترین امتیاز کاربر را بارگذاری کن
+                await loadHighScore();
+                
+            } catch (error) {
+                console.error("خطا در ورود ناشناس:", error);
+                statusMessage.textContent = 'خطا در اتصال به سرور. کنسول را چک کنید.';
+                highScoreEl.textContent = 'خطا';
+            }
+        }
+
+        // 2. تابع بارگذاری بالاترین امتیاز از Appwrite
+        async function loadHighScore() {
+            try {
+                const response = await databases.listDocuments(
+                    DATABASE_ID,
+                    COLLECTION_ID,
+                    [
+                        Query.equal('userId', [userId]) // فقط رکوردی را پیدا کن که userId آن با کاربر فعلی یکی باشد
+                    ]
+                );
+
+                if (response.documents.length > 0) {
+                    // اگر رکوردی برای این کاربر وجود داشت
+                    const userRecord = response.documents[0];
+                    savedHighScore = userRecord.score;
+                    documentId = userRecord.$id; // شناسه رکورد را ذخیره می‌کنیم تا بعدا بتوانیم آن را آپدیت کنیم
+                    highScoreEl.textContent = savedHighScore;
+                } else {
+                    // اگر رکوردی وجود نداشت، یعنی کاربر بار اول است که بازی می‌کند
+                    savedHighScore = 0;
+                    highScoreEl.textContent = '0';
+                    statusMessage.textContent = 'خوش آمدید! اولین امتیاز خود را ثبت کنید.';
                 }
             } catch (error) {
-                console.log('خطا در بارگذاری اطلاعات:', error);
-                // پاک کردن اطلاعات خراب
-                localStorage.removeItem('hooshyarGame');
-            }
-            return false;
-        }
-
-        // ذخیره اطلاعات
-        function saveData() {
-            try {
-                const dataToSave = {
-                    name: gameState.player.name,
-                    cups: gameState.player.cups,
-                    currentLevel: gameState.currentLevel,
-                    isDeveloper: gameState.player.isDeveloper
-                };
-                localStorage.setItem('hooshyarGame', JSON.stringify(dataToSave));
-            } catch (error) {
-                console.log('خطا در ذخیره اطلاعات:', error);
+                console.error("خطا در بارگذاری امتیاز:", error);
+                statusMessage.textContent = 'خطا در خواندن اطلاعات از دیتابیس. تنظیمات کالکشن را چک کنید.';
+                highScoreEl.textContent = 'خطا';
             }
         }
 
-        // نمایش پنل کد هدیه
-        function showGiftCodePanel() {
-            document.getElementById('giftCodeInput').value = '';
-            document.getElementById('giftCodePanel').classList.remove('hidden');
-        }
-
-        // پنهان کردن پنل کد هدیه
-        function hideGiftCodePanel() {
-            document.getElementById('giftCodePanel').classList.add('hidden');
-        }
-
-        // اعمال کد هدیه
-        function applyGiftCode() {
-            const code = document.getElementById('giftCodeInput').value.trim();
-            
-            if (code === '') {
-                alert('لطفاً کد هدیه را وارد کنید!');
+        // 3. تابع ذخیره یا به‌روزرسانی امتیاز در Appwrite
+        async function saveScoreToAppwrite() {
+            if (currentScore <= savedHighScore) {
+                statusMessage.textContent = 'امتیاز جدید باید از بالاترین امتیاز بیشتر باشد.';
                 return;
             }
-            
-            if (code === 'alljebhflebppllpbvgggffccccccvvhkkbfdxbh') {
-                gameState.player.isDeveloper = true;
-                updatePlayerNameDisplay();
-                saveData();
-                hideGiftCodePanel();
-                
-                // نمایش پیام موفقیت
-                const successMsg = document.createElement('div');
-                successMsg.className = 'fixed top-4 left-4 right-4 z-50 text-center';
-                successMsg.innerHTML = `
-                    <div class="black-card rounded-xl p-4 mx-auto max-w-md border border-green-500 bg-green-900 bg-opacity-20">
-                        <div class="text-green-400 font-medium">🎉 تبریک! شما به عنوان سازنده شناخته شدید!</div>
-                    </div>
-                `;
-                document.body.appendChild(successMsg);
-                
-                setTimeout(() => {
-                    document.body.removeChild(successMsg);
-                }, 4000);
-            } else {
-                // نمایش پیام خطا
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'fixed top-4 left-4 right-4 z-50 text-center';
-                errorMsg.innerHTML = `
-                    <div class="black-card rounded-xl p-4 mx-auto max-w-md border border-red-500 bg-red-900 bg-opacity-20">
-                        <div class="text-red-400 font-medium">❌ کد هدیه نامعتبر است!</div>
-                    </div>
-                `;
-                document.body.appendChild(errorMsg);
-                
-                setTimeout(() => {
-                    document.body.removeChild(errorMsg);
-                }, 3000);
-            }
-        }
 
-        // به‌روزرسانی نمایش نام بازیکن
-        function updatePlayerNameDisplay() {
-            const playerNameElement = document.getElementById('playerName');
-            if (gameState.player.isDeveloper) {
-                playerNameElement.innerHTML = `<svg class="w-4 h-4 inline-block ml-1 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,16.5L18,9.5L16.59,8.09L11,13.67L7.91,10.59L6.5,12L11,16.5Z"/>
-                </svg>${gameState.player.name}`;
-            } else {
-                playerNameElement.textContent = gameState.player.name;
-            }
-        }
+            saveScoreBtn.disabled = true;
+            statusMessage.textContent = 'در حال ذخیره امتیاز...';
 
-        // شروع برنامه
-        document.addEventListener('DOMContentLoaded', function() {
-            // نمایش صفحه لودینگ
-            showPage('loadingPage');
-            
-            // شبیه‌سازی لودینگ
-            const loadingTexts = [
-                'در حال بارگذاری منابع...',
-                'بررسی اتصال اینترنت...',
-                'آماده‌سازی بازی...',
-                'بارگذاری سوالات...',
-                'تنظیم رابط کاربری...',
-                'تقریباً آماده است...',
-                'آماده!'
-            ];
-            
-            let currentTextIndex = 0;
-            const loadingTextElement = document.getElementById('loadingText');
-            
-            const textInterval = setInterval(() => {
-                if (currentTextIndex < loadingTexts.length - 1) {
-                    currentTextIndex++;
-                    if (loadingTextElement) {
-                        loadingTextElement.textContent = loadingTexts[currentTextIndex];
-                    }
-                }
-            }, 1000);
-            
-            // بررسی اتصال اینترنت در لودینگ
-            setTimeout(() => {
-                if (!navigator.onLine) {
-                    clearInterval(textInterval);
-                    document.getElementById('loadingInternetError').classList.remove('hidden');
-                    return;
-                }
-                
-                // پایان لودینگ
-                clearInterval(textInterval);
-                
-                // بررسی اطلاعات ذخیره شده
-                if (loadSavedData()) {
-                    // اگر اطلاعات وجود دارد، مستقیم به منو برو
-                    updatePlayerNameDisplay();
-                    const cupsElement = document.getElementById('playerCups');
-                    if (cupsElement) {
-                        cupsElement.textContent = gameState.player.cups;
-                    }
-                    showPage('mainMenu');
+            const data = {
+                userId: userId,
+                score: currentScore
+            };
+
+            try {
+                if (documentId) {
+                    // اگر documentId وجود دارد، یعنی رکورد از قبل بوده و باید آپدیت شود
+                    await databases.updateDocument(DATABASE_ID, COLLECTION_ID, documentId, data);
                 } else {
-                    // اگر اطلاعات وجود ندارد، صفحه ثبت نام نمایش بده
-                    showPage('registerPage');
+                    // اگر documentId وجود ندارد، یعنی رکورد جدید است و باید ساخته شود
+                    const response = await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), data);
+                    documentId = response.$id; // شناسه رکورد جدید را ذخیره می‌کنیم
                 }
-            }, 7000); // 7 ثانیه لودینگ
-            
-            // نظارت بر وضعیت اینترنت
-            window.addEventListener('online', () => {
-                hideInternetError();
-                hideLoadingInternetError();
-            });
-            
-            window.addEventListener('offline', () => {
-                showInternetError();
-            });
+
+                savedHighScore = currentScore;
+                highScoreEl.textContent = savedHighScore;
+                statusMessage.textContent = 'امتیاز با موفقیت ذخیره شد!';
+            } catch (error) {
+                console.error("خطا در ذخیره امتیاز:", error);
+                statusMessage.textContent = 'خطا در ذخیره اطلاعات. سطح دسترسی‌ها (Permissions) را چک کنید.';
+            } finally {
+                saveScoreBtn.disabled = false;
+            }
+        }
+
+        // --- ثبت Event Listeners ---
+
+        clickBox.addEventListener('click', () => {
+            currentScore++;
+            currentScoreEl.textContent = currentScore;
+            // اگر امتیاز جدید از رکورد قبلی بیشتر شد، دکمه ذخیره را فعال کن
+            if (currentScore > savedHighScore) {
+                saveScoreBtn.disabled = false;
+            }
         });
 
-        // پنهان کردن خطای اینترنت در لودینگ
-        function hideLoadingInternetError() {
-            document.getElementById('loadingInternetError').classList.add('hidden');
-        }
+        saveScoreBtn.addEventListener('click', saveScoreToAppwrite);
 
-        // تلاش مجدد اتصال
-        function retryConnection() {
-            if (navigator.onLine) {
-                hideLoadingInternetError();
-                location.reload();
-            } else {
-                alert('هنوز اتصال اینترنت برقرار نیست. لطفاً اتصال خود را بررسی کنید.');
-            }
-        }
+        // --- شروع برنامه ---
+        document.addEventListener('DOMContentLoaded', init);
 
-        // خروج از برنامه
-        function exitApp() {
-            if (confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
-                window.close();
-            }
-        }
-
-        // اسامی ربات‌ها
-        const botNames = [
-            'فاطمه', 'علی_123', 'مریم_گل', 'رضا_پرو', 'سارا_2024', 'امیر_گیمر',
-            'نازنین', 'محمد_کول', 'زهرا_استار', 'حسین_ماستر', 'آرین_پلیر',
-            'نیلوفر', 'کیان_گیم', 'ندا_چمپ', 'پوریا_پرو', 'شیدا_گیمر'
-        ];
-
-        // موضوعات بازی
-        const topics = [
-            { name: 'سینما', emoji: '🎬' },
-            { name: 'اطلاعات عمومی', emoji: '🧠' },
-            { name: 'ورزش', emoji: '⚽' },
-            { name: 'تاریخ', emoji: '📚' },
-            { name: 'علم', emoji: '🔬' }
-        ];
-
-        // سوالات
-        const questions = {
-            'سینما': [
-                { q: 'کارگردان فیلم "جدایی نادر از سیمین" کیست؟', a: ['اصغر فرهادی', 'مجید مجیدی', 'عباس کیارستمی', 'داریوش مهرجویی'], correct: 0 },
-                { q: 'فیلم "تایتانیک" در چه سالی ساخته شد؟', a: ['1997', '1995', '1999', '1996'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "گادفادر" کیست؟', a: ['مارلون براندو', 'آل پاچینو', 'رابرت دنیرو', 'جیمز کان'], correct: 0 },
-                { q: 'فیلم "آواتار" توسط کدام کارگردان ساخته شد؟', a: ['جیمز کامرون', 'استیون اسپیلبرگ', 'کریستوفر نولان', 'ریدلی اسکات'], correct: 0 },
-                { q: 'کدام فیلم بیشترین اسکار را برده است؟', a: ['بن هور', 'تایتانیک', 'بازگشت پادشاه', 'همه موارد'], correct: 3 },
-                { q: 'بازیگر نقش جوکر در فیلم "شوالیه تاریکی" کیست؟', a: ['هیث لجر', 'جک نیکلسون', 'خواکین فینیکس', 'جرد لتو'], correct: 0 },
-                { q: 'فیلم "کازابلانکا" در چه سالی ساخته شد؟', a: ['1942', '1940', '1944', '1945'], correct: 0 },
-                { q: 'کارگردان فیلم "پالپ فیکشن" کیست؟', a: ['کوئنتین تارانتینو', 'مارتین اسکورسیزی', 'کوئن برادرز', 'دیوید فینچر'], correct: 0 },
-                { q: 'فیلم "شهروند کین" توسط کدام بازیگر کارگردانی شد؟', a: ['اورسن ولز', 'چارلی چاپلین', 'آلفرد هیچکاک', 'جان فورد'], correct: 0 },
-                { q: 'کدام فیلم اولین فیلم انیمیشن بلند دیزنی است؟', a: ['سفیدبرفی', 'پینوکیو', 'بامبی', 'سیندرلا'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "راکی" کیست؟', a: ['سیلوستر استالونه', 'رابرت دنیرو', 'آل پاچینو', 'جان تراولتا'], correct: 0 },
-                { q: 'فیلم "شیندلرز لیست" در مورد چه موضوعی است؟', a: ['هولوکاست', 'جنگ ویتنام', 'جنگ جهانی اول', 'جنگ سرد'], correct: 0 },
-                { q: 'کارگردان فیلم "2001: ادیسه فضایی" کیست؟', a: ['استنلی کوبریک', 'ریدلی اسکات', 'جرج لوکاس', 'استیون اسپیلبرگ'], correct: 0 },
-                { q: 'فیلم "گرگ وال استریت" در چه سالی ساخته شد؟', a: ['1987', '1985', '1989', '1990'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "تاکسی درایور" کیست؟', a: ['رابرت دنیرو', 'آل پاچینو', 'جک نیکلسون', 'داستین هافمن'], correct: 0 },
-                { q: 'کدام فیلم اولین فیلم رنگی تاریخ سینما است؟', a: ['جادوگر آز', 'رفته با باد', 'کازابلانکا', 'سینگین در باران'], correct: 0 },
-                { q: 'فیلم "آپوکالیپس نو" در مورد کدام جنگ است؟', a: ['جنگ ویتنام', 'جنگ جهانی دوم', 'جنگ کره', 'جنگ خلیج فارس'], correct: 0 },
-                { q: 'کارگردان فیلم "ورتیگو" کیست؟', a: ['آلفرد هیچکاک', 'بیلی وایلدر', 'جان فورد', 'هاوارد هاکس'], correct: 0 },
-                { q: 'فیلم "کلئوپاترا" با بازی کدام بازیگر ساخته شد؟', a: ['الیزابت تیلور', 'مریلین مونرو', 'گریس کلی', 'آودری هپبورن'], correct: 0 },
-                { q: 'کدام فیلم بیشترین فروش تاریخ سینما را دارد؟', a: ['آواتار', 'انتقام‌جویان', 'تایتانیک', 'جنگ ستارگان'], correct: 0 },
-                { q: 'فیلم "رانندگی خوب" توسط کدام کارگردان ساخته شد؟', a: ['مارتین اسکورسیزی', 'کوئنتین تارانتینو', 'دیوید فینچر', 'کریستوفر نولان'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "فارست گامپ" کیست؟', a: ['تام هنکس', 'کوین کاستنر', 'مل گیبسون', 'راسل کرو'], correct: 0 },
-                { q: 'فیلم "ماتریکس" در چه سالی ساخته شد؟', a: ['1999', '1998', '2000', '1997'], correct: 0 },
-                { q: 'کارگردان فیلم "هشت و نیم" کیست؟', a: ['فدریکو فلینی', 'میکل‌آنجلو آنتونیونی', 'لوکینو ویسکونتی', 'ویتوریو دسیکا'], correct: 0 },
-                { q: 'فیلم "سایکو" در چه سالی ساخته شد؟', a: ['1960', '1958', '1962', '1959'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "رمبو" کیست؟', a: ['سیلوستر استالونه', 'آرنولد شوارتزنگر', 'بروس ویلیس', 'ژان کلود ون دام'], correct: 0 },
-                { q: 'کدام فیلم اولین فیلم صوتی تاریخ سینما است؟', a: ['خواننده جاز', 'چارلی چاپلین', 'کازابلانکا', 'رفته با باد'], correct: 0 },
-                { q: 'فیلم "لارنس عربستان" توسط کدام کارگردان ساخته شد؟', a: ['دیوید لین', 'جان فورد', 'ویلیام وایلر', 'جرج استیونز'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "کاسابلانکا" کیست؟', a: ['همفری بوگارت', 'کری گرانت', 'جیمز استوارت', 'کلارک گیبل'], correct: 0 },
-                { q: 'فیلم "رقص با گرگ‌ها" در چه سالی ساخته شد؟', a: ['1990', '1988', '1992', '1989'], correct: 0 },
-                { q: 'کارگردان فیلم "سینما پارادیزو" کیست؟', a: ['جوزپه تورناتوره', 'فدریکو فلینی', 'لوکا گوادانینو', 'پائولو سورنتینو'], correct: 0 },
-                { q: 'فیلم "بلید رانر" بر اساس کدام رمان ساخته شد؟', a: ['آیا آندروئیدها رویای گوسفند الکتریکی می‌بینند؟', '1984', 'دونه', 'فارنهایت 451'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "گلادیاتور" کیست؟', a: ['راسل کرو', 'مل گیبسون', 'کوین کاستنر', 'برد پیت'], correct: 0 },
-                { q: 'فیلم "شب‌های کابیریا" توسط کدام کارگردان ساخته شد؟', a: ['فدریکو فلینی', 'میکل‌آنجلو آنتونیونی', 'لوکینو ویسکونتی', 'ویتوریو دسیکا'], correct: 0 },
-                { q: 'کدام فیلم بیشترین نامزدی اسکار را دریافت کرده؟', a: ['همه درباره حوا', 'تایتانیک', 'لالالند', 'بازگشت پادشاه'], correct: 0 },
-                { q: 'فیلم "خداپدر" در چه سالی ساخته شد؟', a: ['1972', '1970', '1974', '1973'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "یکی بر فراز آشیان فاخته" کیست؟', a: ['جک نیکلسون', 'رابرت دنیرو', 'آل پاچینو', 'داستین هافمن'], correct: 0 },
-                { q: 'کارگردان فیلم "هفت" کیست؟', a: ['دیوید فینچر', 'کریستوفر نولان', 'دنی ویلنوو', 'ریدلی اسکات'], correct: 0 },
-                { q: 'فیلم "رفته با باد" در چه سالی ساخته شد؟', a: ['1939', '1937', '1941', '1940'], correct: 0 },
-                { q: 'بازیگر نقش اصلی فیلم "شاهزاده کوچولو" کیست؟', a: ['مارک آسانته', 'جف بریجز', 'ریچل مک‌آدامز', 'همه موارد'], correct: 3 }
-            ],
-            'اطلاعات عمومی': [
-                { q: 'پایتخت استرالیا کدام شهر است؟', a: ['کانبرا', 'سیدنی', 'ملبورن', 'پرث'], correct: 0 },
-                { q: 'بزرگترین اقیانوس جهان کدام است؟', a: ['اقیانوس آرام', 'اقیانوس اطلس', 'اقیانوس هند', 'اقیانوس منجمد شمالی'], correct: 0 },
-                { q: 'کدام کشور بیشترین جمعیت را دارد؟', a: ['چین', 'هند', 'آمریکا', 'اندونزی'], correct: 0 },
-                { q: 'بلندترین کوه جهان کدام است؟', a: ['اورست', 'K2', 'کانچنجونگا', 'لهوتسه'], correct: 0 },
-                { q: 'کدام کشور بیشترین مرز زمینی را دارد؟', a: ['چین', 'روسیه', 'برزیل', 'هند'], correct: 0 },
-                { q: 'طولانی‌ترین رودخانه جهان کدام است؟', a: ['نیل', 'آمازون', 'یانگ‌تسه', 'می‌سی‌سی‌پی'], correct: 0 },
-                { q: 'کوچکترین کشور جهان کدام است؟', a: ['واتیکان', 'موناکو', 'نائورو', 'سان مارینو'], correct: 0 },
-                { q: 'کدام قاره بیشترین کشور را دارد؟', a: ['آفریقا', 'آسیا', 'اروپا', 'آمریکای جنوبی'], correct: 0 },
-                { q: 'عمیق‌ترین نقطه اقیانوس‌ها کجاست؟', a: ['گودال ماریانا', 'گودال پورتوریکو', 'گودال ژاپن', 'گودال پرو-شیلی'], correct: 0 },
-                { q: 'کدام کشور بیشترین جزیره را دارد؟', a: ['فنلاند', 'سوئد', 'نروژ', 'کانادا'], correct: 0 },
-                { q: 'بزرگترین دریاچه جهان کدام است؟', a: ['دریای خزر', 'دریاچه سوپریور', 'دریاچه ویکتوریا', 'دریاچه هورون'], correct: 0 },
-                { q: 'کدام کشور بیشترین منطقه زمانی را دارد؟', a: ['فرانسه', 'روسیه', 'آمریکا', 'استرالیا'], correct: 0 },
-                { q: 'خشک‌ترین بیابان جهان کدام است؟', a: ['آتاکاما', 'صحرا', 'گوبی', 'کالاهاری'], correct: 0 },
-                { q: 'کدام کشور بیشترین ذخایر نفت را دارد؟', a: ['ونزوئلا', 'عربستان سعودی', 'کانادا', 'ایران'], correct: 0 },
-                { q: 'بزرگترین جزیره جهان کدام است؟', a: ['گرینلند', 'گینه نو', 'بورنئو', 'ماداگاسکار'], correct: 0 },
-                { q: 'کدام کشور بیشترین مرز دریایی را دارد؟', a: ['کانادا', 'اندونزی', 'روسیه', 'استرالیا'], correct: 0 },
-                { q: 'سردترین پایتخت جهان کدام است؟', a: ['اولان‌باتور', 'هلسینکی', 'ریکیاویک', 'مسکو'], correct: 0 },
-                { q: 'کدام کشور بیشترین آتشفشان فعال را دارد؟', a: ['اندونزی', 'ژاپن', 'شیلی', 'ایسلند'], correct: 0 },
-                { q: 'بزرگترین آبشار جهان کدام است؟', a: ['آنجل', 'نیاگارا', 'ویکتوریا', 'ایگوآسو'], correct: 0 },
-                { q: 'کدام کشور بیشترین زبان رسمی را دارد؟', a: ['آفریقای جنوبی', 'هند', 'بولیوی', 'سوئیس'], correct: 0 },
-                { q: 'عمیق‌ترین دریاچه جهان کدام است؟', a: ['بایکال', 'تانگانیکا', 'خزر', 'مالاوی'], correct: 0 },
-                { q: 'کدام کشور بیشترین جمعیت مسلمان را دارد؟', a: ['اندونزی', 'پاکستان', 'هند', 'بنگلادش'], correct: 0 },
-                { q: 'بلندترین آبشار جهان کدام است؟', a: ['آنجل', 'توگلا', 'یوسمیت', 'کوکنان'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید برنج را دارد؟', a: ['چین', 'هند', 'اندونزی', 'بنگلادش'], correct: 0 },
-                { q: 'گرم‌ترین مکان زمین کجاست؟', a: ['دره مرگ', 'صحرای لوت', 'صحرای آتاکاما', 'صحرای کالاهاری'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید قهوه را دارد؟', a: ['برزیل', 'ویتنام', 'کلمبیا', 'اندونزی'], correct: 0 },
-                { q: 'بزرگترین کویر جهان کدام است؟', a: ['آنتارکتیکا', 'صحرا', 'عربستان', 'گوبی'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید چای را دارد؟', a: ['چین', 'هند', 'کنیا', 'سری‌لانکا'], correct: 0 },
-                { q: 'طولانی‌ترین رشته کوه جهان کدام است؟', a: ['آند', 'راکی', 'هیمالیا', 'آلپ'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید گندم را دارد؟', a: ['چین', 'هند', 'روسیه', 'آمریکا'], correct: 0 },
-                { q: 'بزرگترین دلتا جهان کدام است؟', a: ['گنگ-برهماپوترا', 'نیل', 'آمازون', 'می‌سی‌سی‌پی'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید نفت را دارد؟', a: ['آمریکا', 'عربستان سعودی', 'روسیه', 'کانادا'], correct: 0 },
-                { q: 'سریع‌ترین حیوان زمینی کدام است؟', a: ['یوزپلنگ', 'شیر', 'گزل', 'سگ تازی'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید برق آبی را دارد؟', a: ['چین', 'برزیل', 'کانادا', 'آمریکا'], correct: 0 },
-                { q: 'بزرگترین صخره مرجانی جهان کدام است؟', a: ['صخره بزرگ مرجانی', 'صخره مرجانی بلیز', 'صخره مرجانی قرمز', 'صخره مرجانی اندمان'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید طلا را دارد؟', a: ['چین', 'استرالیا', 'روسیه', 'آمریکا'], correct: 0 },
-                { q: 'عمیق‌ترین غار جهان کدام است؟', a: ['ورونیا', 'کروبرا', 'لامپرختسوفن', 'میرولدا'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید الماس را دارد؟', a: ['روسیه', 'بوتسوانا', 'کنگو', 'استرالیا'], correct: 0 },
-                { q: 'بزرگترین تالاب جهان کدام است؟', a: ['پانتانال', 'اورگلیدز', 'اوکاوانگو', 'کامارگ'], correct: 0 },
-                { q: 'کدام کشور بیشترین تولید آلومینیوم را دارد؟', a: ['چین', 'روسیه', 'کانادا', 'هند'], correct: 0 }
-            ],
-            'ورزش': [
-                { q: 'جام جهانی فوتبال 2022 در کدام کشور برگزار شد؟', a: ['قطر', 'روسیه', 'برزیل', 'آلمان'], correct: 0 },
-                { q: 'کدام ورزشکار بیشترین مدال طلای المپیک را دارد؟', a: ['مایکل فلپس', 'اوسین بولت', 'کارل لوئیس', 'مارک اسپیتز'], correct: 0 },
-                { q: 'تنیس ویمبلدون در کدام کشور برگزار می‌شود؟', a: ['انگلستان', 'فرانسه', 'آمریکا', 'استرالیا'], correct: 0 }
-            ],
-            'تاریخ': [
-                { q: 'جنگ جهانی دوم در چه سالی پایان یافت؟', a: ['1945', '1944', '1946', '1943'], correct: 0 },
-                { q: 'امپراتوری روم در چه سالی سقوط کرد؟', a: ['476', '480', '470', '485'], correct: 0 },
-                { q: 'کلمب آمریکا را در چه سالی کشف کرد؟', a: ['1492', '1490', '1494', '1488'], correct: 0 }
-            ],
-            'علم': [
-                { q: 'فرمول شیمیایی آب چیست؟', a: ['H2O', 'CO2', 'NaCl', 'CH4'], correct: 0 },
-                { q: 'سرعت نور در خلاء چقدر است؟', a: ['300000 کیلومتر بر ثانیه', '250000 کیلومتر بر ثانیه', '350000 کیلومتر بر ثانیه', '200000 کیلومتر بر ثانیه'], correct: 0 },
-                { q: 'کدام سیاره به سیاره سرخ معروف است؟', a: ['مریخ', 'زهره', 'مشتری', 'زحل'], correct: 0 }
-            ]
-        };
-
-        // ثبت نام
-        function register() {
-            const username = document.getElementById('username').value.trim();
-            const age = document.getElementById('age').value.trim();
-            const terms = document.getElementById('terms').checked;
-
-            if (!username) {
-                alert('لطفاً نام کاربری خود را وارد کنید');
-                return;
-            }
-
-            if (!age || isNaN(age) || age < 1 || age > 120) {
-                alert('لطفاً سن معتبری وارد کنید (1-120)');
-                return;
-            }
-
-            if (!terms) {
-                alert('لطفاً قوانین را بپذیرید');
-                return;
-            }
-
-            // ذخیره اطلاعات
-            gameState.player.name = username;
-            gameState.player.cups = 0;
-            gameState.currentLevel = 1;
-            gameState.player.isDeveloper = false;
-            
-            // به‌روزرسانی نمایش
-            updatePlayerNameDisplay();
-            document.getElementById('playerCups').textContent = '0';
-            
-            // ذخیره در localStorage
-            saveData();
-            
-            // رفتن به منوی اصلی
-            showPage('mainMenu');
-        }
-
-        // نمایش صفحه
-        function showPage(pageId) {
-            const pages = ['initialLoading', 'loadingPage', 'registerPage', 'mainMenu', 'settingsPage', 'developersPage', 'levelsPage', 'searchingPage', 'opponentPage', 'roundTopicPage', 'gamePage', 'gameEndPage'];
-            pages.forEach(page => {
-                const element = document.getElementById(page);
-                if (element) {
-                    element.classList.add('hidden');
-                }
-            });
-            const targetElement = document.getElementById(pageId);
-            if (targetElement) {
-                targetElement.classList.remove('hidden');
-            }
-        }
-
-        // ویرایش نام
-        function editName() {
-            document.getElementById('newNameInput').value = gameState.player.name;
-            document.getElementById('editNamePanel').classList.remove('hidden');
-        }
-
-        // پنهان کردن پنل ویرایش نام
-        function hideEditNamePanel() {
-            document.getElementById('editNamePanel').classList.add('hidden');
-        }
-
-        // ذخیره نام جدید
-        function saveNewName() {
-            const newName = document.getElementById('newNameInput').value.trim();
-            
-            if (newName === '') {
-                alert('نام نمی‌تواند خالی باشد!');
-                return;
-            }
-            
-            gameState.player.name = newName;
-            updatePlayerNameDisplay();
-            
-            // به‌روزرسانی نام در صفحات بازی
-            const gamePlayerNameElements = document.querySelectorAll('#gamePlayerName, #finalPlayerName');
-            gamePlayerNameElements.forEach(element => {
-                if (element) element.textContent = gameState.player.name;
-            });
-            
-            saveData();
-            hideEditNamePanel();
-            
-            // نمایش پیام موفقیت
-            const successMsg = document.createElement('div');
-            successMsg.className = 'fixed top-4 left-4 right-4 z-50 text-center';
-            successMsg.innerHTML = `
-                <div class="black-card rounded-xl p-3 mx-auto max-w-md border border-green-500 bg-green-900 bg-opacity-20">
-                    <div class="text-green-400 font-medium">✅ نام شما با موفقیت تغییر یافت!</div>
-                </div>
-            `;
-            document.body.appendChild(successMsg);
-            
-            setTimeout(() => {
-                document.body.removeChild(successMsg);
-            }, 3000);
-        }
-
-        // تنظیمات
-        function showSettings() {
-            showPage('settingsPage');
-        }
-
-        function hideSettings() {
-            showPage('mainMenu');
-        }
-
-        // نمایش سازندگان
-        function showDevelopers() {
-            showPage('developersPage');
-        }
-
-        // نمایش مراحل
-        function showLevels() {
-            const grid = document.getElementById('levelsGrid');
-            grid.innerHTML = '';
-            
-            for (let i = 1; i <= 70; i++) {
-                const button = document.createElement('button');
-                button.className = `w-12 h-12 rounded-lg font-bold ${i <= gameState.currentLevel ? 'gold-accent text-black hover:bg-yellow-600' : 'bg-gray-700 text-gray-400 border border-gray-600'} transition duration-200`;
-                button.textContent = i;
-                if (i <= gameState.currentLevel) {
-                    button.onclick = () => startSinglePlayer(i);
-                }
-                grid.appendChild(button);
-            }
-            
-            showPage('levelsPage');
-        }
-
-        // سوالات بازی تک نفره برای 70 مرحله
-        const singlePlayerQuestions = {
-            1: [
-                { q: 'پایتخت ایران کدام شهر است؟', a: ['تهران', 'اصفهان', 'شیراز', 'مشهد'], correct: 0 },
-                { q: '2 + 2 چند می‌شود؟', a: ['4', '3', '5', '6'], correct: 0 },
-                { q: 'کدام رنگ از ترکیب قرمز و آبی به دست می‌آید؟', a: ['بنفش', 'سبز', 'زرد', 'نارنجی'], correct: 0 }
-            ],
-            2: [
-                { q: 'بزرگترین سیاره منظومه شمسی کدام است؟', a: ['مشتری', 'زمین', 'مریخ', 'زهره'], correct: 0 },
-                { q: '5 × 3 چند می‌شود؟', a: ['15', '12', '18', '20'], correct: 0 },
-                { q: 'کدام حیوان شیر تولید می‌کند؟', a: ['گاو', 'سگ', 'گربه', 'خرگوش'], correct: 0 }
-            ],
-            3: [
-                { q: 'اولین رئیس جمهور آمریکا کی بود؟', a: ['جورج واشنگتن', 'آبراهام لینکلن', 'توماس جفرسون', 'جان آدامز'], correct: 0 },
-                { q: '10 - 7 چند می‌شود؟', a: ['3', '4', '2', '5'], correct: 0 },
-                { q: 'کدام فصل بعد از زمستان می‌آید؟', a: ['بهار', 'تابستان', 'پاییز', 'زمستان'], correct: 0 }
-            ]
-        };
-
-        // شروع بازی تک نفره
-        function startSinglePlayer(level) {
-            gameState.isOnlineGame = false;
-            gameState.currentLevel = level;
-            
-            if (level <= 3) {
-                startSinglePlayerGame(level);
-            } else {
-                alert(`مرحله ${level} هنوز آماده نیست! فعلاً فقط 3 مرحله اول آماده است.`);
-            }
-        }
-
-        // شروع بازی تک نفره
-        function startSinglePlayerGame(level) {
-            gameState.player.score = 0;
-            gameState.player.correct = 0;
-            gameState.player.wrong = 0;
-            gameState.currentQuestion = 0;
-            
-            document.getElementById('gamePlayerName').textContent = gameState.player.name;
-            document.getElementById('gameOpponentName').textContent = `مرحله ${level}`;
-            document.getElementById('gameTopicName').textContent = `مرحله ${level}`;
-            document.getElementById('gameRoundNum').textContent = '1';
-            
-            updateScores();
-            showPage('gamePage');
-            
-            gameState.timer = 60; // زمان بیشتر برای بازی تک نفره
-            startGameTimer();
-            showSinglePlayerQuestion(level);
-        }
-
-        // نمایش سوال بازی تک نفره
-        function showSinglePlayerQuestion(level) {
-            const levelQuestions = singlePlayerQuestions[level];
-            if (!levelQuestions || gameState.currentQuestion >= levelQuestions.length) {
-                endSinglePlayerGame(level);
-                return;
-            }
-            
-            const question = levelQuestions[gameState.currentQuestion];
-            
-            document.getElementById('questionText').textContent = question.q;
-            
-            const answersGrid = document.getElementById('answersGrid');
-            answersGrid.innerHTML = '';
-            
-            question.a.forEach((answer, index) => {
-                const button = document.createElement('button');
-                button.className = 'bg-gray-800 hover:bg-gray-700 text-yellow-400 font-medium py-3 px-4 rounded-lg transition duration-200 border border-yellow-500';
-                button.textContent = answer;
-                button.onclick = () => selectSinglePlayerAnswer(index, question.correct, level);
-                answersGrid.appendChild(button);
-            });
-            
-            document.getElementById('gameStatus').textContent = `سوال ${gameState.currentQuestion + 1} از ${levelQuestions.length}`;
-        }
-
-        // انتخاب پاسخ در بازی تک نفره
-        function selectSinglePlayerAnswer(selected, correct, level) {
-            // غیرفعال کردن تمام دکمه‌ها
-            const answerButtons = document.querySelectorAll('#answersGrid button');
-            answerButtons.forEach(button => {
-                button.disabled = true;
-                button.classList.add('opacity-50', 'cursor-not-allowed');
-                button.onclick = null;
-            });
-            
-            if (selected === correct) {
-                gameState.player.correct++;
-                document.getElementById('gameStatus').textContent = '✅ پاسخ درست!';
-            } else {
-                gameState.player.wrong++;
-                document.getElementById('gameStatus').textContent = '❌ پاسخ غلط!';
-            }
-            
-            updateScores();
-            gameState.currentQuestion++;
-            
-            // نمایش تایمر سوال بعدی
-            showNextQuestionTimer();
-            
-            setTimeout(() => {
-                hideNextQuestionTimer();
-                showSinglePlayerQuestion(level);
-            }, 5000);
-        }
-
-        // پایان بازی تک نفره
-        function endSinglePlayerGame(level) {
-            clearInterval(gameState.gameTimer);
-            
-            const totalQuestions = singlePlayerQuestions[level].length;
-            const correctAnswers = gameState.player.correct;
-            const percentage = (correctAnswers / totalQuestions) * 100;
-            
-            document.getElementById('finalPlayerName').textContent = gameState.player.name;
-            document.getElementById('finalPlayerCorrect').textContent = `${gameState.player.correct} ✓`;
-            document.getElementById('finalPlayerWrong').textContent = `${gameState.player.wrong} ✗`;
-            
-            document.getElementById('finalOpponentName').textContent = `مرحله ${level}`;
-            document.getElementById('finalOpponentCorrect').textContent = `${Math.floor(totalQuestions * 0.7)} ✓`;
-            document.getElementById('finalOpponentWrong').textContent = `${totalQuestions - Math.floor(totalQuestions * 0.7)} ✗`;
-            
-            if (percentage >= 70) {
-                document.getElementById('resultEmoji').textContent = '🏆';
-                document.getElementById('resultTitle').textContent = 'مرحله گذرانده شد!';
-                gameState.player.cups += 20;
-                if (gameState.currentLevel === level) {
-                    gameState.currentLevel++;
-                }
-            } else {
-                document.getElementById('resultEmoji').textContent = '😔';
-                document.getElementById('resultTitle').textContent = 'مرحله ناموفق!';
-                gameState.player.cups = Math.max(0, gameState.player.cups - 10);
-            }
-            
-            document.getElementById('playerCups').textContent = gameState.player.cups;
-            saveData();
-            showPage('gameEndPage');
-        }
-
-        // بررسی اتصال اینترنت
-        function checkInternetConnection() {
-            return navigator.onLine;
-        }
-
-        // نمایش خطای اینترنت
-        function showInternetError() {
-            document.getElementById('internetError').classList.remove('hidden');
-            setTimeout(() => {
-                hideInternetError();
-            }, 5000); // خودکار پنهان شدن بعد از 5 ثانیه
-        }
-
-        // پنهان کردن خطای اینترنت
-        function hideInternetError() {
-            document.getElementById('internetError').classList.add('hidden');
-        }
-
-        // شروع بازی آنلاین
-        function startOnlineGame() {
-            if (!checkInternetConnection()) {
-                showInternetError();
-                return;
-            }
-            
-            gameState.isOnlineGame = true;
-            showPage('searchingPage');
-            
-            // انیمیشن آمار جستجو
-            let searchTime = 0;
-            let foundCount = 0;
-            
-            const searchInterval = setInterval(() => {
-                searchTime++;
-                if (searchTime > 3) foundCount = Math.min(foundCount + Math.floor(Math.random() * 2), 5);
-                
-                document.getElementById('searchTime').textContent = searchTime;
-                document.getElementById('foundCount').textContent = foundCount;
-                
-                // تغییر متن وضعیت
-                const statuses = [
-                    'جستجوی بازیکنان آنلاین...',
-                    'بررسی سطح مهارت...',
-                    'تطبیق کاپ‌ها...',
-                    'یافتن بهترین حریف...'
-                ];
-                document.getElementById('searchStatus').textContent = statuses[searchTime % statuses.length];
-            }, 1000);
-            
-            // شبیه‌سازی جستجو
-            setTimeout(() => {
-                clearInterval(searchInterval);
-                
-                const botName = botNames[Math.floor(Math.random() * botNames.length)];
-                
-                // تطبیق کاپ ربات با پلیر
-                let botCups;
-                if (gameState.player.cups <= 10) {
-                    botCups = Math.floor(Math.random() * 15); // 0-15
-                } else if (gameState.player.cups <= 100) {
-                    botCups = gameState.player.cups + Math.floor(Math.random() * 40) - 20; // ±20
-                } else if (gameState.player.cups <= 500) {
-                    botCups = gameState.player.cups + Math.floor(Math.random() * 100) - 50; // ±50
-                } else {
-                    botCups = gameState.player.cups + Math.floor(Math.random() * 200) - 100; // ±100
-                }
-                
-                botCups = Math.max(0, botCups); // حداقل 0
-                
-                gameState.opponent.name = botName;
-                gameState.opponent.cups = botCups;
-                
-                document.getElementById('opponentName').textContent = botName;
-                document.getElementById('opponentCups').textContent = botCups;
-                
-                showPage('opponentPage');
-            }, Math.random() * 3000 + 4000);
-        }
-
-        // شروع نبرد
-        function startBattle() {
-            gameState.currentRound = 1;
-            gameState.player.score = 0;
-            gameState.opponent.score = 0;
-            gameState.player.correct = 0;
-            gameState.player.wrong = 0;
-            gameState.opponent.correct = 0;
-            gameState.opponent.wrong = 0;
-            
-            showRoundTopic();
-        }
-
-        // نمایش موضوع راند
-        function showRoundTopic() {
-            const topic = topics[(gameState.currentRound - 1) % topics.length];
-            
-            document.getElementById('currentRoundNum').textContent = gameState.currentRound;
-            document.getElementById('topicEmoji').textContent = topic.emoji;
-            document.getElementById('topicName').textContent = topic.name;
-            
-            showPage('roundTopicPage');
-            
-            let countdown = 3;
-            const countdownInterval = setInterval(() => {
-                document.getElementById('countdown').textContent = countdown;
-                countdown--;
-                
-                if (countdown < 0) {
-                    clearInterval(countdownInterval);
-                    startRound();
-                }
-            }, 1000);
-        }
-
-        // شروع راند
-        function startRound() {
-            const topic = topics[(gameState.currentRound - 1) % topics.length];
-            
-            document.getElementById('gamePlayerName').textContent = gameState.player.name;
-            document.getElementById('gameOpponentName').textContent = gameState.opponent.name;
-            document.getElementById('gameTopicName').textContent = topic.name;
-            document.getElementById('gameRoundNum').textContent = gameState.currentRound;
-            
-            updateScores();
-            showPage('gamePage');
-            
-            gameState.timer = 40;
-            gameState.currentQuestion = 0;
-            
-            startGameTimer();
-            showNextQuestion();
-        }
-
-        // تایمر بازی
-        function startGameTimer() {
-            gameState.gameTimer = setInterval(() => {
-                gameState.timer--;
-                document.getElementById('timer').textContent = gameState.timer;
-                
-                if (gameState.timer <= 0) {
-                    endRound();
-                }
-            }, 1000);
-        }
-
-        // نمایش سوال بعدی
-        function showNextQuestion() {
-            const topic = topics[(gameState.currentRound - 1) % topics.length];
-            const topicQuestions = questions[topic.name];
-            const question = topicQuestions[Math.floor(Math.random() * topicQuestions.length)];
-            
-            document.getElementById('questionText').textContent = question.q;
-            
-            const answersGrid = document.getElementById('answersGrid');
-            answersGrid.innerHTML = '';
-            
-            question.a.forEach((answer, index) => {
-                const button = document.createElement('button');
-                button.className = 'bg-gray-800 hover:bg-gray-700 text-yellow-400 font-medium py-3 px-4 rounded-lg transition duration-200 border border-yellow-500';
-                button.textContent = answer;
-                button.onclick = () => selectAnswer(index, question.correct);
-                answersGrid.appendChild(button);
-            });
-            
-            document.getElementById('gameStatus').textContent = 'منتظر پاسخ شما...';
-            gameState.playerAnswered = false;
-            
-            // شبیه‌سازی پاسخ ربات (مستقل از پلیر)
-            setTimeout(() => {
-                simulateBotAnswer(question.correct);
-            }, Math.random() * 5000 + 2000);
-            
-            // تایمر سوال - فقط اگر پلیر پاسخ نداده باشد
-            gameState.questionTimer = setTimeout(() => {
-                if (!gameState.playerAnswered && gameState.timer > 0) {
-                    showNextQuestion();
-                }
-            }, 5000); // 5 ثانیه برای هر سوال
-        }
-
-        // انتخاب پاسخ
-        function selectAnswer(selected, correct) {
-            if (gameState.playerAnswered) return; // جلوگیری از پاسخ مکرر
-            
-            gameState.playerAnswered = true;
-            clearTimeout(gameState.questionTimer);
-            
-            // غیرفعال کردن تمام دکمه‌ها
-            const answerButtons = document.querySelectorAll('#answersGrid button');
-            answerButtons.forEach(button => {
-                button.disabled = true;
-                button.classList.add('opacity-50', 'cursor-not-allowed');
-                button.onclick = null;
-            });
-            
-            if (selected === correct) {
-                gameState.player.correct++;
-                document.getElementById('gameStatus').textContent = '✅ پاسخ درست!';
-            } else {
-                gameState.player.wrong++;
-                document.getElementById('gameStatus').textContent = '❌ پاسخ غلط!';
-            }
-            
-            updateScores();
-            
-            // نمایش تایمر سوال بعدی
-            showNextQuestionTimer();
-            
-            // حتماً 5 ثانیه صبر کردن
-            setTimeout(() => {
-                hideNextQuestionTimer();
-                if (gameState.timer > 0) {
-                    showNextQuestion();
-                }
-            }, 5000);
-        }
-
-        // نمایش تایمر سوال بعدی
-        function showNextQuestionTimer() {
-            document.getElementById('nextQuestionTimer').classList.remove('hidden');
-            let countdown = 5;
-            document.getElementById('nextQuestionCountdown').textContent = countdown;
-            
-            const timerInterval = setInterval(() => {
-                countdown--;
-                document.getElementById('nextQuestionCountdown').textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(timerInterval);
-                }
-            }, 1000);
-        }
-
-        // پنهان کردن تایمر سوال بعدی
-        function hideNextQuestionTimer() {
-            document.getElementById('nextQuestionTimer').classList.add('hidden');
-        }
-
-        // شبیه‌سازی پاسخ ربات
-        function simulateBotAnswer(correct) {
-            const chance = Math.random();
-            if (chance < 0.6) { // 60% احتمال پاسخ درست
-                gameState.opponent.correct++;
-            } else if (chance < 0.9) { // 30% احتمال پاسخ غلط
-                gameState.opponent.wrong++;
-            }
-            // 10% احتمال عدم پاسخ
-            
-            updateScores();
-        }
-
-        // به‌روزرسانی امتیازها
-        function updateScores() {
-            document.getElementById('playerScore').textContent = `${gameState.player.correct} ✓`;
-            document.getElementById('opponentScore').textContent = `${gameState.opponent.correct} ✓`;
-        }
-
-        // پایان راند
-        function endRound() {
-            clearInterval(gameState.gameTimer);
-            clearTimeout(gameState.questionTimer);
-            
-            if (gameState.currentRound < 3) {
-                gameState.currentRound++;
-                setTimeout(() => {
-                    showRoundTopic();
-                }, 1000);
-            } else {
-                endGame();
-            }
-        }
-
-        // پایان بازی
-        function endGame() {
-            const playerTotal = gameState.player.correct;
-            const opponentTotal = gameState.opponent.correct;
-            
-            document.getElementById('finalPlayerName').textContent = gameState.player.name;
-            document.getElementById('finalPlayerCorrect').textContent = `${gameState.player.correct} ✓`;
-            document.getElementById('finalPlayerWrong').textContent = `${gameState.player.wrong} ✗`;
-            
-            document.getElementById('finalOpponentName').textContent = gameState.opponent.name;
-            document.getElementById('finalOpponentCorrect').textContent = `${gameState.opponent.correct} ✓`;
-            document.getElementById('finalOpponentWrong').textContent = `${gameState.opponent.wrong} ✗`;
-            
-            if (playerTotal > opponentTotal) {
-                document.getElementById('resultEmoji').textContent = '🏆';
-                document.getElementById('resultTitle').textContent = 'پیروزی!';
-                gameState.player.cups += 30;
-            } else if (playerTotal < opponentTotal) {
-                document.getElementById('resultEmoji').textContent = '😔';
-                document.getElementById('resultTitle').textContent = 'شکست!';
-                gameState.player.cups = Math.max(0, gameState.player.cups - 20);
-            } else {
-                document.getElementById('resultEmoji').textContent = '🤝';
-                document.getElementById('resultTitle').textContent = 'مساوی!';
-                gameState.player.cups += 10;
-            }
-            
-            document.getElementById('playerCups').textContent = gameState.player.cups;
-            saveData();
-            
-            showPage('gameEndPage');
-        }
-
-        // بازگشت به منو
-        function backToMenu() {
-            // پاک کردن تمام تایمرها
-            if (gameState.gameTimer) {
-                clearInterval(gameState.gameTimer);
-                gameState.gameTimer = null;
-            }
-            if (gameState.questionTimer) {
-                clearTimeout(gameState.questionTimer);
-                gameState.questionTimer = null;
-            }
-            
-            // ریست کردن وضعیت بازی
-            gameState.playerAnswered = false;
-            gameState.currentQuestion = 0;
-            gameState.currentRound = 1;
-            gameState.timer = 40;
-            
-            // پنهان کردن تایمر سوال بعدی
-            hideNextQuestionTimer();
-            
-            showPage('mainMenu');
-        }
-
-        // بازگشت به منو از صفحه نتایج
-        function backToMenuFromResults() {
-            // پاک کردن تمام تایمرها
-            if (gameState.gameTimer) {
-                clearInterval(gameState.gameTimer);
-                gameState.gameTimer = null;
-            }
-            if (gameState.questionTimer) {
-                clearTimeout(gameState.questionTimer);
-                gameState.questionTimer = null;
-            }
-            
-            // ریست کردن وضعیت بازی
-            gameState.playerAnswered = false;
-            gameState.currentQuestion = 0;
-            gameState.currentRound = 1;
-            gameState.timer = 40;
-            
-            // پنهان کردن تایمر سوال بعدی
-            hideNextQuestionTimer();
-            
-            showPage('mainMenu');
-        }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fa000203cac936',t:'MTc1NTI3NDYyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
