@@ -3,273 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بازی تستی با Nhost</title>
+    <title>تست دکمه خرید گرافیکی</title>
     <style>
-        /* CSS یکپارچه (بدون تغییر نسبت به نسخه قبل) */
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
-
+        /* استایل‌های کلی صفحه */
         body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+            margin: 0;
+            font-family: 'Vazirmatn', sans-serif; /* استفاده از یک فونت فارسی زیبا */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
             text-align: center;
+            overflow: hidden;
         }
 
+        /* کانتینر اصلی */
         .container {
-            background-color: #ffffff;
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         h1 {
-            color: #1a237e;
+            font-size: 2.5rem;
             margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
         }
 
-        #game-area {
-            margin: 30px 0;
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            max-width: 500px;
         }
 
-        #click-box {
-            width: 150px;
-            height: 150px;
-            background-color: #3f51b5;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
+        /* استایل دکمه اصلی */
+        .purchase-button {
+            padding: 15px 40px;
+            font-size: 1.2rem;
             font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            margin: 0 auto;
-            transition: transform 0.1s ease, background-color 0.2s;
-            user-select: none;
-        }
-
-        #click-box:active {
-            transform: scale(0.95);
-            background-color: #303f9f;
-        }
-
-        .scores {
-            font-size: 20px;
-            margin: 20px 0;
-        }
-
-        .scores span {
-            font-weight: bold;
-            color: #d81b60;
-            margin: 0 5px;
-            min-width: 40px;
-            display: inline-block;
-        }
-
-        #save-score-btn {
-            background-color: #43a047;
-            color: white;
+            color: #2c3e50;
+            background-color: #f1c40f;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 18px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
-        #save-score-btn:hover {
-            background-color: #388e3c;
-        }
-        
-        #save-score-btn:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
+        /* افکت هاور روی دکمه */
+        .purchase-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background-color: #f39c12;
         }
 
-        #status-message {
+        /* افکت کلیک روی دکمه */
+        .purchase-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* انیمیشن پیام موفقیت */
+        #message {
             margin-top: 20px;
-            color: #666;
-            font-size: 14px;
-            min-height: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(46, 204, 113, 0.8);
+            font-weight: bold;
+            display: none; /* در ابتدا مخفی است */
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>بازی کلیکر Nhost</h1>
-        <p>روی جعبه آبی کلیک کن تا امتیاز بگیری!</p>
-
-        <div id="game-area">
-            <div id="click-box">کلیک کن!</div>
-        </div>
-
-        <div class="scores">
-            <span>امتیاز فعلی:</span>
-            <span id="current-score">0</span>
-        </div>
-        <div class="scores">
-            <span>بالاترین امتیاز شما:</span>
-            <span id="high-score">...</span>
-        </div>
-
-        <button id="save-score-btn" disabled>ذخیره امتیاز در سرور</button>
-        <p id="status-message">در حال اتصال به سرور Nhost...</p>
+        <h1>تست خرید درون‌برنامه‌ای</h1>
+        <p>
+            برای شبیه‌سازی فرآیند خرید، روی دکمه زیر کلیک کنید. با این کار، فرآیند استاندارد خرید مایکت (که باید در اپلیکیشن اندروید پیاده‌سازی شود) شبیه‌سازی می‌شود.
+        </p>
+        <button id="buyButton" class="purchase-button">خرید محصول ویژه</button>
+        <div id="message"></div>
     </div>
 
-    <!-- ایمپورت کردن کتابخانه Nhost -->
-    <script src="https://cdn.jsdelivr.net/npm/@nhost/nhost-js@latest/dist/nhost.min.js"></script>
-
     <script>
-        // JavaScript یکپارچه
-        
-        // --- تنظیمات پروژه Nhost شما ---
-        // این مقادیر را از پنل Nhost خود بردارید
-        const NHOST_SUBDOMAIN = 'dlmibstjpdpdcfcigfpk'; // این همان مقداری است که دادید
-        const NHOST_REGION = 'eu-central-1'; // این مقدار را از پنل Nhost خود چک کنید!
+        // پیدا کردن دکمه و پنل پیام در DOM
+        const buyButton = document.getElementById('buyButton');
+        const messagePanel = document.getElementById('message');
 
-        // --- گرفتن عناصر DOM ---
-        const clickBox = document.getElementById('click-box');
-        const currentScoreEl = document.getElementById('current-score');
-        const highScoreEl = document.getElementById('high-score');
-        const saveScoreBtn = document.getElementById('save-score-btn');
-        const statusMessage = document.getElementById('status-message');
+        // کلید عمومی شما (این کلید به صورت عمومی و امن قابل نگهداری در کد است)
+        const myketPublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCNMcyn3aj8r1nxEuiln3s839fm/SDGH4RS9KJtC1r2n6FhRIjAh69uM5pfFKA64GxHD1PCtMV+wJQvIGZehAT8HU5QPdyWTME+FeAoSoWwWBeQOaZGEdP+BdFLN9vgsYdljCkP4AsodQTkGD4KYZaerThFdtYv5NztfKSDvcmgaQIDAQAB";
 
-        // --- متغیرهای وضعیت بازی ---
-        let currentScore = 0;
-        let savedHighScore = 0;
-        let userId = null;
-        let scoreRecordId = null; // برای ذخیره شناسه رکورد کاربر در دیتابیس
+        // تعریف یک تابع برای اجرا هنگام کلیک روی دکمه
+        function handlePurchaseClick() {
+            // غیرفعال کردن دکمه برای جلوگیری از کلیک‌های متعدد
+            buyButton.disabled = true;
+            buyButton.innerText = 'در حال پردازش...';
 
-        // --- مقداردهی اولیه Nhost SDK ---
-        const nhost = new nhost.NhostClient({
-            subdomain: NHOST_SUBDOMAIN,
-            region: NHOST_REGION
-        });
-
-        // --- توابع اصلی برنامه ---
-
-        // 1. تابع ورود به صورت ناشناس و بارگذاری امتیازات
-        async function init() {
-            try {
-                // تلاش برای ورود به صورت ناشناس
-                await nhost.auth.signInAnonymously();
-                const user = nhost.auth.getUser();
-                if (!user) {
-                    throw new Error("ورود ناشناس با شکست مواجه شد.");
-                }
-                userId = user.id;
-                statusMessage.textContent = 'با موفقیت به عنوان کاربر ناشناس وارد شدید.';
-                
-                // بعد از ورود موفق، بالاترین امتیاز کاربر را بارگذاری کن
-                await loadHighScore();
-                
-            } catch (error) {
-                console.error("خطا در ورود ناشناس:", error);
-                statusMessage.textContent = 'خطا در اتصال به Nhost. مطمئن شوید ورود ناشناس فعال است.';
-                highScoreEl.textContent = 'خطا';
-            }
-        }
-
-        // 2. تابع بارگذاری بالاترین امتیاز از Nhost با GraphQL
-        async function loadHighScore() {
-            const GET_SCORE_QUERY = `
-                query GetHighScore($userId: uuid!) {
-                  highscores(where: {user_id: {_eq: $userId}}) {
-                    id
-                    score
-                  }
-                }
+            // نمایش پیام شبیه‌سازی شده
+            messagePanel.style.display = 'block';
+            messagePanel.innerHTML = `
+                <strong>دکمه فشرده شد!</strong><br>
+                ۱. در یک اپلیکیشن واقعی، اکنون SDK مایکت فراخوانی می‌شود.<br>
+                ۲. پس از پرداخت موفق، مایکت یک رسید امضاشده برمی‌گرداند.<br>
+                ۳. برنامه شما باید آن رسید را با استفاده از کلید عمومی زیر تأیید کند:<br>
+                <small style="word-break: break-all; display: block; margin-top: 10px; text-align: left; direction: ltr;">${myketPublicKey}</small>
             `;
 
-            try {
-                const response = await nhost.graphql.request(GET_SCORE_QUERY, { userId: userId });
-
-                if (response.data && response.data.highscores.length > 0) {
-                    // اگر رکوردی برای این کاربر وجود داشت
-                    const userRecord = response.data.highscores[0];
-                    savedHighScore = userRecord.score;
-                    scoreRecordId = userRecord.id; // شناسه رکورد را ذخیره می‌کنیم تا بعدا آن را آپدیت کنیم
-                    highScoreEl.textContent = savedHighScore;
-                } else {
-                    // اگر رکوردی وجود نداشت
-                    savedHighScore = 0;
-                    highScoreEl.textContent = '0';
-                    statusMessage.textContent = 'خوش آمدید! اولین امتیاز خود را ثبت کنید.';
-                }
-            } catch (error) {
-                console.error("خطا در بارگذاری امتیاز:", error);
-                statusMessage.textContent = 'خطا در خواندن اطلاعات. دسترسی‌های جدول را چک کنید.';
-                highScoreEl.textContent = 'خطا';
-            }
+            // یک تأخیر کوتاه برای نمایش حالت پردازش
+            setTimeout(() => {
+                buyButton.disabled = false;
+                buyButton.innerText = 'خرید محصول ویژه';
+            }, 4000); // بعد از ۴ ثانیه دکمه به حالت اول برمی‌گردد
         }
 
-        // 3. تابع ذخیره یا به‌روزرسانی امتیاز در Nhost
-        async function saveScoreToNhost() {
-            if (currentScore <= savedHighScore) {
-                statusMessage.textContent = 'امتیاز جدید باید از بالاترین امتیاز بیشتر باشد.';
-                return;
-            }
-
-            saveScoreBtn.disabled = true;
-            statusMessage.textContent = 'در حال ذخیره امتیاز...';
-
-            try {
-                if (scoreRecordId) {
-                    // اگر scoreRecordId وجود دارد، رکورد را آپدیت کن
-                    const UPDATE_SCORE_MUTATION = `
-                        mutation UpdateScore($id: Int!, $score: Int!) {
-                          update_highscores_by_pk(pk_columns: {id: $id}, _set: {score: $score}) {
-                            id
-                          }
-                        }
-                    `;
-                    await nhost.graphql.request(UPDATE_SCORE_MUTATION, { id: scoreRecordId, score: currentScore });
-                } else {
-                    // اگر scoreRecordId وجود ندارد، رکورد جدید بساز
-                    const INSERT_SCORE_MUTATION = `
-                        mutation InsertScore($userId: uuid!, $score: Int!) {
-                          insert_highscores_one(object: {user_id: $userId, score: $score}) {
-                            id
-                          }
-                        }
-                    `;
-                    const response = await nhost.graphql.request(INSERT_SCORE_MUTATION, { userId: userId, score: currentScore });
-                    scoreRecordId = response.data.insert_highscores_one.id;
-                }
-
-                savedHighScore = currentScore;
-                highScoreEl.textContent = savedHighScore;
-                statusMessage.textContent = 'امتیاز با موفقیت ذخیره شد!';
-            } catch (error) {
-                console.error("خطا در ذخیره امتیاز:", error);
-                statusMessage.textContent = 'خطا در ذخیره اطلاعات. دسترسی‌های جدول را چک کنید.';
-            } finally {
-                saveScoreBtn.disabled = false;
-            }
-        }
-
-        // --- ثبت Event Listeners ---
-
-        clickBox.addEventListener('click', () => {
-            currentScore++;
-            currentScoreEl.textContent = currentScore;
-            if (currentScore > savedHighScore) {
-                saveScoreBtn.disabled = false;
-            }
-        });
-
-        saveScoreBtn.addEventListener('click', saveScoreToNhost);
-
-        // --- شروع برنامه ---
-        document.addEventListener('DOMContentLoaded', init);
+        // اتصال تابع به رویداد کلیک دکمه
+        buyButton.addEventListener('click', handlePurchaseClick);
     </script>
+
 </body>
 </html>
